@@ -118,6 +118,12 @@
 <loc>https://hyperledger.github.io/composer/unstable/api/common-conceptdeclaration</loc>
 </url>
 <url>
+<loc>https://hyperledger.github.io/composer/unstable/api/common-decorator</loc>
+</url>
+<url>
+<loc>https://hyperledger.github.io/composer/unstable/api/common-decoratorfactory</loc>
+</url>
+<url>
 <loc>https://hyperledger.github.io/composer/unstable/api/common-enumdeclaration</loc>
 </url>
 <url>

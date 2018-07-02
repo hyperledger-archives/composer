@@ -46,7 +46,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Upgrading a deployed business network | Hyperledger Composer</title>
+    <title>DecoratorFactory (Common API) | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -148,7 +148,7 @@
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Upgrading a deployed business network</p>
+          <p>DecoratorFactory (Common API)</p>
           </div>
 
           <nav class="context-nav">
@@ -346,61 +346,72 @@
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="upgrading-a-deployed-business-network">Upgrading a deployed business network</h1>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
-<p>After a business network has been successfully deployed to a blockchain it may be necessary to upgrade the business network definition. To upgrade a business network definition, first make the updates you wish to deploy to your local copy of the business network component files (model, script, query, access control, and transaction processor files), then update the version of your local business network files. After updating the version install the new version of the <code>.bna</code> to your blockchain, and use the <code>composer network upgrade</code> command to switch to using your new version.</p>
+<h1 id="decoratorfactory">DecoratorFactory</h1>
 
-<h2 id="before-you-begin">Before you begin</h2>
+<p>An interface for a class that processes a decorator and returns a specific
+implementation class for that decorator.</p>
 
-<p>Before upgrading a deployed business network definition:</p>
+<h3 id="details">Details</h3>
 
 <ul>
-<li>Ensure your business network has successfully deployed.</li>
-<li>Make any required updates to your business network you wish to deploy.</li>
+<li><strong>Module</strong> common</li>
 </ul>
 
-<h2 id="step-one-updating-the-business-network-version">Step One: Updating the business network version</h2>
+<h2 id="method-summary">Method Summary</h2>
 
-<p>It is important that the <code>package.json</code> file is updated before installing a new version of your business network to your blockchain.</p>
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><a href="#newdecorator">newDecorator</a></td>
+<td style="text-align: left"><code>Decorator</code></td>
+<td style="text-align: left">Process the decorator, and return a specific implementation class for that decorator, or return null if this decorator is not handled by this processor</td>
+</tr>
+</tbody></table>
 
-<ol>
-<li><p>Open the <code>package.json</code> file in your business network directory.</p></li>
-<li><p>Update the <strong>version</strong> property. The version property must be a <code>.</code> separated number, for example, <code>0.0.2</code> or <code>1.16.4</code>. Make sure to take note of the version number you are setting as it is required for the following steps.</p></li>
-</ol>
+<h1 id="method-details">Method Details</h1>
 
-<h2 id="step-two-package-your-business-network">Step Two: Package your business network</h2>
+<h2 id="newdecorator">newDecorator</h2>
 
-<p>After updating the version number, the business network must be packaged into a business network archive (<code>.bna</code>). The <code>.bna</code> can then be installed on the blockchain and started. The <code>composer archive create</code> command can package either a directory or an npm module, for this example we&#39;ll use the directory command.</p>
+<p><em>Decorator newDecorator( ClassDeclaration; Property parent, Object ast )</em></p>
 
-<ol>
-<li><p>From your business network directory run the <code>composer archive create</code> command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer archive create -t dir -n .
-</code></pre></div></li>
-</ol>
+<p>Process the decorator, and return a specific implementation class for that decorator, or return null if this decorator is not handled by this processor.</p>
 
-<h2 id="step-three-installing-the-new-business-network">Step Three: Installing the new business network</h2>
+<h3 id="returns">Returns</h3>
 
-<p>When the business network has been packaged, it must be installed to the blockchain. It is installed using the same process as when the original business network was installed.</p>
+<p><strong><a href="common-decorator">Decorator</a></strong> - The decorator.</p>
 
-<ol>
-<li><p>Install the business network to your blockchain using the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network install -a NETWORK-FILENAME.bna -c peeradmin@hlfv1
-</code></pre></div>
-<p>The business network card used in the command must be a peer admin card in order to install the business network to the blockchain peers.</p></li>
-</ol>
+<h3 id="parameters">Parameters</h3>
 
-<h2 id="step-four-upgrading-to-the-new-business-network">Step Four: Upgrading to the new business network</h2>
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>parent</strong></td>
+<td style="text-align: left">ClassDeclaration; Property</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the owner of this property</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>ast</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The AST created by the parser</td>
+</tr>
+</tbody></table>
 
-<p>Now that the business network has been installed to the peers, it must be started. The <code>composer network upgrade</code> command will instruct the peers to stop using the older version of the business network and begin using the version specified in the command.</p>
-
-<ol>
-<li><p>Upgrade to the business network that was installed using the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -c peeradmin@hlfv1 -n NETWORK-NAME -V NETWORK-VERSION
-</code></pre></div>
-<p>The network name and network version must match the contents of the <code>package.json</code> in the installed business network.</p></li>
-</ol>
-
-<p>Your business network should now be successfully upgraded.</p>
+<h2 id="inherited-methods">Inherited methods</h2>
 
             
           </section>

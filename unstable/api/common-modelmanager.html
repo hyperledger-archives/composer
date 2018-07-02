@@ -269,6 +269,8 @@
 <li><a href="/composer/unstable/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-decoratorfactory">DecoratorFactory (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-decorator">Decorator (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -377,6 +379,11 @@ and <a href="common-factory">Factory</a> (to create instances).</p>
 </tr>
 </thead><tbody>
 <tr>
+<td style="text-align: left"><a href="#adddecoratorfactory">addDecoratorFactory</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Add a decorator factory to this model manager</td>
+</tr>
+<tr>
 <td style="text-align: left"><a href="#addmodelfile">addModelFile</a></td>
 <td style="text-align: left"><code>Object</code></td>
 <td style="text-align: left">Adds a Composer file (as a string) to the ModelManager</td>
@@ -405,6 +412,11 @@ and <a href="common-factory">Factory</a> (to create instances).</p>
 <td style="text-align: left"><a href="#getconceptdeclarations">getConceptDeclarations</a></td>
 <td style="text-align: left"><code>ConceptDeclaration[]</code></td>
 <td style="text-align: left">Get the Concepts defined in this model manager</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getdecoratorfactories">getDecoratorFactories</a></td>
+<td style="text-align: left"><code>DecoratorFactory[]</code></td>
+<td style="text-align: left">Get the decorator factories for this model manager</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getenumdeclarations">getEnumDeclarations</a></td>
@@ -922,6 +934,44 @@ Note that if there are dependencies between multiple files the files must be add
 <h3 id="parameters">Parameters</h3>
 
 <p>No parameters</p>
+
+<h2 id="getdecoratorfactories">getDecoratorFactories</h2>
+
+<p><em>DecoratorFactory[] getDecoratorFactories(  )</em></p>
+
+<p>Get the decorator factories for this model manager.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-decoratorfactory">DecoratorFactory</a></strong> - The decorator factories for this model manager.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="adddecoratorfactory">addDecoratorFactory</h2>
+
+<p><em>addDecoratorFactory( DecoratorFactory factory )</em></p>
+
+<p>Add a decorator factory to this model manager.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>factory</strong></td>
+<td style="text-align: left">DecoratorFactory</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The decorator factory to add to this model manager.</td>
+</tr>
+</tbody></table>
 
 <h2 id="inherited-methods">Inherited methods</h2>
 
