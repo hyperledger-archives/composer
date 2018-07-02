@@ -358,6 +358,15 @@
   --card, -c     The name of the card to list  [string]
   --quiet, -q    Only display the card name  [boolean]
 </code></pre></div>
+<h2 id="javascript-api-example">Javascript API Example</h2>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">CardList</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-cli'</span><span class="p">).</span><span class="nx">Card</span><span class="p">.</span><span class="nx">List</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">card</span><span class="p">:</span> <span class="s1">'admin@tutorial-network'</span>
+<span class="p">};</span>
+
+<span class="nx">CardList</span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+</code></pre></div>
             
           </section>
         </div>

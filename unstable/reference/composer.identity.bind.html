@@ -382,6 +382,17 @@ Example: <code>/tmp/cert.pem</code></p>
 <p>The fully qualified identifier of the participant that the identity should be bound to.<br>
 Example: <code>resource:net.biz.digitalPropertyNetwork.Person#lenny@biznet.org</code></p>
 
+<h2 id="javascript-api-example">Javascript API Example</h2>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">IdentityBind</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-cli'</span><span class="p">).</span><span class="nx">Identity</span><span class="p">.</span><span class="nx">Bind</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">card</span><span class="p">:</span> <span class="s1">'admin@sample-network'</span><span class="p">,</span>
+  <span class="na">certificateFile</span><span class="p">:</span> <span class="s1">'/tmp/cert.pem'</span><span class="p">,</span>
+  <span class="na">participantId</span><span class="p">:</span> <span class="s1">'resource:net.biz.digitalPropertyNetwork.Person#lenny@biznet.org'</span>
+<span class="p">};</span>
+
+<span class="nx">IdentityBind</span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+</code></pre></div>
             
           </section>
         </div>

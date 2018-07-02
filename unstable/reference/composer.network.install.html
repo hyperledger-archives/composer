@@ -366,6 +366,16 @@ Options:
 </code></pre></div>
 <p>Please refer to <a href="../managing/connector-information.html">Connector specific information</a> for more information about connecting to Hyperledger Fabric v1.1.</p>
 
+<h2 id="javascript-api-example">Javascript API Example</h2>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">NetworkInstall</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-cli'</span><span class="p">).</span><span class="nx">Network</span><span class="p">.</span><span class="nx">Install</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">archiveFile</span><span class="p">:</span> <span class="s1">'digitalPropertyNetwork.bna'</span><span class="p">,</span>
+  <span class="na">card</span><span class="p">:</span> <span class="s1">'admin@tutorial-network'</span>
+<span class="p">};</span>
+
+<span class="nx">NetworkInstall</span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+</code></pre></div>
             
           </section>
         </div>
