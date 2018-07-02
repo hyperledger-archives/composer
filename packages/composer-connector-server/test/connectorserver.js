@@ -903,7 +903,19 @@ describe('ConnectorServer', () => {
             connectorServer.securityContexts[securityContextID] = mockSecurityContext;
         });
 
-        it('should query chain code', () => {
+        it('should query chain code that does not return data', () => {
+            mockConnection.queryChainCode.withArgs(mockSecurityContext, functionName, args).resolves();
+            const cb = sinon.stub();
+            return connectorServer.connectionQueryChainCode(connectionID, securityContextID, functionName, args, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.queryChainCode);
+                    sinon.assert.calledWith(mockConnection.queryChainCode, mockSecurityContext, functionName, args);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null, null);
+                });
+        });
+
+        it('should query chain code that does return data', () => {
             mockConnection.queryChainCode.withArgs(mockSecurityContext, functionName, args).resolves(Buffer.from('hello world'));
             const cb = sinon.stub();
             return connectorServer.connectionQueryChainCode(connectionID, securityContextID, functionName, args, cb)
@@ -964,7 +976,7 @@ describe('ConnectorServer', () => {
             connectorServer.securityContexts[securityContextID] = mockSecurityContext;
         });
 
-        it('should invoke chain code with no options', () => {
+        it('should invoke chain code with no options that does not return data', () => {
             mockConnection.invokeChainCode.withArgs(mockSecurityContext, functionName, args, sinon.match.any).resolves();
             const cb = sinon.stub();
             return connectorServer.connectionInvokeChainCode(connectionID, securityContextID, functionName, args, null, cb)
@@ -973,6 +985,18 @@ describe('ConnectorServer', () => {
                     sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, functionName, args);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
+                });
+        });
+
+        it('should invoke chain code with no options that does return data', () => {
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, functionName, args, sinon.match.any).resolves(Buffer.from('hello world'));
+            const cb = sinon.stub();
+            return connectorServer.connectionInvokeChainCode(connectionID, securityContextID, functionName, args, null, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, functionName, args);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null, 'hello world');
                 });
         });
 

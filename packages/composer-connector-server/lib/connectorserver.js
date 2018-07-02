@@ -586,8 +586,8 @@ class ConnectorServer {
         }
         return connection.queryChainCode(securityContext, functionName, args)
             .then((result) => {
-                callback(null, result.toString());
-                LOG.exit(method, result.toString());
+                callback(null, result ? result.toString() : null);
+                LOG.exit(method, result ? result.toString() : null);
             })
             .catch((error) => {
                 LOG.error(method, error);
@@ -627,14 +627,14 @@ class ConnectorServer {
             return Promise.resolve();
         }
         return connection.invokeChainCode(securityContext, functionName, args, options)
-            .then(() => {
-                callback(null);
-                LOG.exit(method);
+            .then((result) => {
+                callback(null, result ? result.toString() : null);
+                LOG.exit(method, result ? result.toString() : null);
             })
             .catch((error) => {
                 LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
-                LOG.exit(method);
+                LOG.exit(method, null);
             });
     }
 
