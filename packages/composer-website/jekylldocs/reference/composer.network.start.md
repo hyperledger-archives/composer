@@ -41,3 +41,19 @@ Options:
   --file, -f                         File name of the card to be created  [string]
   ```
 Please refer to [Connector specific information](../managing/connector-information.html) for more information about connecting to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.
+
+## Javascript API Example
+
+``` javascript
+const NetworkStart = require('composer-cli').Network.Start;
+
+let options = {
+  networkName: 'tutorial-network',
+  networkVersion: '0.0.1',
+  networkAdmin: 'admin',
+  networkAdminEnrollSecret: 'adminpw',
+  card: 'PeerAdmin@fabric-network'
+};
+
+NetworkStart.handler(options);
+```

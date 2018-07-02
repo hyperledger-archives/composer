@@ -91,3 +91,29 @@ enum MyEnum {
   @bar("enumValue")
   o VALUE
 }
+
+@returns(MyConcept)
+transaction MyTransactionIdentifier1 {
+
+}
+
+@returns(MyConcept[])
+transaction MyTransactionIdentifier2 {
+
+}
+
+@returns(String)
+transaction MyTransactionIdentifier3 {
+
+}
+
+@returns(String[])
+transaction MyTransactionIdentifier4 {
+
+}
+
+// should be boolean, not an identifier
+@returns(true)
+transaction MyTransactionIdentifier5 {
+
+}

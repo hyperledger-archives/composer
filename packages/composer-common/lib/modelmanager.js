@@ -61,9 +61,10 @@ class ModelManager {
     constructor() {
         LOG.entry('constructor');
         this.modelFiles = {};
-        this.addSystemModels();
         this.factory = new Factory(this);
         this.serializer = new Serializer(this.factory, this);
+        this.decoratorFactories = [];
+        this.addSystemModels();
         LOG.exit('constructor');
     }
 
@@ -556,6 +557,22 @@ class ModelManager {
      */
     getSerializer() {
         return this.serializer;
+    }
+
+    /**
+     * Get the decorator factories for this model manager.
+     * @return {DecoratorFactory[]} The decorator factories for this model manager.
+     */
+    getDecoratorFactories() {
+        return this.decoratorFactories;
+    }
+
+    /**
+     * Add a decorator factory to this model manager.
+     * @param {DecoratorFactory} factory The decorator factory to add to this model manager.
+     */
+    addDecoratorFactory(factory) {
+        this.decoratorFactories.push(factory);
     }
 
 }

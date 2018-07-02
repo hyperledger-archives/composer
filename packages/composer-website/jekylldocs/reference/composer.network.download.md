@@ -34,3 +34,16 @@ Example: `businessnetworkv1.1.4`
 `--card, -c`
 
 The business network card to use to download the network.
+
+## Javascript API Example
+
+``` javascript
+const NetworkDownload = require('composer-cli').Network.Download;
+
+let options = {
+  archiveFile: 'businessnetworkv1.1.4',
+  card: 'admin@examplenetwork'
+};
+
+NetworkDownload.handler(options);
+```

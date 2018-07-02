@@ -23,3 +23,15 @@ Options:
   --newlevel, -l  the new logging level  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
   --card, -c      The cardname to use to change the log level the network  [string]
 ```
+
+## Javascript API Example
+
+``` javascript
+const NetworkLogLevel = require('composer-cli').Network.LogLevel;
+
+let options = {
+  card: 'admin@tutorial-network'
+};
+
+NetworkLogLevel.handler(options);
+```

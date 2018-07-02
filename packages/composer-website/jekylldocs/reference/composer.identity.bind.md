@@ -44,3 +44,17 @@ Example: `/tmp/cert.pem`
 
 The fully qualified identifier of the participant that the identity should be bound to.  
 Example: `resource:net.biz.digitalPropertyNetwork.Person#lenny@biznet.org`
+
+## Javascript API Example
+
+```javascript
+const IdentityBind = require('composer-cli').Identity.Bind;
+
+let options = {
+  card: 'admin@sample-network',
+  certificateFile: '/tmp/cert.pem',
+  participantId: 'resource:net.biz.digitalPropertyNetwork.Person#lenny@biznet.org'
+};
+
+IdentityBind.handler(options);
+```

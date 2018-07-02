@@ -14,13 +14,26 @@
 
 'use strict';
 
-exports.command = 'generator <subcommand>';
-exports.desc = 'Composer generator command to convert a Business Network Definition to code';
-exports.builder = function (yargs) {
-   // apply commands in subdirectories, throws an error if an incorrect command is entered
-    return yargs.demandCommand(1, 'Incorrect command. Please see the list of commands above, or enter "composer generator --help".')
-   .commandDir('generator');
-};
-exports.handler = function (argv) {};
+const DecoratorFactory = require('../../lib/introspect/decoratorfactory');
 
-module.exports.Create = require('./generator/lib/createCode');
+require('chai').should();
+
+describe('DecoratorFactory', () => {
+
+    let decoratorFactory;
+
+    beforeEach(() => {
+        decoratorFactory = new DecoratorFactory();
+    });
+
+    describe('#newDecorator', () => {
+
+        it('should throw as abstract', () => {
+            (() => {
+                decoratorFactory.newDecorator();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+});

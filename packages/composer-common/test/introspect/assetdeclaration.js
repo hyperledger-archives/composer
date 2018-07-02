@@ -61,23 +61,6 @@ describe('AssetDeclaration', () => {
         return assets[assets.length - 1];
     };
 
-    describe('#constructor', () => {
-
-        it('should throw if modelFile not specified', () => {
-            (() => {
-                new AssetDeclaration(null, {});
-            }).should.throw(/required/);
-        });
-
-        it('should throw if ast not specified', () => {
-            let mockModelFile = sinon.createStubInstance(ModelFile);
-            (() => {
-                new AssetDeclaration(mockModelFile, null);
-            }).should.throw(/required/);
-        });
-
-    });
-
     describe('#validate', () => {
 
         // skip('should resolve an imported base asset', () => {

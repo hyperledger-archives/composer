@@ -169,8 +169,11 @@ class ProxyConnection extends Connection {
             this.socket.emit('/api/connectionQueryChainCode', this.connectionID, securityContext.securityContextID, functionName, args, (error, result) => {
                 if (error) {
                     return reject(ProxyUtil.inflaterr(error));
+                } else if (result) {
+                    resolve(Buffer.from(result));
+                } else {
+                    resolve(null);
                 }
-                resolve(Buffer.from(result));
             });
         });
     }
@@ -182,16 +185,19 @@ class ProxyConnection extends Connection {
      * @param {string[]} args The arguments to pass to the chaincode function.
      * @param {Object} options options to pass to invoking chaincode
      * @param {Object} options.transactionId Transaction Id to use.
-     * @return {Promise} A promise that is resolved once the chaincode function
-     * has been invoked, or rejected with an error.
+     * @return {Promise} A promise that is resolved with the data returned by the
+     * chaincode function once it has been invoked, or rejected with an error.
      */
     invokeChainCode(securityContext, functionName, args, options) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('/api/connectionInvokeChainCode', this.connectionID, securityContext.securityContextID, functionName, args, options, (error) => {
+            this.socket.emit('/api/connectionInvokeChainCode', this.connectionID, securityContext.securityContextID, functionName, args, options, (error, result) => {
                 if (error) {
                     return reject(ProxyUtil.inflaterr(error));
+                } else if (result) {
+                    resolve(Buffer.from(result));
+                } else {
+                    resolve(null);
                 }
-                resolve();
             });
         });
     }

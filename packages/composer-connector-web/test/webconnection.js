@@ -228,7 +228,29 @@ describe('WebConnection', () => {
 
     describe('#queryChainCode', () => {
 
-        it('should call the engine query method', async () => {
+        it('should call the engine query method that does not return data', async () => {
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            const functionName = 'testFunction';
+            const functionArgs = ['a', 'b', 'c'];
+
+            const mockContainer = sinon.createStubInstance(WebContainer);
+            sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
+            const mockEngine = sinon.createStubInstance(Engine);
+            mockEngine.getContainer.returns(mockContainer);
+            sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
+            mockEngine.init.resolves();
+            mockEngine.query.withArgs(sinon.match.instanceOf(Context), functionName, functionArgs).resolves();
+            mockSecurityContext.getNetworkName.returns(networkDefinition.getName());
+
+            await connection.install(mockSecurityContext, networkDefinition);
+            await connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion());
+            const actual = await connection.queryChainCode(mockSecurityContext, functionName, functionArgs);
+
+            sinon.assert.calledWith(mockEngine.query, sinon.match.instanceOf(Context), functionName, functionArgs);
+            should.equal(actual, null);
+        });
+
+        it('should call the engine query method that does returns data', async () => {
             const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
             const functionName = 'testFunction';
             const functionArgs = ['a', 'b', 'c'];
@@ -247,6 +269,7 @@ describe('WebConnection', () => {
             await connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion());
             const actual = await connection.queryChainCode(mockSecurityContext, functionName, functionArgs);
 
+            sinon.assert.calledWith(mockEngine.query, sinon.match.instanceOf(Context), functionName, functionArgs);
             JSON.parse(actual.toString()).should.deep.equal(expected);
         });
 
@@ -254,7 +277,29 @@ describe('WebConnection', () => {
 
     describe('#invokeChainCode', () => {
 
-        it('should call the engine invoke method', async () => {
+        it('should call the engine invoke method that does not return data', async () => {
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            const functionName = 'testFunction';
+            const functionArgs = ['a', 'b', 'c'];
+
+            const mockContainer = sinon.createStubInstance(WebContainer);
+            sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
+            const mockEngine = sinon.createStubInstance(Engine);
+            mockEngine.getContainer.returns(mockContainer);
+            sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
+            mockEngine.init.resolves();
+            mockEngine.invoke.resolves();
+            mockSecurityContext.getNetworkName.returns(networkDefinition.getName());
+
+            await connection.install(mockSecurityContext, networkDefinition);
+            await connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion());
+            const actual = await connection.invokeChainCode(mockSecurityContext, functionName, functionArgs);
+
+            sinon.assert.calledWith(mockEngine.invoke, sinon.match.instanceOf(Context), functionName, functionArgs);
+            should.equal(actual, null);
+        });
+
+        it('should call the engine invoke method that does return data', async () => {
             const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
             const functionName = 'testFunction';
             const functionArgs = ['a', 'b', 'c'];
@@ -271,9 +316,10 @@ describe('WebConnection', () => {
 
             await connection.install(mockSecurityContext, networkDefinition);
             await connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion());
-            await connection.invokeChainCode(mockSecurityContext, functionName, functionArgs);
+            const actual = await connection.invokeChainCode(mockSecurityContext, functionName, functionArgs);
 
             sinon.assert.calledWith(mockEngine.invoke, sinon.match.instanceOf(Context), functionName, functionArgs);
+            JSON.parse(actual.toString()).should.deep.equal(expected);
         });
 
     });

@@ -30,3 +30,16 @@ Options:
 ```
 
 Please refer to [Connector specific information](../managing/connector-information.html) for more information about connecting to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.
+
+## Javascript API Example
+
+``` javascript
+const NetworkInstall = require('composer-cli').Network.Install;
+
+let options = {
+  archiveFile: 'digitalPropertyNetwork.bna',
+  card: 'admin@tutorial-network'
+};
+
+NetworkInstall.handler(options);
+```

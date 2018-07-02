@@ -46,23 +46,9 @@ class ClassDeclaration extends Decorated {
      * @throws {IllegalModelException}
      */
     constructor(modelFile, ast) {
-        super(ast);
-
-        if(!modelFile) {
-            throw new IllegalModelException(Globalize.formatMessage('classdeclaration-constructor-modelastreq'));
-        }
-        this.modelFile = modelFile;
+        super(modelFile, ast);
         this.process();
-        this.fqn = ModelUtil.getFullyQualifiedName(modelFile.getNamespace(), this.name);
-    }
-
-    /**
-     * Returns the ModelFile that defines this class.
-     *
-     * @return {ModelFile} the owning ModelFile
-     */
-    getModelFile() {
-        return this.modelFile;
+        this.fqn = ModelUtil.getFullyQualifiedName(this.modelFile.getNamespace(), this.name);
     }
 
     /**
