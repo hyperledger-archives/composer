@@ -50,6 +50,7 @@ class ModelFile {
         this.modelManager = modelManager;
         this.external = false;
         this.declarations = [];
+        this.localTypes = new Map();
         this.imports = [];
         this.importShortNames = new Map();
         this.importWildcardNamespaces = [];
@@ -137,6 +138,13 @@ class ModelFile {
                     'type': thing.type,
                 }),this.modelFile);
             }
+        }
+
+        // Now build local types from Declarations
+        for(let index in this.declarations) {
+            let classDeclaration = this.declarations[index];
+            let localType = this.getNamespace() + '.' + classDeclaration.getName();
+            this.localTypes.set(localType, this.declarations[index]);
         }
     }
 
@@ -428,13 +436,11 @@ class ModelFile {
             type = this.getNamespace() + '.' + type;
         }
 
-        for(let n=0; n < this.declarations.length; n++) {
-            let classDeclaration = this.declarations[n];
-            if(type === this.getNamespace() + '.' + classDeclaration.getName() ) {
-                return classDeclaration;
-            }
+        if (this.localTypes.has(type)) {
+            return this.localTypes.get(type);
+        } else {
+            return null;
         }
-        return null;
     }
 
     /**
