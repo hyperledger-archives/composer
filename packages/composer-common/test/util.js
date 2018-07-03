@@ -185,6 +185,47 @@ describe('Util', function () {
                 });
         });
 
+        it('should process a transaction as json and pass additional options', function () {
+            let stub = sandbox.stub(Util, 'securityCheck');
+            let json =  {
+                $class: 'org.acme.l1.ScrapCar',
+                car: 'resource:org.acme.l1.Car#456',
+                timestamp: '1970-01-01T00:00:00.000Z',
+                transactionId: '789'
+            };
+            return Util
+                .submitTransaction(mockSecurityContext,json,null,{option1:true})
+                .then(() => {
+                    sinon.assert.called(stub);
+                    sinon.assert.called(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode,mockSecurityContext,'submitTransaction',[JSON.stringify(json)],{option1:true,transactionId:'tx1234567890'});
+                });
+        });
+
+        it('should process a transaction as resource and pass additional options', function () {
+            let stub = sandbox.stub(Util, 'securityCheck');
+            let json =  {
+                $class: 'org.acme.l1.ScrapCar',
+                car: 'resource:org.acme.l1.Car#456',
+                timestamp: '1970-01-01T00:00:00.000Z',
+                transactionId: '789'
+            };
+            const classDecl = modelManager.getType('org.acme.l1.ScrapCar');
+            const resource = new Resource(modelManager, classDecl, 'org.acme.l1', 'ScrapCar', '789' );
+            let setIdSpy = sinon.spy(resource,'setIdentifier');
+            mockSerializer.toJSON.returns(json);
+            resource.timestamp = new Date(0);
+            resource.car = modelManager.getFactory().newRelationship('org.acme.l1', 'Car', '456');
+            return Util
+                .submitTransaction(mockSecurityContext,resource,mockSerializer,{option2:true})
+                .then(() => {
+                    sinon.assert.called(setIdSpy);
+                    sinon.assert.called(stub);
+                    sinon.assert.called(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode,mockSecurityContext,'submitTransaction',[JSON.stringify(json)],{option2:true,transactionId:'tx1234567890'});
+                });
+        });
+
     });
 
 

@@ -136,6 +136,14 @@ describe('BusinessNetworkConnection', () => {
         transaction MyTransactionThatReturnsEnumArray {
 
         }
+        @commit(true)
+        transaction MyTransactionCommitTrue {
+
+        }
+        @commit(false)
+        transaction MyTransactionCommitFalse {
+
+        }
         `);
         factory = modelManager.getFactory();
         serializer = modelManager.getSerializer();
@@ -841,7 +849,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json], { commit: true, transactionId: 'c89291eb-969f-4b04-b653-82deb5ee0ba1' });
 
                 });
 
@@ -877,7 +885,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json], { commit: true, transactionId: 'c89291eb-969f-4b04-b653-82deb5ee0ba1' });
 
                 });
 
@@ -910,7 +918,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json], { commit: true, transactionId: 'c89291eb-969f-4b04-b653-82deb5ee0ba1' });
 
                 });
 
@@ -950,7 +958,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json], { commit: true, transactionId: 'c89291eb-969f-4b04-b653-82deb5ee0ba1' });
 
                 });
 
@@ -980,6 +988,141 @@ describe('BusinessNetworkConnection', () => {
             return businessNetworkConnection
                 .submitTransaction(tx)
                 .should.be.rejectedWith(/such error/);
+
+        });
+
+        it('should invoke the chain-code for a transaction with additional options', () => {
+
+            // Fake the transaction registry.
+            const txRegistry = sinon.createStubInstance(TransactionRegistry);
+            txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
+
+            // Create the transaction.
+            const tx = factory.newResource('org.acme', 'MyTransactionThatReturnsString', 'c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
+            // Set up the responses from the chain-code.
+            sandbox.stub(Util, 'invokeChainCode').resolves(Buffer.from('"hello world"'));
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
+
+            // Invoke the submitTransaction function.
+            return businessNetworkConnection
+                .submitTransaction(tx, { option1: true, option2: true })
+                .then((result) => {
+
+                    // Check the result.
+                    result.should.equal('hello world');
+
+                    // Force the transaction to be serialized as some fake JSON.
+                    const json = JSON.stringify(serializer.toJSON(tx));
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json], { commit: true, option1: true, option2: true, transactionId: 'c89291eb-969f-4b04-b653-82deb5ee0ba1' });
+
+                });
+
+        });
+
+        it('should invoke the chain-code for a transaction with @commit(true)', () => {
+
+            // Fake the transaction registry.
+            const txRegistry = sinon.createStubInstance(TransactionRegistry);
+            txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
+
+            // Create the transaction.
+            const tx = factory.newResource('org.acme', 'MyTransactionCommitTrue', 'c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
+            // Set up the responses from the chain-code.
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
+
+            // Invoke the submitTransaction function.
+            return businessNetworkConnection
+                .submitTransaction(tx)
+                .then(() => {
+
+                    // Force the transaction to be serialized as some fake JSON.
+                    const json = JSON.stringify(serializer.toJSON(tx));
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json], { commit: true, transactionId: 'c89291eb-969f-4b04-b653-82deb5ee0ba1' });
+
+                });
+
+        });
+
+        it('should invoke the chain-code for a transaction with @commit(false)', () => {
+
+            // Fake the transaction registry.
+            const txRegistry = sinon.createStubInstance(TransactionRegistry);
+            txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
+
+            // Create the transaction.
+            const tx = factory.newResource('org.acme', 'MyTransactionCommitFalse', 'c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
+            // Set up the responses from the chain-code.
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
+
+            // Invoke the submitTransaction function.
+            return businessNetworkConnection
+                .submitTransaction(tx)
+                .then(() => {
+
+                    // Force the transaction to be serialized as some fake JSON.
+                    const json = JSON.stringify(serializer.toJSON(tx));
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json], { commit: false, transactionId: 'c89291eb-969f-4b04-b653-82deb5ee0ba1' });
+
+                });
+
+        });
+
+        it('should invoke the chain-code for a transaction with @commit(true) but commit option of false', () => {
+
+            // Fake the transaction registry.
+            const txRegistry = sinon.createStubInstance(TransactionRegistry);
+            txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
+
+            // Create the transaction.
+            const tx = factory.newResource('org.acme', 'MyTransactionCommitTrue', 'c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
+            // Set up the responses from the chain-code.
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
+
+            // Invoke the submitTransaction function.
+            return businessNetworkConnection
+                .submitTransaction(tx, { commit: false })
+                .then(() => {
+
+                    // Force the transaction to be serialized as some fake JSON.
+                    const json = JSON.stringify(serializer.toJSON(tx));
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json], { commit: false, transactionId: 'c89291eb-969f-4b04-b653-82deb5ee0ba1' });
+
+                });
 
         });
 

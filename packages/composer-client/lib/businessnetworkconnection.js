@@ -506,10 +506,11 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {Resource} transaction - The transaction to submit. Use
      * {@link module:composer-common.Factory#newTransaction newTransaction} to
      * create this object.
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      * @returns {Promise} A promise that will be fulfilled when the transaction
      * has been processed.
      */
-    async submitTransaction(transaction) {
+    async submitTransaction(transaction, additionalConnectorOptions = {}) {
         const method = 'submitTransaction';
         LOG.entry(method, transaction);
         Util.securityCheck(this.securityContext);
@@ -526,8 +527,13 @@ class BusinessNetworkConnection extends EventEmitter {
         // Set the current timestamp.
         transaction.timestamp = new Date();
 
+        // Determine whether or not we want to commit this transaction.
+        const transactionDeclaration = transaction.getClassDeclaration();
+        const commitDecorator = transactionDeclaration.getDecorator('commit');
+        const commit = commitDecorator ? commitDecorator.getValue() : true;
+
         // Submit the transaction.
-        const data = await Util.submitTransaction(this.securityContext, transaction, this.getBusinessNetwork().getSerializer());
+        const data = await Util.submitTransaction(this.securityContext, transaction, this.getBusinessNetwork().getSerializer(), Object.assign({ commit }, additionalConnectorOptions));
 
         // Process the return data.
         const result = this._processReturnData(transaction, data);
