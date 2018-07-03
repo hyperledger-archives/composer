@@ -32,9 +32,10 @@ class EmbeddedDataService extends PouchDBDataService {
      * Constructor.
      * @param {string} [uuid] The UUID of the container.
      * @param {boolean} [autocommit] Should this data service auto commit?
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      */
-    constructor(uuid, autocommit) {
-        super(uuid, autocommit, { adapter: 'memory' });
+    constructor(uuid, autocommit, additionalConnectorOptions = {}) {
+        super(uuid, autocommit, { adapter: 'memory' }, additionalConnectorOptions);
         const method = 'constructor';
         LOG.entry(method, uuid, autocommit);
         LOG.exit(method);

@@ -466,6 +466,83 @@ describe('EmbeddedConnection', () => {
             }), 'testFunction', ['arg1', 'arg2']);
             JSON.parse(result.toString()).should.deep.equal({ test: 'data from engine' });
         });
+
+        it('should call the engine invoke method with commit set to true', async () => {
+
+            // Mock a container
+            let mockContainer = sinon.createStubInstance(EmbeddedContainer);
+            mockContainer.getUUID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+            sandbox.stub(EmbeddedConnection, 'createContainer').returns(mockContainer);
+
+            // Mock an engine
+            let mockEngine = sinon.createStubInstance(Engine);
+            mockEngine.getContainer.returns(mockContainer);
+            mockEngine.init.resolves();
+            mockEngine.invoke.resolves();
+            sandbox.stub(EmbeddedConnection, 'createEngine').returns(mockEngine);
+
+            // Mock a security context
+            mockSecurityContext.getIdentity.returns(identity);
+            mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+
+            // do required install/start
+            await connection.install(mockSecurityContext, businessNetworkDefinition);
+            await connection.start(mockSecurityContext,
+                businessNetworkDefinition.getName(),
+                businessNetworkDefinition.getVersion(),
+                '{"start":"json"}',
+                { start: 'options' });
+
+            // test the function
+            await connection.invokeChainCode(mockSecurityContext, 'testFunction', ['arg1', 'arg2'], { commit: true });
+
+            // validate the behaviour
+            sinon.assert.calledOnce(mockEngine.invoke);
+            sinon.assert.calledWith(mockEngine.invoke, sinon.match((context) => {
+                context.should.be.an.instanceOf(Context);
+                context.additionalConnectorOptions.commit.should.be.true;
+                return true;
+            }), 'testFunction', ['arg1', 'arg2']);
+        });
+
+        it('should call the engine invoke method with commit set to false', async () => {
+
+            // Mock a container
+            let mockContainer = sinon.createStubInstance(EmbeddedContainer);
+            mockContainer.getUUID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+            sandbox.stub(EmbeddedConnection, 'createContainer').returns(mockContainer);
+
+            // Mock an engine
+            let mockEngine = sinon.createStubInstance(Engine);
+            mockEngine.getContainer.returns(mockContainer);
+            mockEngine.init.resolves();
+            mockEngine.invoke.resolves();
+            sandbox.stub(EmbeddedConnection, 'createEngine').returns(mockEngine);
+
+            // Mock a security context
+            mockSecurityContext.getIdentity.returns(identity);
+            mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+
+            // do required install/start
+            await connection.install(mockSecurityContext, businessNetworkDefinition);
+            await connection.start(mockSecurityContext,
+                businessNetworkDefinition.getName(),
+                businessNetworkDefinition.getVersion(),
+                '{"start":"json"}',
+                { start: 'options' });
+
+            // test the function
+            await connection.invokeChainCode(mockSecurityContext, 'testFunction', ['arg1', 'arg2'], { commit: false });
+
+            // validate the behaviour
+            sinon.assert.calledOnce(mockEngine.invoke);
+            sinon.assert.calledWith(mockEngine.invoke, sinon.match((context) => {
+                context.should.be.an.instanceOf(Context);
+                context.additionalConnectorOptions.commit.should.be.false;
+                return true;
+            }), 'testFunction', ['arg1', 'arg2']);
+        });
+
     });
 
     describe('#getIdentities', () => {

@@ -43,6 +43,11 @@ describe('EmbeddedDataService', () => {
             dataService.should.be.an.instanceOf(DataService);
         });
 
+        it('should pass additional connector options', () => {
+            dataService = new EmbeddedDataService(null, null, { commit: false });
+            dataService.additionalConnectorOptions.commit.should.be.false;
+        });
+
     });
 
 });

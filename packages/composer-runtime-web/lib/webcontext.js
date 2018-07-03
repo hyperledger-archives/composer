@@ -32,12 +32,14 @@ class WebContext extends Context {
      * @param {InstalledBusinessNetwork} installedBusinessNetwork Information on the installed business network.
      * @param {Object} identity The current identity.
      * @param {EventEmitter} eventSink The event emitter
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      */
-    constructor(engine, installedBusinessNetwork, identity, eventSink) {
+    constructor(engine, installedBusinessNetwork, identity, eventSink, additionalConnectorOptions = {}) {
         super(engine, installedBusinessNetwork);
-        this.dataService = WebDataService.newNetworkDataService(engine.getContainer().getName());
+        this.dataService = WebDataService.newNetworkDataService(engine.getContainer().getName(), false, additionalConnectorOptions);
         this.identityService = new WebIdentityService(identity);
         this.eventSink = eventSink;
+        this.additionalConnectorOptions = additionalConnectorOptions;
     }
 
     /**

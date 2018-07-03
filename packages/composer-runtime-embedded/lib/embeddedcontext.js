@@ -33,12 +33,14 @@ class EmbeddedContext extends Context {
      * @param {Object} identity The current identity.
      * @param {EventEmitter} eventSink The event emitter
      * @param {InstalledBusinessNetwork} installedBusinessNetwork The installed business network
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      */
-    constructor(engine, identity, eventSink, installedBusinessNetwork) {
+    constructor(engine, identity, eventSink, installedBusinessNetwork, additionalConnectorOptions = {}) {
         super(engine, installedBusinessNetwork);
-        this.dataService = new EmbeddedDataService(engine.getContainer().getUUID());
+        this.dataService = new EmbeddedDataService(engine.getContainer().getUUID(), false, additionalConnectorOptions);
         this.identityService = new EmbeddedIdentityService(identity);
         this.eventSink = eventSink;
+        this.additionalConnectorOptions = additionalConnectorOptions;
     }
 
     /**
@@ -97,6 +99,7 @@ class EmbeddedContext extends Context {
     getNativeAPI() {
         throw new Error('Native API not available in embedded runtime');
     }
+
 }
 
 module.exports = EmbeddedContext;
