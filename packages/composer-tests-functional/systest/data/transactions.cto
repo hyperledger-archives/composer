@@ -228,3 +228,13 @@ transaction TransactionThatReturnsEnum {
 transaction TransactionThatReturnsEnumArray {
     o String value
 }
+
+@commit(true)
+transaction TransactionWithCommitTrue {
+    o String stringValue
+}
+
+@commit(false)
+transaction TransactionWithCommitFalse {
+    o String stringValue
+}

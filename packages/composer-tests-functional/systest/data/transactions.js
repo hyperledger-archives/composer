@@ -512,3 +512,25 @@ async function transactionThatReturnsEnum(transaction) {
 async function transactionThatReturnsEnumArray(transaction) {
     return ['SUCH', 'MANY'];
 }
+
+/**
+ * Handle a transaction with @commit(true).
+ * @param {systest.transactions.TransactionWithCommitTrue} transaction The transaction
+ * @transaction
+ */
+async function transactionWithCommitTrue(transaction) {
+    const assetRegistry = await getAssetRegistry('systest.transactions.SimpleStringAsset');
+    const factory = getFactory();
+    const asset  = factory.newResource('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+    asset.stringValue = transaction.stringValue;
+    await assetRegistry.add(asset);
+}
+
+/**
+ * Handle a transaction with @commit(false).
+ * @param {systest.transactions.TransactionWithCommitFalse} transaction The transaction
+ * @transaction
+ */
+async function transactionWithCommitFalse(transaction) {
+    await transactionWithCommitTrue(transaction);
+}
