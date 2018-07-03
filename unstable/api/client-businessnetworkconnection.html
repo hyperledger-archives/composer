@@ -1082,7 +1082,7 @@ BusinessNetworksDefinitions.</p>
 </code></pre></div>
 <h2 id="submittransaction">submitTransaction</h2>
 
-<p><em>Promise submitTransaction( Resource transaction )</em></p>
+<p><em>Promise submitTransaction( Resource transaction, [Object additionalconnectoroptions] )</em></p>
 
 <p>Submit a transaction for processing by the currently connected business network.</p>
 
@@ -1105,6 +1105,12 @@ BusinessNetworksDefinitions.</p>
 <td style="text-align: left">Resource</td>
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The transaction to submit. Use <a href="common-factory#newtransaction">newTransaction</a> to create this object.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>additionalConnectorOptions</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Additional connector specific options for this transaction.</td>
 </tr>
 </tbody></table>
 
