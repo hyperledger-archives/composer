@@ -286,17 +286,18 @@ class EmbeddedConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      * @return {Buffer} A buffer containing the data returned by the chaincode function,
      * or null if no data was returned.
      */
-    async invokeChainCode(securityContext, functionName, args) {
+    async invokeChainCode(securityContext, functionName, args, additionalConnectorOptions = {}) {
         if (!this.businessNetworkIdentifier) {
             throw new Error('No business network has been specified for this connection');
         }
         let identity = securityContext.getIdentity();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
-        let context = new EmbeddedContext(chaincode.engine, identity, this, chaincode.installedBusinessNetwork);
+        let context = new EmbeddedContext(chaincode.engine, identity, this, chaincode.installedBusinessNetwork, additionalConnectorOptions);
         const data = await chaincode.engine.invoke(context, functionName, args);
         return !Util.isNull(data) ? Buffer.from(JSON.stringify(data)) : null;
     }

@@ -896,7 +896,7 @@ class HLFConnection extends Connection {
      * @return {Promise} A promise that is resolved once the chaincode function
      * has been invoked, or rejected with an error.
      */
-    async invokeChainCode(securityContext, functionName, args, options) {
+    async invokeChainCode(securityContext, functionName, args, options = {}) {
         const method = 'invokeChainCode';
         LOG.entry(method, securityContext, functionName, args, options);
 
@@ -959,6 +959,13 @@ class HLFConnection extends Connection {
                 LOG.debug(method, `Response includes payload data of ${firstValidResponse.response.payload.length} bytes`);
             } else {
                 LOG.debug(method, 'Response does not include payload data');
+            }
+
+            // If commit has been set to false, do not order the transaction or wait for any events.
+            if (options.commit === false) {
+                LOG.debug(method, 'Commit has been set to false, not ordering transaction or waiting for any events');
+                LOG.exit(method, result);
+                return result;
             }
 
             // Submit the endorsed transaction to the primary orderers.

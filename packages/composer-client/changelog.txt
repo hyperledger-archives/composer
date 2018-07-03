@@ -23,6 +23,10 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+
+Version 0.19.11 {ce05ff1f0ed05a74d0c98020e7a07568} 2018-07-03
+- Add additional connector specific options to submitTransaction
+
 Version 0.19.2 {ef6884530844c8fad762ea4d97f07a03} 2018-04-13
 - Added getNativeAPI() function to client APIs
 

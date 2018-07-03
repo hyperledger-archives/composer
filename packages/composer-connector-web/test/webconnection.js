@@ -322,6 +322,56 @@ describe('WebConnection', () => {
             JSON.parse(actual.toString()).should.deep.equal(expected);
         });
 
+        it('should call the engine invoke method with commit set to true', async () => {
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            const functionName = 'testFunction';
+            const functionArgs = ['a', 'b', 'c'];
+
+            const mockContainer = sinon.createStubInstance(WebContainer);
+            sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
+            const mockEngine = sinon.createStubInstance(Engine);
+            mockEngine.getContainer.returns(mockContainer);
+            sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
+            mockEngine.init.resolves();
+            mockEngine.invoke.resolves();
+            mockSecurityContext.getNetworkName.returns(networkDefinition.getName());
+
+            await connection.install(mockSecurityContext, networkDefinition);
+            await connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion());
+            await connection.invokeChainCode(mockSecurityContext, functionName, functionArgs, { commit: true });
+
+            sinon.assert.calledWith(mockEngine.invoke, sinon.match((context) => {
+                context.should.be.an.instanceOf(Context);
+                context.additionalConnectorOptions.commit.should.be.true;
+                return true;
+            }), functionName, functionArgs);
+        });
+
+        it('should call the engine invoke method with commit set to false', async () => {
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            const functionName = 'testFunction';
+            const functionArgs = ['a', 'b', 'c'];
+
+            const mockContainer = sinon.createStubInstance(WebContainer);
+            sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
+            const mockEngine = sinon.createStubInstance(Engine);
+            mockEngine.getContainer.returns(mockContainer);
+            sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
+            mockEngine.init.resolves();
+            mockEngine.invoke.resolves();
+            mockSecurityContext.getNetworkName.returns(networkDefinition.getName());
+
+            await connection.install(mockSecurityContext, networkDefinition);
+            await connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion());
+            await connection.invokeChainCode(mockSecurityContext, functionName, functionArgs, { commit: false });
+
+            sinon.assert.calledWith(mockEngine.invoke, sinon.match((context) => {
+                context.should.be.an.instanceOf(Context);
+                context.additionalConnectorOptions.commit.should.be.false;
+                return true;
+            }), functionName, functionArgs);
+        });
+
     });
 
     describe('#getIdentities', () => {

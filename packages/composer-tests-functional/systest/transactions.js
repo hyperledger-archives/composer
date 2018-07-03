@@ -270,4 +270,34 @@ describe('Transaction system tests', function() {
         ['SUCH', 'MANY'].should.deep.equal(outputValue);
     });
 
+    it('should submit and execute a transaction processor function annotated with @commit(true)', async () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions', 'TransactionWithCommitTrue');
+        transaction.stringValue = 'hello from single annotated transaction';
+        await client.submitTransaction(transaction);
+        const assetRegistry = await client.getAssetRegistry('systest.transactions.SimpleStringAsset');
+        const exists = await assetRegistry.exists('stringAsset1');
+        exists.should.be.true;
+    });
+
+    it('should submit and execute a transaction processor function annotated with @commit(false)', async () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions', 'TransactionWithCommitFalse');
+        transaction.stringValue = 'hello from single annotated transaction';
+        await client.submitTransaction(transaction);
+        const assetRegistry = await client.getAssetRegistry('systest.transactions.SimpleStringAsset');
+        const exists = await assetRegistry.exists('stringAsset1');
+        exists.should.be.false;
+    });
+
+    it('should submit and execute a transaction processor function with the commit option set to false', async () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions', 'TransactionWithCommitTrue');
+        transaction.stringValue = 'hello from single annotated transaction';
+        await client.submitTransaction(transaction, { commit: false });
+        const assetRegistry = await client.getAssetRegistry('systest.transactions.SimpleStringAsset');
+        const exists = await assetRegistry.exists('stringAsset1');
+        exists.should.be.false;
+    });
+
 });

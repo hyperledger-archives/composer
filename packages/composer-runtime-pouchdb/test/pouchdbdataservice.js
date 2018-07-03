@@ -38,6 +38,12 @@ describe('PouchDBDataService', () => {
     let dataService;
     let db;
     let sandbox;
+    let options;
+    let additionalConnectorOptions;
+
+    beforeEach(() => {
+        options = additionalConnectorOptions = undefined;
+    });
 
     /**
      * Create a database
@@ -50,7 +56,7 @@ describe('PouchDBDataService', () => {
         sandbox.stub(PouchDBDataService, 'createPouchDB').returns(db);
 
         if (uuid) {
-            dataService = new PouchDBDataService(uuid, {adapter : 'memory'});
+            dataService = new PouchDBDataService(uuid, {adapter : 'memory'}, options, additionalConnectorOptions);
             return db.bulkDocs([
                 {
                     _id : pouchCollate.toIndexableString(['3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c', collectionObjectType, 'doges1'])
@@ -60,7 +66,7 @@ describe('PouchDBDataService', () => {
                 },
             ]);
         } else {
-            dataService = new PouchDBDataService(null, {adapter : 'memory'});
+            dataService = new PouchDBDataService(null, {adapter : 'memory'}, options, additionalConnectorOptions);
             return db.bulkDocs([
                 {
                     _id : pouchCollate.toIndexableString([collectionObjectType, 'doges1'])
@@ -1009,31 +1015,50 @@ describe('PouchDBDataService', () => {
             return createDatabase('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
         });
 
-        it('should reset the list of queued actions', () => {
+        it('should reset the list of queued actions', async () => {
             dataService.pendingActions = [1, 2, 3];
-            return dataService.transactionStart(false)
-                .then(() => {
-                    dataService.pendingActions.should.deep.equal([]);
-                });
+            await dataService.transactionStart(false);
+            dataService.pendingActions.should.deep.equal([]);
         });
     });
 
     describe('#transactionPrepare', () => {
 
-        beforeEach(() => {
-            return createDatabase('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
-        });
-
-        it('should call all of the queued actions', () => {
+        it('should call all of the queued actions if commit not specified', async () => {
+            await createDatabase('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
             const cb1 = sinon.stub(), cb2 = sinon.stub();
             cb1.resolves();
             cb2.resolves();
             dataService.pendingActions = [cb1, cb2];
-            return dataService.transactionPrepare()
-                .then(() => {
-                    sinon.assert.calledOnce(cb1);
-                    sinon.assert.calledOnce(cb2);
-                });
+            await dataService.transactionPrepare();
+            sinon.assert.calledOnce(cb1);
+            sinon.assert.calledOnce(cb2);
         });
+
+        it('should call all of the queued actions if commit specified as true', async () => {
+            additionalConnectorOptions = { commit: true };
+            await createDatabase('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
+            const cb1 = sinon.stub(), cb2 = sinon.stub();
+            cb1.resolves();
+            cb2.resolves();
+            dataService.pendingActions = [cb1, cb2];
+            await dataService.transactionPrepare();
+            sinon.assert.calledOnce(cb1);
+            sinon.assert.calledOnce(cb2);
+        });
+
+        it('should not call all of the queued actions if commit specified as false', async () => {
+            additionalConnectorOptions = { commit: false };
+            await createDatabase('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
+            const cb1 = sinon.stub(), cb2 = sinon.stub();
+            cb1.resolves();
+            cb2.resolves();
+            dataService.pendingActions = [cb1, cb2];
+            await dataService.transactionPrepare();
+            sinon.assert.notCalled(cb1);
+            sinon.assert.notCalled(cb2);
+        });
+
     });
+
 });
