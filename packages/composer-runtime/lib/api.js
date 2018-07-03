@@ -290,9 +290,9 @@ class Api {
          * configured with the CouchDB database for the world state.
          * @example
          * // Build a query.
-         * var query = buildQuery('SELECT org.example.sample.SampleAsset WHERE (value == _$inputValue)');
+         * var q = buildQuery('SELECT org.example.sample.SampleAsset WHERE (value == _$inputValue)');
          * // Execute the query.
-         * return query(query, { inputValue: 'blue' })
+         * return query(q, { inputValue: 'blue' })
          *   .then(function (assets) {
          *     assets.forEach(function (asset) {
          *       // Process each asset.
