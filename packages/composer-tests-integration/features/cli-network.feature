@@ -118,6 +118,25 @@ Feature: Cli network steps
         Then The stdout information should include text matching /Transaction Submitted./
         And The stdout information should include text matching /Command succeeded/
 
+    Scenario: Using the CLI, I can execute a transaction that returns data from within the business network
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit
+              -c admin@marbles-network
+              -d '{
+                    "$class": "org.hyperledger_composer.marbles.TradeMarbleWithReceipt",
+                    "marble": "resource:org.hyperledger_composer.marbles.Marble#101",
+                    "newOwner": "resource:org.hyperledger_composer.marbles.Player#bob"
+                }'
+            """
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /\$class:   org.hyperledger_composer.marbles.TradeReceipt/
+        And The stdout information should include text matching /marble:/
+        And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob/
+        And The stdout information should include text matching /oldOwner:/
+        And The stdout information should include text matching /newOwner:/
+        And The stdout information should include text matching /Command succeeded/
+
     Scenario: Using the CLI, I can update the network to a newer version
         Given I have the following folders
             | ../resources/sample-networks/marbles-network-update |
@@ -253,10 +272,10 @@ Feature: Cli network steps
         And The stdout information should include text matching /marbleId: 201/
         And The stdout information should include text matching /size:     SMALL/
         And The stdout information should include text matching /color:    RED/
-        And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob/
+        And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob2/
         And The stdout information should include text matching /Command succeeded/
 
-    Scenario: Using the CLI, I can execute a newtransaction from within the new business network
+    Scenario: Using the CLI, I can execute a transaction from within the new business network
         When I run the following expected pass CLI command
             """
             composer transaction submit
@@ -270,6 +289,24 @@ Feature: Cli network steps
         Then The stdout information should include text matching /Transaction Submitted./
         And The stdout information should include text matching /Command succeeded/
 
+    Scenario: Using the CLI, I can execute a transaction that returns data from within the new business network
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit
+              -c admin@marbles-network
+              -d '{
+                    "$class": "org.hyperledger_composer.marbles.TradeMarbleWithReceipt",
+                    "marble": "resource:org.hyperledger_composer.marbles.NewMarble#201",
+                    "newOwner": "resource:org.hyperledger_composer.marbles.Player#bob2"
+                }'
+            """
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /\$class:   org.hyperledger_composer.marbles.TradeReceipt/
+        And The stdout information should include text matching /marble:/
+        And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob2/
+        And The stdout information should include text matching /oldOwner:/
+        And The stdout information should include text matching /newOwner:/
+        And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can reset the network to remove all assets
         When I run the following expected pass CLI command

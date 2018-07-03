@@ -15,6 +15,8 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
+const { Typed } = require('composer-common');
+const Pretty = require('prettyjson');
 
 /**
  * <p>
@@ -28,41 +30,52 @@ class Submit {
   /**
     * Command process for deploy command
     * @param {string} argv argument list from composer command
-    * @return {Promise} promise when command complete
     */
-    static handler(argv) {
-        let businessNetworkConnection;
-        let cardName = argv.card;
+    static async handler(argv) {
+        const cardName = argv.card;
+        const businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
+        await businessNetworkConnection.connect(cardName);
 
-        businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-        return businessNetworkConnection.connect(cardName)
+        let data = argv.data;
+        if (typeof data === 'string') {
+            try {
+                data = JSON.parse(data);
+            } catch(e) {
+                throw new Error('JSON error. Have you quoted the JSON string?', e);
+            }
+        } else {
+            throw new Error('Data must be a string');
+        }
 
-        .then(() => {
-            let data = argv.data;
+        if (!data.$class) {
+            throw new Error('$class attribute not supplied');
+        }
 
-            if (typeof data === 'string') {
-                try {
-                    data = JSON.parse(data);
-                } catch(e) {
-                    throw new Error('JSON error. Have you quoted the JSON string?', e);
+        const businessNetwork = businessNetworkConnection.getBusinessNetwork();
+        const serializer = businessNetwork.getSerializer();
+        const resource = serializer.fromJSON(data);
+
+        const result = await businessNetworkConnection.submitTransaction(resource);
+        if (result) {
+            const prettify = (result) => {
+                if (result instanceof Typed) {
+                    return serializer.toJSON(result);
                 }
+                return result;
+            };
+            let prettyResult;
+            if (Array.isArray(result)) {
+                prettyResult = result.map(item => prettify(item));
             } else {
-                throw new Error('Data must be a string');
+                prettyResult = prettify(result);
             }
-
-            if (!data.$class) {
-                throw new Error('$class attribute not supplied');
-            }
-
-            let businessNetwork = businessNetworkConnection.getBusinessNetwork();
-            let serializer = businessNetwork.getSerializer();
-            let resource = serializer.fromJSON(data);
-
-            return businessNetworkConnection.submitTransaction(resource);
-        })
-        .then((submitted) => {
-            cmdUtil.log('Transaction Submitted.');
-        });
+            cmdUtil.log(Pretty.render(prettyResult, {
+                keysColor: 'blue',
+                dashColor: 'blue',
+                stringColor: 'white'
+            }));
+        }
+        cmdUtil.log('Transaction Submitted.');
     }
 
 }

@@ -56,8 +56,13 @@ describe('EngineTransactions', () => {
         modelManager.addDecoratorFactory(new ReturnsDecoratorFactory());
         modelManager.addModelFile(`
         namespace org.acme
+        asset MyAsset identified by assetId {
+            o String assetId
+            o String value
+        }
         concept MyConcept {
             o String value
+            --> MyAsset asset optional
         }
         participant MyParticipant identified by participantId {
             o String participantId
@@ -567,6 +572,31 @@ describe('EngineTransactions', () => {
             engine._processComplexReturnValue(mockContext, transaction, concept).should.deep.equal({
                 $class: 'org.acme.MyConcept',
                 value: 'hello world'
+            });
+        });
+
+        it('should handle a concept return value with a relationship to an asset that is a relationship', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConcept');
+            const concept = factory.newConcept('org.acme', 'MyConcept');
+            concept.value = 'hello world';
+            concept.asset = factory.newRelationship('org.acme', 'MyAsset', '1234');
+            engine._processComplexReturnValue(mockContext, transaction, concept).should.deep.equal({
+                $class: 'org.acme.MyConcept',
+                value: 'hello world',
+                asset: 'resource:org.acme.MyAsset#1234'
+            });
+        });
+
+        it('should handle a concept return value with a relationship to an asset that is a resource', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConcept');
+            const concept = factory.newConcept('org.acme', 'MyConcept');
+            concept.value = 'hello world';
+            concept.asset = factory.newResource('org.acme', 'MyAsset', '1234');
+            concept.asset.value = 'hello dogez';
+            engine._processComplexReturnValue(mockContext, transaction, concept).should.deep.equal({
+                $class: 'org.acme.MyConcept',
+                value: 'hello world',
+                asset: 'resource:org.acme.MyAsset#1234'
             });
         });
 
