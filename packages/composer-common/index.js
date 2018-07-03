@@ -60,6 +60,7 @@ module.exports.Certificate = require('./lib/certificate');
 module.exports.CertificateUtil = require('./lib/certificateutil');
 module.exports.ClassDeclaration = require('./lib/introspect/classdeclaration');
 module.exports.CodeGen = require('./lib/codegen/codegen.js');
+module.exports.CommitDecoratorFactory = require('./lib/commitdecoratorfactory');
 module.exports.Concept = require('./lib/model/concept');
 module.exports.ConceptDeclaration = require('./lib/introspect/conceptdeclaration');
 module.exports.Connection = require('./lib/connection');
