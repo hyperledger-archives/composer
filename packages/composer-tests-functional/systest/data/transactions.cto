@@ -164,3 +164,67 @@ transaction TransactionUsingUtilityFunctions  {
 
     o String stringValue
 }
+
+concept TransactionReceipt {
+    o String value
+}
+
+@returns(TransactionReceipt)
+transaction TransactionThatReturnsConcept {
+    o String value
+}
+
+@returns(TransactionReceipt[])
+transaction TransactionThatReturnsConceptArray {
+    o String value
+}
+
+@returns(DateTime)
+transaction TransactionThatReturnsDateTime {
+    o DateTime value
+}
+
+@returns(Integer)
+transaction TransactionThatReturnsInteger {
+    o Integer value
+}
+
+@returns(Long)
+transaction TransactionThatReturnsLong {
+    o Long value
+}
+
+@returns(Double)
+transaction TransactionThatReturnsDouble {
+    o Double value
+}
+
+@returns(Double[])
+transaction TransactionThatReturnsDoubleArray {
+    o Double value
+}
+
+@returns(Boolean)
+transaction TransactionThatReturnsBoolean {
+    o Boolean value
+}
+
+@returns(String)
+transaction TransactionThatReturnsString {
+    o String value
+}
+
+@returns(String[])
+transaction TransactionThatReturnsStringArray {
+    o String value
+}
+
+@returns(SimpleEnum)
+transaction TransactionThatReturnsEnum {
+    o String value
+}
+
+@returns(SimpleEnum[])
+transaction TransactionThatReturnsEnumArray {
+    o String value
+}

@@ -104,6 +104,8 @@ class Util {
      * @param {resource|object} transaction - the transaction
      * @param {Serializer} [serializer]  needed ONLY if the transaction passed is not a resource but pure json
      * @param {string} [functionName]  The name of the function to call default is submitTransaction.
+     * @return {Promise} - A promise that will be resolved with the value returned
+     * by the chain-code function.
      */
     static async submitTransaction(securityContext,  transaction, serializer,functionName = 'submitTransaction'){
         Util.securityCheck(securityContext);
@@ -120,8 +122,7 @@ class Util {
             json=transaction;
         }
 
-        await Util.invokeChainCode(securityContext, functionName, [JSON.stringify(json)], { transactionId: txId.id });
-
+        return Util.invokeChainCode(securityContext, functionName, [JSON.stringify(json)], { transactionId: txId.id });
     }
 
     /**

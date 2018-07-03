@@ -140,6 +140,51 @@ describe('Util', function () {
                 });
         });
 
+        it('should process a transaction as json and return the result', function () {
+            let stub = sandbox.stub(Util, 'securityCheck');
+            let json =  {
+                $class: 'org.acme.l1.ScrapCar',
+                car: 'resource:org.acme.l1.Car#456',
+                timestamp: '1970-01-01T00:00:00.000Z',
+                transactionId: '789'
+            };
+            mockConnection.invokeChainCode.resolves('hello world');
+            return Util
+                .submitTransaction(mockSecurityContext,json)
+                .then((result) => {
+                    result.should.equal('hello world');
+                    sinon.assert.called(stub);
+                    sinon.assert.called(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode,mockSecurityContext,'submitTransaction',[JSON.stringify(json)],{transactionId:'tx1234567890'});
+                });
+        });
+
+        it('should process a transaction as resource and return the result', function () {
+            let stub = sandbox.stub(Util, 'securityCheck');
+            let json =  {
+                $class: 'org.acme.l1.ScrapCar',
+                car: 'resource:org.acme.l1.Car#456',
+                timestamp: '1970-01-01T00:00:00.000Z',
+                transactionId: '789'
+            };
+            const classDecl = modelManager.getType('org.acme.l1.ScrapCar');
+            const resource = new Resource(modelManager, classDecl, 'org.acme.l1', 'ScrapCar', '789' );
+            let setIdSpy = sinon.spy(resource,'setIdentifier');
+            mockSerializer.toJSON.returns(json);
+            resource.timestamp = new Date(0);
+            resource.car = modelManager.getFactory().newRelationship('org.acme.l1', 'Car', '456');
+            mockConnection.invokeChainCode.resolves('hello world');
+            return Util
+                .submitTransaction(mockSecurityContext,resource,mockSerializer)
+                .then((result) => {
+                    result.should.equal('hello world');
+                    sinon.assert.called(setIdSpy);
+                    sinon.assert.called(stub);
+                    sinon.assert.called(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode,mockSecurityContext,'submitTransaction',[JSON.stringify(json)],{transactionId:'tx1234567890'});
+                });
+        });
+
     });
 
 
@@ -172,17 +217,21 @@ describe('Util', function () {
             }).should.throw(/invalid arg specified: undefined/);
         });
 
-        it('should query the chain-code and return the result', function () {
+        it('should query the chain-code with strings and return the result', function () {
+            mockConnection.queryChainCode.resolves('hello world');
             return Util.queryChainCode(mockSecurityContext, 'function', ['arg1', 'arg2'])
-                .then(() => {
+                .then((result) => {
+                    result.should.equal('hello world');
                     sinon.assert.calledOnce(mockConnection.queryChainCode);
                     sinon.assert.calledWith(mockConnection.queryChainCode, mockSecurityContext, 'function', ['arg1', 'arg2']);
                 });
         });
 
-        it('should query the chain-code and return the result', function () {
+        it('should query the chain-code with booleans and return the result', function () {
+            mockConnection.queryChainCode.resolves('hello world');
             return Util.queryChainCode(mockSecurityContext, 'function', [true, false])
-                .then(() => {
+                .then((result) => {
+                    result.should.equal('hello world');
                     sinon.assert.calledOnce(mockConnection.queryChainCode);
                     sinon.assert.calledWith(mockConnection.queryChainCode, mockSecurityContext, 'function', ['true', 'false']);
                 });
@@ -248,9 +297,19 @@ describe('Util', function () {
             }).should.throw(/invalid arg specified: undefined/);
         });
 
-        it('should invoke the chain-code and return the result', function () {
+        it('should invoke the chain-code', function () {
             return Util.invokeChainCode(mockSecurityContext, 'function', ['arg1', 'arg2'])
                 .then(() => {
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'function', ['arg1', 'arg2']);
+                });
+        });
+
+        it('should invoke the chain-code and return the result', function () {
+            mockConnection.invokeChainCode.resolves('hello world');
+            return Util.invokeChainCode(mockSecurityContext, 'function', ['arg1', 'arg2'])
+                .then((result) => {
+                    result.should.equal('hello world');
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
                     sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'function', ['arg1', 'arg2']);
                 });

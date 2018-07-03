@@ -19,7 +19,6 @@ const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const CardStore = require('composer-common').BusinessNetworkCardStore;
-const commonQuery = require('composer-common').Query;
 const Connection = require('composer-common').Connection;
 const Factory = require('composer-common').Factory;
 const IdCard = require('composer-common').IdCard;
@@ -27,8 +26,6 @@ const IdentityRegistry = require('../lib/identityregistry');
 const ModelManager = require('composer-common').ModelManager;
 const ParticipantRegistry = require('../lib/participantregistry');
 const Query = require('../lib/query');
-const QueryFile = require('composer-common').QueryFile;
-const QueryManager = require('composer-common').QueryManager;
 const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
 const Serializer = require('composer-common').Serializer;
@@ -44,7 +41,6 @@ const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
-
 describe('BusinessNetworkConnection', () => {
 
     let sandbox;
@@ -52,49 +48,98 @@ describe('BusinessNetworkConnection', () => {
     let businessNetworkConnection;
     let mockSecurityContext;
     let mockConnection;
-    let mockBusinessNetworkDefinition;
+    let businessNetworkDefinition;
+    let businessNetworkArchive;
     let modelManager;
-    let mockQueryManager;
-    let mockQueryFile;
     let factory;
     let serializer;
     let mockParticipantRegistry;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         sandbox = sinon.sandbox.create();
         clock = sinon.useFakeTimers();
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
         mockConnection = sinon.createStubInstance(Connection);
         mockSecurityContext.getConnection.returns(mockConnection);
-        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        mockBusinessNetworkDefinition.getName.returns('super-doge-network');
+        businessNetworkDefinition = new BusinessNetworkDefinition('super-doge-network@0.0.1');
         businessNetworkConnection = new BusinessNetworkConnection();
-        businessNetworkConnection.businessNetwork = mockBusinessNetworkDefinition;
-        modelManager = new ModelManager();
+        businessNetworkConnection.businessNetwork = businessNetworkDefinition;
+        modelManager = businessNetworkDefinition.getModelManager();
         modelManager.addModelFile(`
-        namespace org.acme.sample
-        asset SampleAsset identified by assetId {
+        namespace org.acme
+        asset MyAsset identified by assetId {
             o String assetId
         }
-        participant SampleParticipant identified by participantId {
+        participant MyParticipant identified by participantId {
             o String participantId
         }
-        transaction SampleTransaction {
+        transaction MyTransaction {
 
         }
-        event SampleEvent {
+        event MyEvent {
+
+        }
+        concept MyConcept {
+            o String value
+        }
+        @returns(MyConcept)
+        transaction MyTransactionThatReturnsConcept {
+
+        }
+        @returns(MyConcept[])
+        transaction MyTransactionThatReturnsConceptArray {
+
+        }
+        @returns(DateTime)
+        transaction MyTransactionThatReturnsDateTime {
+
+        }
+        @returns(Integer)
+        transaction MyTransactionThatReturnsInteger {
+
+        }
+        @returns(Long)
+        transaction MyTransactionThatReturnsLong {
+
+        }
+        @returns(Double)
+        transaction MyTransactionThatReturnsDouble {
+
+        }
+        @returns(Boolean)
+        transaction MyTransactionThatReturnsBoolean {
+
+        }
+        @returns(String)
+        transaction MyTransactionThatReturnsString {
+
+        }
+        @returns(String[])
+        transaction MyTransactionThatReturnsStringArray {
+
+        }
+        @returns(Double[])
+        transaction MyTransactionThatReturnsDoubleArray {
+
+        }
+        enum MyEnum {
+            o WOW
+            o SUCH
+            o MANY
+            o MUCH
+        }
+        @returns(MyEnum)
+        transaction MyTransactionThatReturnsEnum {
+
+        }
+        @returns(MyEnum[])
+        transaction MyTransactionThatReturnsEnumArray {
 
         }
         `);
-        businessNetworkConnection.businessNetwork.getModelManager.returns(modelManager);
-        mockQueryManager = sinon.createStubInstance(QueryManager);
-        businessNetworkConnection.businessNetwork.getQueryManager.returns(mockQueryManager);
-        mockQueryFile = sinon.createStubInstance(QueryFile);
-        mockQueryManager.createQueryFile.returns(mockQueryFile);
-        factory = new Factory(modelManager);
-        businessNetworkConnection.businessNetwork.getFactory.returns(factory);
-        serializer = new Serializer(factory, modelManager);
-        businessNetworkConnection.businessNetwork.getSerializer.returns(serializer);
+        factory = modelManager.getFactory();
+        serializer = modelManager.getSerializer();
+        businessNetworkArchive = await businessNetworkDefinition.toArchive();
         businessNetworkConnection.securityContext = mockSecurityContext;
         mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
         delete process.env.COMPOSER_CONFIG;
@@ -160,15 +205,14 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.login.resolves(mockSecurityContext);
             mockConnection.ping.resolves();
             const buffer = Buffer.from(JSON.stringify({
-                data : 'aGVsbG8='
+                data : businessNetworkArchive.toString('base64')
             }));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
             const cb = sinon.stub();
             businessNetworkConnection.on('event', cb);
             mockConnection.on.withArgs('events', sinon.match.func).yields([
-                {$class : 'org.acme.sample.SampleEvent', eventId : 'event1'},
-                {$class : 'org.acme.sample.SampleEvent', eventId : 'event2'}
+                {$class : 'org.acme.MyEvent', eventId : 'event1'},
+                {$class : 'org.acme.MyEvent', eventId : 'event2'}
             ]);
         });
 
@@ -265,21 +309,21 @@ describe('BusinessNetworkConnection', () => {
             mockRegistry.id = 'id';
             mockRegistry.name = 'name';
             sandbox.stub(Registry, 'getRegistry').resolves(mockRegistry);
-            return businessNetworkConnection.getRegistry('org.acme.sample.SampleTransaction');
+            return businessNetworkConnection.getRegistry('org.acme.MyTransaction');
         });
         it('should get an asset registry based on name', () => {
             let mockRegistry = sinon.createStubInstance(Registry);
             mockRegistry.id = 'id';
             mockRegistry.name = 'name';
             sandbox.stub(Registry, 'getRegistry').resolves(mockRegistry);
-            return businessNetworkConnection.getRegistry('org.acme.sample.SampleAsset');
+            return businessNetworkConnection.getRegistry('org.acme.MyAsset');
         });
         it('should get an participant registry based on name', () => {
             let mockRegistry = sinon.createStubInstance(Registry);
             mockRegistry.id = 'id';
             mockRegistry.name = 'name';
             sandbox.stub(Registry, 'getRegistry').resolves(mockRegistry);
-            return businessNetworkConnection.getRegistry('org.acme.sample.SampleParticipant');
+            return businessNetworkConnection.getRegistry('org.acme.MyParticipant');
         });
 
     });
@@ -759,20 +803,18 @@ describe('BusinessNetworkConnection', () => {
 
     describe('#submitTransaction', () => {
 
-        it('should throw when transaction not specified', () => {
-            (() => {
-                businessNetworkConnection.submitTransaction(null);
-            }).should.throw(/transaction not specified/);
+        it('should throw when transaction not specified', async () => {
+            await businessNetworkConnection.submitTransaction(null)
+                .should.be.rejectedWith(/transaction not specified/);
         });
 
-        it('should throw when type is not a transaction', () => {
-            const asset = factory.newResource('org.acme.sample', 'SampleAsset', 'ASSET_1');
-            (() => {
-                businessNetworkConnection.submitTransaction(asset);
-            }).should.throw(/org.acme.sample.SampleAsset is not a transaction/);
+        it('should throw when type is not a transaction', async () => {
+            const asset = factory.newResource('org.acme', 'MyAsset', 'ASSET_1');
+            await businessNetworkConnection.submitTransaction(asset)
+                .should.be.rejectedWith(/org.acme.MyAsset is not a transaction/);
         });
 
-        it('should invoke the chain-code', () => {
+        it('should invoke the chain-code for a transaction that does not return data', () => {
 
             // Fake the transaction registry.
             const txRegistry = sinon.createStubInstance(TransactionRegistry);
@@ -780,7 +822,7 @@ describe('BusinessNetworkConnection', () => {
             sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
 
             // Create the transaction.
-            const tx = factory.newResource('org.acme.sample', 'SampleTransaction', 'c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            const tx = factory.newResource('org.acme', 'MyTransaction', 'c89291eb-969f-4b04-b653-82deb5ee0ba1');
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
@@ -800,6 +842,43 @@ describe('BusinessNetworkConnection', () => {
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
                     sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json]);
+
+                });
+
+        });
+
+        it('should invoke the chain-code for a transaction that does return data', () => {
+
+            // Fake the transaction registry.
+            const txRegistry = sinon.createStubInstance(TransactionRegistry);
+            txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
+
+            // Create the transaction.
+            const tx = factory.newResource('org.acme', 'MyTransactionThatReturnsString', 'c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
+            // Set up the responses from the chain-code.
+            sandbox.stub(Util, 'invokeChainCode').resolves(Buffer.from('"hello world"'));
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
+
+            // Invoke the submitTransaction function.
+            return businessNetworkConnection
+                .submitTransaction(tx)
+                .then((result) => {
+
+                    // Check the result.
+                    result.should.equal('hello world');
+
+                    // Force the transaction to be serialized as some fake JSON.
+                    const json = JSON.stringify(serializer.toJSON(tx));
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json]);
+
                 });
 
         });
@@ -812,7 +891,7 @@ describe('BusinessNetworkConnection', () => {
             sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
 
             // Create the transaction.
-            const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
+            const tx = factory.newTransaction('org.acme', 'MyTransaction');
             delete tx.$identifier;
 
             // Set up the responses from the chain-code.
@@ -845,7 +924,7 @@ describe('BusinessNetworkConnection', () => {
             sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
 
             // Create the transaction.
-            const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
+            const tx = factory.newTransaction('org.acme', 'MyTransaction');
             tx.timestamp = new Date('October 24, 1994');
 
             // Stub the UUID generator.
@@ -885,7 +964,7 @@ describe('BusinessNetworkConnection', () => {
             sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
 
             // Create the transaction.
-            const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
+            const tx = factory.newTransaction('org.acme', 'MyTransaction');
             delete tx.timestamp;
 
             // Stub the UUID generator.
@@ -906,16 +985,297 @@ describe('BusinessNetworkConnection', () => {
 
     });
 
+    describe('#_processReturnData', () => {
+
+        it('should handle no expected return value with no return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransaction');
+            should.equal(businessNetworkConnection._processReturnData(transaction, [undefined]), undefined);
+        });
+
+        it('should handle no expected return value and ignore a return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransaction');
+            should.equal(businessNetworkConnection._processReturnData(transaction, ['hello world']), undefined);
+        });
+
+        it('should handle a string return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsString');
+            businessNetworkConnection._processReturnData(transaction, '"hello world"').should.equal('hello world');
+        });
+
+        it('should handle a string array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsStringArray');
+            businessNetworkConnection._processReturnData(transaction, '["hello", "world"]').should.deep.equal(['hello', 'world']);
+        });
+
+        it('should handle an enum return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsEnum');
+            businessNetworkConnection._processReturnData(transaction, '"WOW"').should.equal('WOW');
+        });
+
+        it('should handle a concept return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConcept');
+            const concept = factory.newConcept('org.acme', 'MyConcept');
+            concept.value = 'hello world';
+            const json = serializer.toJSON(concept);
+            const result = businessNetworkConnection._processReturnData(transaction, JSON.stringify(json));
+            serializer.toJSON(result).should.deep.equal(json);
+        });
+
+        it('should throw if a return value required but return value was not provided', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsString');
+            (() => {
+                businessNetworkConnection._processReturnData(transaction, undefined);
+            }).should.throw(/but nothing was returned by any functions/);
+        });
+
+    });
+
+    describe('#_processComplexReturnData', () => {
+
+        it('should throw for invalid JSON return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConcept');
+            (() => {
+                businessNetworkConnection._processComplexReturnData(transaction, 'lulz');
+            }).should.throw(/return value of type MyConcept was expected/);
+        });
+
+        it('should handle a concept return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConcept');
+            const concept = factory.newConcept('org.acme', 'MyConcept');
+            concept.value = 'hello world';
+            const json = serializer.toJSON(concept);
+            const result = businessNetworkConnection._processComplexReturnData(transaction, JSON.stringify(json));
+            serializer.toJSON(result).should.deep.equal(json);
+        });
+
+        it('should handle a concept array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConceptArray');
+            const concept1 = factory.newConcept('org.acme', 'MyConcept');
+            concept1.value = 'hello world';
+            const concept2 = factory.newConcept('org.acme', 'MyConcept');
+            concept2.value = 'purple mushroom';
+            const json1 = serializer.toJSON(concept1);
+            const json2 = serializer.toJSON(concept2);
+            const result = businessNetworkConnection._processComplexReturnData(transaction, JSON.stringify([json1, json2])).map(item => serializer.toJSON(item));
+            result.should.deep.equal([json1, json2]);
+        });
+
+        it('should throw for an invalid (wrong type) concept return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConcept');
+            (() => {
+                businessNetworkConnection._processComplexReturnData(transaction, '"hello world"');
+            }).should.throw(/but a non-typed value was returned/);
+        });
+
+        it('should throw for an invalid (wrong element type) concept array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConceptArray');
+            (() => {
+                businessNetworkConnection._processComplexReturnData(transaction, '["hello world"]');
+            }).should.throw(/but a non-typed value was returned/);
+        });
+
+        it('should throw for an invalid (wrong array type) concept array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConceptArray');
+            (() => {
+                businessNetworkConnection._processComplexReturnData(transaction, '3.142');
+            }).should.throw(/but a value of type undefined was returned/);
+        });
+
+        it('should throw for a non-matching concept return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConcept');
+            const concept = factory.newTransaction('org.acme', 'MyTransaction');
+            (() => {
+                businessNetworkConnection._processComplexReturnData(transaction, JSON.stringify(serializer.toJSON(concept)));
+            }).should.throw(/but a value of type MyTransaction was returned/);
+        });
+
+        it('should throw for a non-matching concept array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConceptArray');
+            const concept1 = factory.newConcept('org.acme', 'MyConcept');
+            concept1.value = 'hello world';
+            const concept2 = factory.newTransaction('org.acme', 'MyTransaction');
+            (() => {
+                businessNetworkConnection._processComplexReturnData(transaction, JSON.stringify([serializer.toJSON(concept1), serializer.toJSON(concept2)]));
+            }).should.throw(/but a value of type MyTransaction was returned/);
+        });
+
+    });
+
+    describe('#_processEnumReturnValue', () => {
+
+        it('should throw for invalid JSON return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsEnum');
+            (() => {
+                businessNetworkConnection._processEnumReturnData(transaction, 'lulz');
+            }).should.throw(/return value of type MyEnum was expected/);
+        });
+
+        it('should handle an enum return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsEnum');
+            businessNetworkConnection._processEnumReturnData(transaction, '"WOW"').should.equal('WOW');
+        });
+
+        it('should throw for an invalid enum return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsEnum');
+            (() => {
+                businessNetworkConnection._processEnumReturnData(transaction, '3.142');
+            }).should.throw(/return value of type MyEnum was expected/);
+        });
+
+        it('should throw for an undefined enum return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsEnum');
+            (() => {
+                businessNetworkConnection._processEnumReturnData(transaction, '"CATZ RULE"');
+            }).should.throw(/return value of type MyEnum was expected/);
+        });
+
+        it('should handle an enum array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsEnumArray');
+            businessNetworkConnection._processEnumReturnData(transaction, '["SUCH", "MANY"]').should.deep.equal(['SUCH', 'MANY']);
+        });
+
+        it('should throw for an invalid enum array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsEnumArray');
+            (() => {
+                businessNetworkConnection._processEnumReturnData(transaction, '3.142');
+            }).should.throw(/return value of type MyEnum\[\] was expected/);
+        });
+
+        it('should throw for an undefined enum array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsEnumArray');
+            (() => {
+                businessNetworkConnection._processEnumReturnData(transaction, '["CATZ", "RULE"]');
+            }).should.throw(/return value of type MyEnum\[\] was expected/);
+        });
+
+    });
+
+    describe('#_processPrimitiveReturnData', () => {
+
+        it('should throw for invalid JSON return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsString');
+            (() => {
+                businessNetworkConnection._processPrimitiveReturnData(transaction, 'lulz');
+            }).should.throw(/return value of type String was expected/);
+        });
+
+        it('should handle a date/time return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsDateTime');
+            const result = businessNetworkConnection._processPrimitiveReturnData(transaction, '"1970-01-01T00:00:00.000Z"');
+            result.should.be.an.instanceOf(Date);
+            result.getTime().should.equal(0);
+        });
+
+        it('should throw for an invalid date/time return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsDateTime');
+            (() => {
+                businessNetworkConnection._processPrimitiveReturnData(transaction, '3.142');
+            }).should.throw(/return value of type DateTime was expected/);
+            (() => {
+                businessNetworkConnection._processPrimitiveReturnData(transaction, '"not a string"');
+            }).should.throw(/return value of type DateTime was expected/);
+        });
+
+        it('should handle an integer return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsInteger');
+            businessNetworkConnection._processPrimitiveReturnData(transaction, '16384').should.equal(16384);
+        });
+
+        it('should throw for an invalid integer return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsInteger');
+            (() => {
+                businessNetworkConnection._processPrimitiveReturnData(transaction, '"not a string"');
+            }).should.throw(/return value of type Integer was expected/);
+        });
+
+        it('should handle a long return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsLong');
+            businessNetworkConnection._processPrimitiveReturnData(transaction, '10000000000').should.equal(10000000000);
+        });
+
+        it('should throw for an invalid long return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsLong');
+            (() => {
+                businessNetworkConnection._processPrimitiveReturnData(transaction, '"not a string"');
+            }).should.throw(/return value of type Long was expected/);
+        });
+
+        it('should handle a double return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsDouble');
+            businessNetworkConnection._processPrimitiveReturnData(transaction, '3.142').should.equal(3.142);
+        });
+
+        it('should throw for an invalid double return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsDouble');
+            (() => {
+                businessNetworkConnection._processPrimitiveReturnData(transaction, '"not a string"');
+            }).should.throw(/return value of type Double was expected/);
+        });
+
+        it('should handle a boolean return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsBoolean');
+            businessNetworkConnection._processPrimitiveReturnData(transaction, 'true').should.equal(true);
+        });
+
+        it('should throw for an invalid boolean return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsBoolean');
+            (() => {
+                businessNetworkConnection._processPrimitiveReturnData(transaction, '"not a string"');
+            }).should.throw(/return value of type Boolean was expected/);
+        });
+
+        it('should handle a string return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsString');
+            businessNetworkConnection._processPrimitiveReturnData(transaction, '"hello world"').should.equal('hello world');
+        });
+
+        it('should throw for an invalid string return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsString');
+            (() => {
+                businessNetworkConnection._processPrimitiveReturnData(transaction, '3.142');
+            }).should.throw(/return value of type String was expected/);
+        });
+
+        it('should handle a string array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsStringArray');
+            businessNetworkConnection._processPrimitiveReturnData(transaction, '["hello", "world"]').should.deep.equal(['hello', 'world']);
+        });
+
+        it('should throw for an invalid string array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsStringArray');
+            (() => {
+                businessNetworkConnection._processPrimitiveReturnData(transaction, '[3.142]');
+            }).should.throw(/return value of type String\[\] was expected/);
+        });
+
+        it('should handle a double array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsDoubleArray');
+            businessNetworkConnection._processPrimitiveReturnData(transaction, '[3.142, 1.234]').should.deep.equal([3.142, 1.234]);
+        });
+
+        it('should throw for an invalid double array return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsDoubleArray');
+            (() => {
+                businessNetworkConnection._processPrimitiveReturnData(transaction, 'null');
+            }).should.throw(/return value of type Double\[\] was expected/);
+        });
+
+    });
+
     describe('#buildQuery', () => {
 
         it('should build the query', () => {
-            const mockCommonQuery = sinon.createStubInstance(commonQuery);
-            businessNetworkConnection.dynamicQueryFile = mockQueryFile;
-            mockQueryFile.buildQuery.withArgs('Dynamic query', 'Dynamic query', 'SELECT doge').returns(mockCommonQuery);
-            const result = businessNetworkConnection.buildQuery('SELECT doge');
+            businessNetworkConnection.dynamicQueryFile = businessNetworkDefinition.getQueryManager().createQueryFile('$dynamic_queries.qry', '');
+            const result = businessNetworkConnection.buildQuery('SELECT org.acme.MyAsset');
             result.should.be.an.instanceOf(Query);
-            result.getIdentifier().should.equal('SELECT doge');
-            sinon.assert.calledOnce(mockCommonQuery.validate);
+            result.getIdentifier().should.equal('SELECT org.acme.MyAsset');
+        });
+
+        it('should validate the query', () => {
+            businessNetworkConnection.dynamicQueryFile = businessNetworkDefinition.getQueryManager().createQueryFile('$dynamic_queries.qry', '');
+            (() => {
+                businessNetworkConnection.buildQuery('SELECT org.acme.NoSuchAsset');
+            }).should.throw(/Type NoSuchAsset is not defined in namespace org.acme/);
         });
 
     });
@@ -931,17 +1291,17 @@ describe('BusinessNetworkConnection', () => {
         it('should submit a built query', () => {
             const query = new Query('SELECT doge');
             const response = [
-                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_1'},
-                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_2'}
+                {$class : 'org.acme.MyAsset', assetId : 'ASSET_1'},
+                {$class : 'org.acme.MyAsset', assetId : 'ASSET_2'}
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['build', 'SELECT doge', '{}']).resolves(buffer);
             return businessNetworkConnection.query(query)
                 .then((response) => {
                     response.should.have.lengthOf(2);
-                    response[0].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[0].instanceOf('org.acme.MyAsset').should.be.true;
                     response[0].getIdentifier().should.equal('ASSET_1');
-                    response[1].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[1].instanceOf('org.acme.MyAsset').should.be.true;
                     response[1].getIdentifier().should.equal('ASSET_2');
                 });
         });
@@ -949,51 +1309,51 @@ describe('BusinessNetworkConnection', () => {
         it('should submit a built query with parameters', () => {
             const query = new Query('SELECT doge');
             const response = [
-                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_1'},
-                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_2'}
+                {$class : 'org.acme.MyAsset', assetId : 'ASSET_1'},
+                {$class : 'org.acme.MyAsset', assetId : 'ASSET_2'}
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['build', 'SELECT doge', '{"param1":true}']).resolves(buffer);
             return businessNetworkConnection.query(query, {param1 : true})
                 .then((response) => {
                     response.should.have.lengthOf(2);
-                    response[0].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[0].instanceOf('org.acme.MyAsset').should.be.true;
                     response[0].getIdentifier().should.equal('ASSET_1');
-                    response[1].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[1].instanceOf('org.acme.MyAsset').should.be.true;
                     response[1].getIdentifier().should.equal('ASSET_2');
                 });
         });
 
         it('should submit a named query', () => {
             const response = [
-                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_1'},
-                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_2'}
+                {$class : 'org.acme.MyAsset', assetId : 'ASSET_1'},
+                {$class : 'org.acme.MyAsset', assetId : 'ASSET_2'}
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['named', 'Q1', '{}']).resolves(buffer);
             return businessNetworkConnection.query('Q1')
                 .then((response) => {
                     response.should.have.lengthOf(2);
-                    response[0].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[0].instanceOf('org.acme.MyAsset').should.be.true;
                     response[0].getIdentifier().should.equal('ASSET_1');
-                    response[1].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[1].instanceOf('org.acme.MyAsset').should.be.true;
                     response[1].getIdentifier().should.equal('ASSET_2');
                 });
         });
 
         it('should submit a named query with parameters', () => {
             const response = [
-                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_1'},
-                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_2'}
+                {$class : 'org.acme.MyAsset', assetId : 'ASSET_1'},
+                {$class : 'org.acme.MyAsset', assetId : 'ASSET_2'}
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['named', 'Q1', '{"param1":true}']).resolves(buffer);
             return businessNetworkConnection.query('Q1', {param1 : true})
                 .then((response) => {
                     response.should.have.lengthOf(2);
-                    response[0].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[0].instanceOf('org.acme.MyAsset').should.be.true;
                     response[0].getIdentifier().should.equal('ASSET_1');
-                    response[1].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[1].instanceOf('org.acme.MyAsset').should.be.true;
                     response[1].getIdentifier().should.equal('ASSET_2');
                 });
         });
@@ -1149,7 +1509,7 @@ describe('BusinessNetworkConnection', () => {
             sandbox.stub(Util, 'invokeChainCode').resolves();
             mockParticipantRegistry.exists.resolves(false);
 
-            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+            return businessNetworkConnection.issueIdentity('org.acme.MyParticipant#dogeid1', 'dogeid1')
                 .catch((error) => {
                     error.should.match(/does not exist /);
                 });
@@ -1162,7 +1522,7 @@ describe('BusinessNetworkConnection', () => {
             identityRegistry.getAll.resolves([{name: 'dogeid1'}]);
             sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(identityRegistry);
 
-            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+            return businessNetworkConnection.issueIdentity('org.acme.MyParticipant#dogeid1', 'dogeid1')
             .catch((error) => {
                 error.should.match(/Identity with name dogeid1 already exists in super-doge-network/);
             });
@@ -1177,7 +1537,7 @@ describe('BusinessNetworkConnection', () => {
 
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
 
-            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+            return businessNetworkConnection.issueIdentity('org.acme.MyParticipant#dogeid1', 'dogeid1')
             .then((result) => {
                 sinon.assert.calledOnce(mockConnection.createIdentity);
                 sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
@@ -1185,7 +1545,7 @@ describe('BusinessNetworkConnection', () => {
                 const tx = businessNetworkConnection.submitTransaction.args[0][0];
                 tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
                 tx.participant.isRelationship().should.be.true;
-                tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.MyParticipant#dogeid1');
                 tx.identityName.should.equal('dogeid1');
                 result.should.deep.equal({
                     userID : 'dogeid1',
@@ -1196,7 +1556,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should submit a request to the chaincode for a fully qualified identifier', () => {
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
-            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+            return businessNetworkConnection.issueIdentity('org.acme.MyParticipant#dogeid1', 'dogeid1')
                 .then((result) => {
                     sinon.assert.calledOnce(mockConnection.createIdentity);
                     sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
@@ -1204,7 +1564,7 @@ describe('BusinessNetworkConnection', () => {
                     const tx = businessNetworkConnection.submitTransaction.args[0][0];
                     tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
                     tx.participant.isRelationship().should.be.true;
-                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.MyParticipant#dogeid1');
                     tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
                         userID : 'dogeid1',
@@ -1215,7 +1575,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should submit a request to the chaincode for a URI', () => {
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
-            return businessNetworkConnection.issueIdentity('resource:org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+            return businessNetworkConnection.issueIdentity('resource:org.acme.MyParticipant#dogeid1', 'dogeid1')
                 .then((result) => {
                     sinon.assert.calledOnce(mockConnection.createIdentity);
                     sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
@@ -1223,7 +1583,7 @@ describe('BusinessNetworkConnection', () => {
                     const tx = businessNetworkConnection.submitTransaction.args[0][0];
                     tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
                     tx.participant.isRelationship().should.be.true;
-                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.MyParticipant#dogeid1');
                     tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
                         userID : 'dogeid1',
@@ -1233,7 +1593,7 @@ describe('BusinessNetworkConnection', () => {
         });
 
         it('should submit a request to the chaincode for an resource', () => {
-            const participant = factory.newResource('org.acme.sample', 'SampleParticipant', 'dogeid1');
+            const participant = factory.newResource('org.acme', 'MyParticipant', 'dogeid1');
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
             return businessNetworkConnection.issueIdentity(participant, 'dogeid1')
                 .then((result) => {
@@ -1243,7 +1603,7 @@ describe('BusinessNetworkConnection', () => {
                     const tx = businessNetworkConnection.submitTransaction.args[0][0];
                     tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
                     tx.participant.isRelationship().should.be.true;
-                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.MyParticipant#dogeid1');
                     tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
                         userID : 'dogeid1',
@@ -1253,7 +1613,7 @@ describe('BusinessNetworkConnection', () => {
         });
 
         it('should submit a request to the chaincode for an relationship', () => {
-            const participant = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'dogeid1');
+            const participant = factory.newRelationship('org.acme', 'MyParticipant', 'dogeid1');
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
             return businessNetworkConnection.issueIdentity(participant, 'dogeid1')
                 .then((result) => {
@@ -1263,7 +1623,7 @@ describe('BusinessNetworkConnection', () => {
                     const tx = businessNetworkConnection.submitTransaction.args[0][0];
                     tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
                     tx.participant.isRelationship().should.be.true;
-                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.MyParticipant#dogeid1');
                     tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
                         userID : 'dogeid1',
@@ -1274,7 +1634,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should submit a request to the chaincode with additional options', () => {
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
-            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1', {
+            return businessNetworkConnection.issueIdentity('org.acme.MyParticipant#dogeid1', 'dogeid1', {
                 issuer : true,
                 affiliation : 'dogecorp'
             })
@@ -1288,7 +1648,7 @@ describe('BusinessNetworkConnection', () => {
                     const tx = businessNetworkConnection.submitTransaction.args[0][0];
                     tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
                     tx.participant.isRelationship().should.be.true;
-                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.MyParticipant#dogeid1');
                     tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
                         userID : 'dogeid1',
@@ -1323,32 +1683,32 @@ describe('BusinessNetworkConnection', () => {
 
         it('should submit a request to the chaincode for a fully qualified identifier', () => {
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
-            return businessNetworkConnection.bindIdentity('org.acme.sample.SampleParticipant#dogeid1', pem)
+            return businessNetworkConnection.bindIdentity('org.acme.MyParticipant#dogeid1', pem)
                 .then(() => {
                     sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
                     const tx = businessNetworkConnection.submitTransaction.args[0][0];
                     tx.instanceOf('org.hyperledger.composer.system.BindIdentity').should.be.true;
                     tx.participant.isRelationship().should.be.true;
-                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.MyParticipant#dogeid1');
                     tx.certificate.should.equal(pem);
                 });
         });
 
         it('should submit a request to the chaincode for a URI', () => {
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
-            return businessNetworkConnection.bindIdentity('resource:org.acme.sample.SampleParticipant#dogeid1', pem)
+            return businessNetworkConnection.bindIdentity('resource:org.acme.MyParticipant#dogeid1', pem)
                 .then(() => {
                     sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
                     const tx = businessNetworkConnection.submitTransaction.args[0][0];
                     tx.instanceOf('org.hyperledger.composer.system.BindIdentity').should.be.true;
                     tx.participant.isRelationship().should.be.true;
-                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.MyParticipant#dogeid1');
                     tx.certificate.should.equal(pem);
                 });
         });
 
         it('should submit a request to the chaincode for an resource', () => {
-            const participant = factory.newResource('org.acme.sample', 'SampleParticipant', 'dogeid1');
+            const participant = factory.newResource('org.acme', 'MyParticipant', 'dogeid1');
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
             return businessNetworkConnection.bindIdentity(participant, pem)
                 .then(() => {
@@ -1356,13 +1716,13 @@ describe('BusinessNetworkConnection', () => {
                     const tx = businessNetworkConnection.submitTransaction.args[0][0];
                     tx.instanceOf('org.hyperledger.composer.system.BindIdentity').should.be.true;
                     tx.participant.isRelationship().should.be.true;
-                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.MyParticipant#dogeid1');
                     tx.certificate.should.equal(pem);
                 });
         });
 
         it('should submit a request to the chaincode for an relationship', () => {
-            const participant = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'dogeid1');
+            const participant = factory.newRelationship('org.acme', 'MyParticipant', 'dogeid1');
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
             return businessNetworkConnection.bindIdentity(participant, pem)
                 .then(() => {
@@ -1370,7 +1730,7 @@ describe('BusinessNetworkConnection', () => {
                     const tx = businessNetworkConnection.submitTransaction.args[0][0];
                     tx.instanceOf('org.hyperledger.composer.system.BindIdentity').should.be.true;
                     tx.participant.isRelationship().should.be.true;
-                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.MyParticipant#dogeid1');
                     tx.certificate.should.equal(pem);
                 });
         });

@@ -980,10 +980,11 @@ class TestUtil {
                     return cardStoreForDeploy;
                 })
                 .catch((err) => {
+                    console.error(err);
                     if (retryCount >= this.retries) {
                         throw(err);
                     } else {
-                        this.deploy(businessNetworkDefinition, cardName, otherChannel, forceDeploy, retryCount++);
+                        return this.deploy(businessNetworkDefinition, cardName, otherChannel, forceDeploy, retryCount++);
                     }
                 });
         } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
@@ -1034,10 +1035,11 @@ class TestUtil {
                     return cardStoreForDeploy;
                 })
                 .catch((err) => {
+                    console.error(err);
                     if (retryCount >= this.retries) {
                         throw(err);
                     } else {
-                        this.deploy(businessNetworkDefinition, cardName, otherChannel, forceDeploy, retryCount++);
+                        return this.deploy(businessNetworkDefinition, cardName, otherChannel, forceDeploy, retryCount++);
                     }
                 });
         } else if (forceDeploy) {
