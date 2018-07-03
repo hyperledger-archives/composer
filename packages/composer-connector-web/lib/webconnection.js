@@ -218,13 +218,14 @@ class WebConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      * @return {Buffer} A buffer containing the data returned by the chaincode function,
      * or null if no data was returned.
      */
-    async invokeChainCode(securityContext, functionName, args) {
+    async invokeChainCode(securityContext, functionName, args, additionalConnectorOptions = {}) {
         const identity = securityContext.getIdentity();
         const networkInfo = await this._getNetworkInfo(securityContext.getNetworkName());
-        const context = new WebContext(networkInfo.engine, networkInfo.installedNetwork, identity, this);
+        const context = new WebContext(networkInfo.engine, networkInfo.installedNetwork, identity, this, additionalConnectorOptions);
         const data = await networkInfo.engine.invoke(context, functionName, args);
         return !Util.isNull(data) ? Buffer.from(JSON.stringify(data)) : null;
     }

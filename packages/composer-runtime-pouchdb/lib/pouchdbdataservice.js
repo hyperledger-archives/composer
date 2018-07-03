@@ -64,16 +64,17 @@ class PouchDBDataService extends DataService {
      * @param {string} [uuid] The UUID of the container.
      * @param {boolean} [autocommit] Should this data service auto commit?
      * @param {Object} [options] Optional options for PouchDB.
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      */
-    constructor (uuid, autocommit, options) {
+    constructor (uuid, autocommit, options, additionalConnectorOptions = {}) {
         super();
         const method = 'constructor';
-        LOG.entry(method, uuid, autocommit, options);
+        LOG.entry(method, uuid, autocommit, options, additionalConnectorOptions);
         this.uuid = uuid;
         this.db = PouchDBDataService.createPouchDB('Composer', options);
-
         this.autocommit = !!autocommit;
         this.pendingActions = [];
+        this.additionalConnectorOptions = additionalConnectorOptions;
         LOG.exit(method);
     }
 
@@ -350,38 +351,31 @@ class PouchDBDataService extends DataService {
     /**
      * Called at the start of a transaction.
      * @param {boolean} readOnly Is the transaction read-only?
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
-    transactionStart (readOnly) {
+    async transactionStart (readOnly) {
         const method = 'transactionStart';
         LOG.entry(method, readOnly);
-        return super.transactionStart(readOnly)
-            .then(() => {
-                this.pendingActions = [];
-                LOG.exit(method);
-            });
+        await super.transactionStart(readOnly);
+        this.pendingActions = [];
+        LOG.exit(method);
     }
 
     /**
      * Called when a transaction is preparing to commit.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
-    transactionPrepare () {
+    async transactionPrepare () {
         const method = 'transactionPrepare';
         LOG.entry(method);
-        return super.transactionPrepare()
-            .then(() => {
-                return this.pendingActions.reduce((promise, pendingAction) => {
-                    return promise.then(() => {
-                        return pendingAction();
-                    });
-                }, Promise.resolve());
-            })
-            .then(() => {
-                LOG.exit(method);
-            });
+        await super.transactionPrepare();
+        if (this.additionalConnectorOptions.commit === false) {
+            LOG.debug('commit specified as false');
+            LOG.exit(method);
+            return;
+        }
+        for (const pendingAction of this.pendingActions) {
+            await pendingAction();
+        }
+        LOG.exit(method);
     }
 
 }
