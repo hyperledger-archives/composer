@@ -17,6 +17,7 @@
 const AclFile = require('./acl/aclfile');
 const AclManager = require('./aclmanager');
 const BusinessNetworkMetadata = require('./businessnetworkmetadata');
+const CommitDecoratorFactory = require('./commitdecoratorfactory');
 const fs = require('fs');
 const fsPath = require('path');
 const Introspector = require('./introspect/introspector');
@@ -115,6 +116,7 @@ class BusinessNetworkDefinition {
         }
 
         this.modelManager = new ModelManager();
+        this.modelManager.addDecoratorFactory(new CommitDecoratorFactory());
         this.modelManager.addDecoratorFactory(new ReturnsDecoratorFactory());
         this.factory = this.modelManager.getFactory();
         this.serializer = this.modelManager.getSerializer();

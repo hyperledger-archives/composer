@@ -15,6 +15,7 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
+const CommitDecorator = require('../lib/commitdecorator');
 const fs = require('fs');
 const JSZip = require('jszip');
 const ModelFile = require('../lib/introspect/modelfile');
@@ -490,6 +491,18 @@ describe('BusinessNetworkDefinition', () => {
     });
 
     describe('#decorator processors', () => {
+
+        it('should install the decorator processor for @commit', () => {
+            const bnd = new BusinessNetworkDefinition('id@1.0.0', 'description', null, 'readme');
+            const modelManager = bnd.getModelManager();
+            modelManager.addModelFile(`
+            namespace org.acme
+            @commit(false)
+            transaction T { }`);
+            const transactionDeclaration = modelManager.getType('org.acme.T');
+            const decorator = transactionDeclaration.getDecorator('commit');
+            decorator.should.be.an.instanceOf(CommitDecorator);
+        });
 
         it('should install the decorator processor for @returns', () => {
             const bnd = new BusinessNetworkDefinition('id@1.0.0', 'description', null, 'readme');

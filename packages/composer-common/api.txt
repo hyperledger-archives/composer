@@ -39,6 +39,13 @@ class Certificate {
 class CertificateUtil {
    + void generate(Object,string,string,string,string) 
 }
+class CommitDecorator extends Decorator {
+   + void constructor(Object) throws IllegalModelException
+   + boolean getValue() 
+}
+class CommitDecoratorFactory extends DecoratorFactory {
+   + Decorator newDecorator(Object) 
+}
 class Factory {
    + Resource newResource(String,String,String,Object,boolean,String,boolean,boolean) throws TypeNotFoundException
    + Resource newConcept(String,String,Object,boolean,String,boolean) throws TypeNotFoundException
