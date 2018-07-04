@@ -53,6 +53,7 @@
     "ora": "1.2.0",
     "prettyoutput": "1.1.1",
     "rimraf": "2.5.4",
+    "through2": "^2.0.3",
     "vinyl-fs": "2.4.4",
     "yargs": "10.0.3"
   },
@@ -70,7 +71,8 @@
       "_template/assets.default",
       "bin/opus",
       "test/testfile.md",
-      "_tmp"
+      "_tmp",
+      "testdata"
     ],
     "file_type_method": "EXCLUDE",
     "file_types": [
@@ -106,7 +108,8 @@
       "test/**",
       "_bnaTemplate/**",
       "_configs/**",
-      "_template/**"
+      "_template/**",
+      "testdata/**"
     ],
     "reporter": [
       "text-summary",
