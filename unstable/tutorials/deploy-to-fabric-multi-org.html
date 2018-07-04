@@ -396,10 +396,12 @@
 <li><p>change directory to <code>fabric-samples</code></p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd fabric-samples
 </code></pre></div></li>
-<li><p>Download the platform binaries, including cryptogen :</p>
-<div class="highlight"><pre><code class="language-" data-lang="">curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0
+<li><p>Download the platform binaries, including cryptogen using this command (three parameters needed for the bash command):</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0  1.1.0  0.4.6
 </code></pre></div>
-<p>Verify the list of docker images downloaded without issues</p></li>
+<p>Verify the list of docker images downloaded without issues.</p>
+
+<p>(Please note that you can ignore the initial &quot;error: pathspec v1.1.0 did not match&quot; message in the output for now)</p></li>
 <li><p>change directory into <code>first-network</code> sample</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd first-network
 </code></pre></div></li>
