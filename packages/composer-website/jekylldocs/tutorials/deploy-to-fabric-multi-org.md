@@ -59,11 +59,13 @@ In order to follow this tutorial, you must start up a fresh {{site.data.conrefs.
 
         cd fabric-samples
 
-2. Download the platform binaries, including cryptogen :
+2. Download the platform binaries, including cryptogen using this command (three parameters needed for the bash command):
 
-        curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0
+        curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0  1.1.0  0.4.6
 
-    Verify the list of docker images downloaded without issues
+    Verify the list of docker images downloaded without issues.
+    
+    (Please note that you can ignore the initial "error: pathspec v1.1.0 did not match" message in the output for now)
 
 3. change directory into `first-network` sample
 
