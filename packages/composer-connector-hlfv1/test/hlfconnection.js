@@ -2052,36 +2052,12 @@ describe('HLFConnection', () => {
         });
 
         it('should submit an invoke request to the chaincode and not order it if commit specified as false', () => {
-            const proposalResponses = [{
-                response: {
-                    status: 200,
-                    payload: 'hello world'
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
-            connection._validatePeerResponses.returns({ignoredErrors: 0, validResponses: proposalResponses});
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub1.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
+            sandbox.stub(connection, 'queryChainCode').resolves('hello world');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'], { commit: false })
                 .then((result) => {
                     result.should.equal('hello world');
-                    sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
-                    sinon.assert.calledWith(mockChannel.sendTransactionProposal, {
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        fcn: 'myfunc',
-                        args: ['arg1', 'arg2']
-                    });
-                    sinon.assert.notCalled(mockChannel.sendTransaction);
-                    sinon.assert.notCalled(connection._checkCCListener);
-                    sinon.assert.calledOnce(connection._checkEventhubs);
+                    sinon.assert.calledOnce(connection.queryChainCode);
+                    sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'myfunc', ['arg1', 'arg2'], { commit: false });
                 });
         });
 

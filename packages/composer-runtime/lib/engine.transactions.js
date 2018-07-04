@@ -297,7 +297,7 @@ class EngineTransactions {
                 LOG.error(method, error);
                 throw error;
             }
-            return context.getSerializer().toJSON(actualReturnValue);
+            return context.getSerializer().toJSON(actualReturnValue, { convertResourcesToRelationships: true, permitResourcesForRelationships: false });
         };
 
         // Handle the non-array case - a single return value.

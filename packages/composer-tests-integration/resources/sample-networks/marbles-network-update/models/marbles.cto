@@ -48,3 +48,15 @@ transaction TradeMarble {
   --> NewMarble marble
   --> Player newOwner
 }
+
+concept TradeReceipt {
+    o NewMarble marble
+    o Player oldOwner
+    o Player newOwner
+}
+
+@returns(TradeReceipt)
+transaction TradeMarbleWithReceipt {
+  --> NewMarble marble
+  --> Player newOwner
+}
