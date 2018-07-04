@@ -489,7 +489,7 @@ transaction SampleTransaction {
 </code></pre></div>
 <p>In this example, not only can the specific asset referenced by the relationship in the transaction be referenced using <code>tx.asset</code>, the specific participant referenced by the <code>owner</code> relationship can be referenced using <code>tx.asset.owner</code>. In this case, <code>tx.asset.owner</code> would resolve to reference a specific participant.</p>
 
-<h2 id="promise-returns-in-transaction-processor-functions">Promise returns in transaction processor functions</h2>
+<h2 id="handling-asynchronous-code-and-promises-in-transaction-processor-functions">Handling asynchronous code and promises in transaction processor functions</h2>
 
 <p>Similarly to relationships, transaction processor functions will wait for promises to be resolved before committing the transaction. If a promise is rejected, the transaction will fail.</p>
 
@@ -582,7 +582,7 @@ transaction SampleTransaction {
     <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="calling-hyperledger-fabric-v1-1-apis-in-transaction-processor-functions">Calling Hyperledger Fabric v1.1 APIs in transaction processor functions</h3>
+<h3 id="calling-hyperledger-fabric-apis-in-transaction-processor-functions">Calling Hyperledger Fabric APIs in transaction processor functions</h3>
 
 <p>To call the Hyperledger Fabric API in a transaction processor function, the function <code>getNativeAPI</code> must be called, followed by a function from the Hyperledger Fabric API. Using the Hyperledger Fabric API gives you access to functionality which is not available in the Hyperledger Composer API.</p>
 
@@ -591,7 +591,7 @@ transaction SampleTransaction {
 <p>In the example below, the Hyperledger Fabric API function <code>getHistoryForKey</code> is called, which returns the history of a specified asset as an iterator. The transaction processor function then stores the returned data in an array.</p>
 
 <p>For more information on the Hyperledger Fabric APIs you can call in a transaction processor function, see the <a href="https://fabric-shim.github.io/ChaincodeStub.html">Hyperledger Fabric API documentation</a>.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">async</span> <span class="kd">function</span> <span class="nx">simpleNativeHistoryTransaction</span> <span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>    
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">async</span> <span class="kd">function</span> <span class="nx">simpleNativeHistoryTransaction</span> <span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">assetId</span><span class="p">;</span>
     <span class="kd">const</span> <span class="nx">nativeSupport</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">nativeSupport</span><span class="p">;</span>
 
@@ -617,6 +617,285 @@ transaction SampleTransaction {
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
+</code></pre></div>
+<h2 id="returning-data-from-transaction-processor-functions">Returning data from transaction processor functions</h2>
+
+<p>Transaction processor functions can optionally return data to client applications. This can be useful for returning a receipt to the submitter of the transaction, or returning an asset modified by the transaction to avoid a separate lookup of the asset after the transaction has been committed.</p>
+
+<p>The return data for a transaction processor function must be a valid type, either a primitive type (String, Integer, Long, etc.), or a type modelled using the Composer modelling language - a concept, asset, participant, transaction, event or enumeration.</p>
+
+<p>The type of the return data must also be specified on the model for the transaction using the <code>@returns(Type)</code> decorator, and the return data must be the last thing returned by the transaction processor function. If you have multiple transaction processor functions for a single transaction, only one of those transaction processor functions can return data. If the return data is missing, or is of the wrong type, then the transaction will fail and will be rejected.</p>
+
+<h3 id="returning-a-primitive-type-from-a-transaction-processor-function">Returning a primitive type from a transaction processor function</h3>
+
+<p>Here is an example of a transaction processor function that returns a String to a client application.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+@returns(String)
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns a string.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string) The string.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'hello world!'</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const string = await bnc.submitTransaction(transaction);
+console.log(`transaction returned $[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string)`);
+</code></pre></div>
+<p>Here is an example of a transaction processor function that returns an array of integers to a client application.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+@returns(Integer[])
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns an array of integers.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {number[]} The array of integers.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const integers = await bnc.submitTransaction(transaction);
+for (const integer of integers) {
+    console.log(`transaction returned ${integer}`);
+}
+</code></pre></div>
+<h3 id="returning-a-complex-type-from-a-transaction-processor-function">Returning a complex type from a transaction processor function</h3>
+
+<p>Here is an example of a transaction processor function that returns a concept to a client application. The same code can be modified to return an asset, participant, transaction or event as well.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+concept MyConcept {
+    o String value
+}
+
+@returns(MyConcept)
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns a concept.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {org.sample.MyConcept} The concept.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="no">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
+    <span class="k">const</span> <span class="no">concept</span> <span class="o">=</span> <span class="nx">factory</span><span class="o">.</span><span class="nx">newConcept</span><span class="p">(</span><span class="s1">'org.sample'</span><span class="p">,</span> <span class="s1">'MyConcept'</span><span class="p">);</span>
+    <span class="nx">concept</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'hello world!'</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">concept</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const concept = await bnc.submitTransaction(transaction);
+console.log(`transaction returned ${concept.value}`);
+</code></pre></div>
+<p>Here is an example of a transaction processor function that returns an array of concepts to a client application.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+concept MyConcept {
+    o String value
+}
+
+@returns(MyConcept[])
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns an array of concepts.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {org.sample.MyConcept[]} The array of concepts.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="no">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
+    <span class="k">const</span> <span class="no">concept1</span> <span class="o">=</span> <span class="nx">factory</span><span class="o">.</span><span class="nx">newConcept</span><span class="p">(</span><span class="s1">'org.sample'</span><span class="p">,</span> <span class="s1">'MyConcept'</span><span class="p">);</span>
+    <span class="nx">concept1</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'hello alice!'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">concept2</span> <span class="o">=</span> <span class="nx">factory</span><span class="o">.</span><span class="nx">newConcept</span><span class="p">(</span><span class="s1">'org.sample'</span><span class="p">,</span> <span class="s1">'MyConcept'</span><span class="p">);</span>
+    <span class="nx">concept2</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'hello bob!'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">concept3</span> <span class="o">=</span> <span class="nx">factory</span><span class="o">.</span><span class="nx">newConcept</span><span class="p">(</span><span class="s1">'org.sample'</span><span class="p">,</span> <span class="s1">'MyConcept'</span><span class="p">);</span>
+    <span class="nx">concept3</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'hello charlie!'</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">[</span> <span class="nx">concept1</span><span class="p">,</span> <span class="nx">concept2</span><span class="p">,</span> <span class="nx">concept3</span> <span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const concepts = await bnc.submitTransaction(transaction);
+for (const concept of concepts) {
+    console.log(`transaction returned ${concept.value}`);
+}
+</code></pre></div>
+<h3 id="returning-an-enumeration-from-a-transaction-processor-function">Returning an enumeration from a transaction processor function</h3>
+
+<p>Here is an example of a transaction processor function that returns an enumeration to a client application.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+enum MyEnum {
+    o HELLO
+    o WORLD
+}
+
+@returns(MyEnum)
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns an enumeration.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {org.sample.MyEnum} The enumeration.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'HELLO'</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const enum = await bnc.submitTransaction(transaction);
+console.log(`transaction returned ${enum}`);
+</code></pre></div>
+<p>Here is an example of a transaction processor function that returns an array of enumerations to a client application.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+enum MyEnum {
+    o HELLO
+    o WORLD
+}
+
+@returns(MyEnum[])
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns an array of enumerations.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {org.sample.MyEnum[]} The array of enumerations.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">[</span> <span class="s1">'HELLO'</span><span class="p">,</span> <span class="s1">'WORLD'</span> <span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const enums = await bnc.submitTransaction(transaction);
+for (const enum of enums) {
+    console.log(`transaction returned ${enum}`);
+}
+</code></pre></div>
+<h2 id="read-only-transaction-processor-functions-query-processor-functions">Read-only transaction processor functions (query processor functions)</h2>
+
+<p>Transactions can be modelled as being read-only by specifying the <code>@commit(false)</code> decorator. When a transaction is modelled as read-only, the transaction is submitted as normal, and any transaction processor functions for that transaction are executed as normal. However, the transaction is not committed - it will not be endorsed by multiple peers on the blockchain network, nor will it be sent to the ordering service, nor will it publish any events.</p>
+
+<p>This feature can be useful when the APIs that client applications can use to read data from the business network are too limited for your use case. These APIs include <code>get(id)</code> (get by ID), <code>getAll()</code> (get all), <code>exists(id)</code> (test existence), and <code>query(q, params)</code> (execute a complex query). For example, a client application may wish to get all of the assets across multiple business networks deployed to multiple channels in a single call to the blockchain network. Another example is reducing the result set of a query on the &quot;server&quot; (chaincode) side, before returning the result set to the client application, to reduce network traffic and the load on the client application.</p>
+
+<p>Here is an example of a read-only transaction processor function that retrieves a set of assets from the current business network, as well as other business networks, and returns all of the assets to the client application:</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+asset MyAsset identified by assetId {
+    o String assetId
+    o String value
+}
+
+@commit(false)
+@returns(MyAsset[])
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns an array of assets.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {org.sample.MyAsset[]} All the assets.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="no">allAssets</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">const</span> <span class="no">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.sample.MyAsset'</span><span class="p">);</span>
+    <span class="k">const</span> <span class="no">localAssets</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">getAll</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="no">asset</span> <span class="nx">of</span> <span class="nx">localAssets</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">localAssets</span><span class="o">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">const</span> <span class="no">businessNetworkNames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'other-network-1'</span><span class="p">,</span> <span class="s1">'other-network-2'</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="no">businessNetworkName</span> <span class="nx">of</span> <span class="nx">businessNetworkNames</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">const</span> <span class="no">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getNativeAPI</span><span class="p">()</span><span class="o">.</span><span class="nx">invokeChaincode</span><span class="p">(</span><span class="nx">businessNetworkName</span><span class="p">,</span> <span class="p">[</span><span class="s1">'getAllResourcesInRegistry'</span><span class="p">,</span> <span class="s1">'Asset'</span><span class="p">,</span> <span class="s1">'org.sample.MyAsset'</span><span class="p">],</span> <span class="s1">'composerchannel'</span><span class="p">);</span>
+        <span class="k">const</span> <span class="no">json</span> <span class="o">=</span> <span class="nx">JSON</span><span class="o">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">response</span><span class="o">.</span><span class="nx">payload</span><span class="o">.</span><span class="nx">toString</span><span class="p">(</span><span class="s1">'utf8'</span><span class="p">));</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="no">item</span> <span class="nx">of</span> <span class="nx">json</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">allAssets</span><span class="o">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">getSerializer</span><span class="p">()</span><span class="o">.</span><span class="nx">fromJSON</span><span class="p">(</span><span class="nx">item</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">allAssets</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const assets = await bnc.submitTransaction(transaction);
+for (const asset of assets) {
+    console.log(`transaction returned ${asset.value}`);
+}
 </code></pre></div>
 <h2 id="what-next">What next?</h2>
 
