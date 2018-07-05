@@ -118,6 +118,12 @@
 <loc>https://hyperledger.github.io/composer/latest/api/common-conceptdeclaration</loc>
 </url>
 <url>
+<loc>https://hyperledger.github.io/composer/latest/api/common-decorator</loc>
+</url>
+<url>
+<loc>https://hyperledger.github.io/composer/latest/api/common-decoratorfactory</loc>
+</url>
+<url>
 <loc>https://hyperledger.github.io/composer/latest/api/common-enumdeclaration</loc>
 </url>
 <url>
@@ -230,6 +236,9 @@
 </url>
 <url>
 <loc>https://hyperledger.github.io/composer/latest/reference/composer.network.ping</loc>
+</url>
+<url>
+<loc>https://hyperledger.github.io/composer/latest/reference/composer.network.reset</loc>
 </url>
 <url>
 <loc>https://hyperledger.github.io/composer/latest/reference/composer.network.start</loc>

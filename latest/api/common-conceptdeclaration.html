@@ -269,6 +269,8 @@
 <li><a href="/composer/latest/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/latest/api/common-decoratorfactory">DecoratorFactory (Common API)</a></li>
+<li><a href="/composer/latest/api/common-decorator">Decorator (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -405,15 +407,9 @@ identifying field.</p>
 </tr>
 <tr>
 <td style="text-align: left">ClassDeclaration</td>
-<td style="text-align: left"><a href="#getmodelfile">getModelFile</a></td>
-<td style="text-align: left"><code>ModelFile</code></td>
-<td style="text-align: left">Returns the ModelFile that defines this class</td>
-</tr>
-<tr>
-<td style="text-align: left">ClassDeclaration</td>
-<td style="text-align: left"><a href="#getsystemtype">getSystemType</a></td>
-<td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Returns the base system type for this type of class declaration</td>
+<td style="text-align: left"><a href="#_resolvesupertype">_resolveSuperType</a></td>
+<td style="text-align: left"><code>ClassDeclaration</code></td>
+<td style="text-align: left">Resolve the super type on this class and store it as an internal property</td>
 </tr>
 <tr>
 <td style="text-align: left">ClassDeclaration</td>
@@ -471,9 +467,9 @@ identifying field.</p>
 </tr>
 <tr>
 <td style="text-align: left">ClassDeclaration</td>
-<td style="text-align: left"><a href="#_resolvesupertype">_resolveSuperType</a></td>
-<td style="text-align: left"><code>ClassDeclaration</code></td>
-<td style="text-align: left">Resolve the super type on this class and store it as an internal property</td>
+<td style="text-align: left"><a href="#getsystemtype">getSystemType</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the base system type for this type of class declaration</td>
 </tr>
 <tr>
 <td style="text-align: left">ClassDeclaration</td>
@@ -588,22 +584,6 @@ identifying field.</p>
 <p>No parameters</p>
 
 <h2 id="inherited-methods">Inherited methods</h2>
-
-<h2 id="getmodelfile">getModelFile</h2>
-
-<p><em>ModelFile getModelFile(  )</em></p>
-
-<p><strong>Inherited from:</strong>  ClassDeclaration</p>
-
-<p>Returns the ModelFile that defines this class.</p>
-
-<h3 id="returns">Returns</h3>
-
-<p><a href="common-modelfile">ModelFile</a> - the owning ModelFile</p>
-
-<h3 id="parameters">Parameters</h3>
-
-<p>No parameters</p>
 
 <h2 id="_resolvesupertype">_resolveSuperType</h2>
 

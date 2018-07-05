@@ -269,6 +269,8 @@
 <li><a href="/composer/latest/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/latest/api/common-decoratorfactory">DecoratorFactory (Common API)</a></li>
+<li><a href="/composer/latest/api/common-decorator">Decorator (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -381,6 +383,16 @@ Example: <code>{&quot;$class&quot;:&quot;net.biz.digitalPropertyNetwork.Register
 
 <p>Here is the entire command:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit -c maeid1@digitalproperty-network -d '{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'
+</code></pre></div>
+<h2 id="javascript-api-example">Javascript API Example</h2>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">TransactionSubmit</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-cli'</span><span class="p">).</span><span class="nx">Transaction</span><span class="p">.</span><span class="nx">Submit</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">card</span><span class="p">:</span> <span class="s1">'admin@tutorial-network'</span><span class="p">,</span>
+  <span class="na">data</span><span class="p">:</span> <span class="s1">'{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'</span>
+<span class="p">};</span>
+
+<span class="nx">TransactionSubmit</span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
 </code></pre></div>
             
           </section>

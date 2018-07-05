@@ -269,6 +269,8 @@
 <li><a href="/composer/latest/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/latest/api/common-decoratorfactory">DecoratorFactory (Common API)</a></li>
+<li><a href="/composer/latest/api/common-decorator">Decorator (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -1080,7 +1082,7 @@ BusinessNetworksDefinitions.</p>
 </code></pre></div>
 <h2 id="submittransaction">submitTransaction</h2>
 
-<p><em>Promise submitTransaction( Resource transaction )</em></p>
+<p><em>Promise submitTransaction( Resource transaction, [Object additionalconnectoroptions] )</em></p>
 
 <p>Submit a transaction for processing by the currently connected business network.</p>
 
@@ -1103,6 +1105,12 @@ BusinessNetworksDefinitions.</p>
 <td style="text-align: left">Resource</td>
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The transaction to submit. Use <a href="common-factory#newtransaction">newTransaction</a> to create this object.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>additionalConnectorOptions</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Additional connector specific options for this transaction.</td>
 </tr>
 </tbody></table>
 

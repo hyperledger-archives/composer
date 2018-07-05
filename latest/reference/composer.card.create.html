@@ -269,6 +269,8 @@
 <li><a href="/composer/latest/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/latest/api/common-decoratorfactory">DecoratorFactory (Common API)</a></li>
+<li><a href="/composer/latest/api/common-decorator">Decorator (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -368,8 +370,21 @@ Options:
 
 <p>Roles are only used by playground when interacting with Hyperledger Fabric to determine which card to use when performing the 2 step action of installing new business networks and then either starting or upgrading that business network. Whenever a business network is first deployed or new changes are deployed, the new business network is first installed onto the peer(s) and then a start or upgrade is requested.</p>
 
-<p>In order to perform an installation of a business network, a card with the <code>PeerAdmin</code> role is used. To perform a start or upgrade of the business network a card with the <code>ChannelAdmin</code> role is used. </p>
+<p>In order to perform an installation of a business network, a card with the <code>PeerAdmin</code> role is used. To perform a start or upgrade of the business network a card with the <code>ChannelAdmin</code> role is used.</p>
 
+<h2 id="javascript-api-example">Javascript API Example</h2>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">CardCreate</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-cli'</span><span class="p">).</span><span class="nx">Card</span><span class="p">.</span><span class="nx">Create</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">file</span><span class="p">:</span> <span class="s1">'conga.card'</span><span class="p">,</span>
+  <span class="na">businessNetworkName</span><span class="p">:</span> <span class="s1">'penguin-network'</span><span class="p">,</span>
+  <span class="na">connectionProfileFile</span><span class="p">:</span> <span class="s1">'connection.json'</span><span class="p">,</span>
+  <span class="na">user</span><span class="p">:</span> <span class="s1">'conga'</span><span class="p">,</span>
+  <span class="na">enrollSecret</span><span class="p">:</span> <span class="s1">'supersecret'</span>
+<span class="p">};</span>
+
+<span class="nx">CardCreate</span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+</code></pre></div>
             
           </section>
         </div>
