@@ -78,6 +78,18 @@ query Q18 {
 }
 ```
 
+#### Testing queries
+
+If you intend to run unit test on your Queries, currently, PouchDB does not allow using testing queries that use `ORDER BY` clauses, due to issue [#3923](https://github.com/hyperledger/composer/issues/3923).
+
+You can bypass this problem by implementing the `npm test` command in `package.json` along these lines:
+
+```
+"test": "sed -i '' -e 's,  ORDER BY,// ORDER BY,g' ./queries.qry && mocha -t 0 --recursive && sed -i '' -e 's,// ORDER BY,  ORDER BY,g' ./queries.qry"
+```
+
+This comments out all the `ORDER BY` parts before testing, and uncomments them after testing. Naturally, this will not permit testing that ordering works, but can help test the expected content of queries.
+
 ## What next?
 
 - [Applying queries to a business network.](../business-network/query.html)
