@@ -84,14 +84,14 @@ class AdminConnection {
         const connectionProfileData = card.getConnectionProfile();
         connectionProfileData.cardName = name;
         const connectionManager = await this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
-        const exists = this.cardStore.has(name);
+        connectionProfileData.wallet = await this.cardStore.getWallet(name);
+        const exists = await this.cardStore.has(name);
         if (exists) {
             await connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
         }
         // if we have a certificate and optionally a privateKey we should ask the connection manager to import
         const certificate = card.getCredentials().certificate;
         const privateKey = card.getCredentials().privateKey;
-        connectionProfileData.wallet = await this.cardStore.getWallet(name);
         if (certificate){
             await connectionManager.importIdentity(connectionProfileData.name, connectionProfileData, card.getUserName(), certificate, privateKey);
         }
