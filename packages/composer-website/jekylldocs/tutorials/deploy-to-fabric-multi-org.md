@@ -62,7 +62,7 @@ In order to follow this tutorial, you must start up a fresh {{site.data.conrefs.
 
 2. Download the platform binaries, including cryptogen using this command (three parameters needed for the bash command):
 
-        curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0  1.1.0  0.4.6
+        curl -sSL http://bit.ly/2ysbOFE | bash -s 1.2.0 1.2.0 0.4.10
 
     Verify the list of docker images downloaded without issues.
     

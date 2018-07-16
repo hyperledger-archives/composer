@@ -17,9 +17,6 @@
 set -ev
 set -o pipefail
 
-# Set ARCH
-ARCH=`uname -m`
-
 # Grab the fabric directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
@@ -28,18 +25,15 @@ rm -rf ${HOME}/.composer
 
 cd "${DIR}"
 
+# Set up environment variables for Fabric Docker image versions
+. "../../../scripts/fabric-docker-env.sh"
+
 # Set default timeouts
 export COMPOSER_PORT_WAIT_SECS=30
 export COMPOSER_DEPLOY_WAIT_SECS=500
 export COMPOSER_TIMEOUT_SECS=500
 
 DOCKER_FILE=${DIR}/fabric/hlfv1/docker-compose.yml
-
-docker pull hyperledger/fabric-peer:$ARCH-1.1.0
-docker pull hyperledger/fabric-ca:$ARCH-1.1.0
-docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0
-docker pull hyperledger/fabric-orderer:$ARCH-1.1.0
-docker pull hyperledger/fabric-couchdb:$ARCH-0.4.6
 
 if [ -d ./hlfv1/crypto-config ]; then
     rm -rf ./hlfv1/crypto-config
@@ -55,10 +49,10 @@ for KEY in $(find crypto-config -type f -name "*_sk"); do
 done
 
 echo Using docker file ${DOCKER_FILE}
-ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
-ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+docker-compose -f ${DOCKER_FILE} kill
+docker-compose -f ${DOCKER_FILE} down
 docker rmi -f $(docker images -aq dev-*) || true
-ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
+docker-compose -f ${DOCKER_FILE} up -d
 
 # wait for the fabric to start
 sleep 10
