@@ -67,9 +67,7 @@ describe('Concept', function () {
                 resource.toJSON();
             }).should.throw(/Use Serializer.toJSON to convert resource instances to JSON objects./);
         });
-    });
 
-    describe('#toJSON', () => {
         it('should generate JSON for an asset that contains a concept', function () {
             let conceptModel = fs.readFileSync('./test/data/model/concept.cto', 'utf8');
             modelManager.addModelFile(conceptModel, 'concept.cto');

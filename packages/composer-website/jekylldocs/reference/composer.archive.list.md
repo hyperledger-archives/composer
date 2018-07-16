@@ -34,3 +34,15 @@ Version:0.0.1
 
 Command succeeded
 ```
+
+## Javascript API Example
+
+```javascript
+const ArchiveList = require('composer-cli').Archive.List;
+
+let options = {
+  archiveFile: 'digitalPropertyNetwork.bna'
+};
+
+ArchiveList.handler(options);
+```

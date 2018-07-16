@@ -4,7 +4,7 @@ title: Binding an existing identity to a participant
 category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
-excerpt: "[**An existing identity can be bound to a participant using either the API or the command line**](../managing/identity-issue.html). Once an existing identity has been bound, the identity can then be used by the participant to interact with the business network in the context of that participant."
+excerpt: "[**An existing identity can be bound to a participant using either the API or the command line**](../managing/identity-bind.html). Once an existing identity has been bound, the identity can then be used by the participant to interact with the business network in the context of that participant."
 index-order: 805
 ---
 
@@ -81,7 +81,7 @@ of that participant has been created and placed into a participant registry.
   * Command line
 
 
-        composer identity bind -c admin@digitalPropertyNetwork -a "resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
+        composer identity bind -c admin@digitalPropertyNetwork -a "resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org" -e mae-pub.pem
 
 
 2. As the participant, test the connection to the business network

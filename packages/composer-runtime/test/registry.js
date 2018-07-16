@@ -93,8 +93,10 @@ describe('Registry', () => {
             }]);
             mockResource1 = sinon.createStubInstance(Resource);
             mockResource1.theValue = 'the value 1';
+            mockResource1.getIdentifier.returns('1');
             mockResource2 = sinon.createStubInstance(Resource);
             mockResource2.theValue = 'the value 2';
+            mockResource2.getIdentifier.returns('2');
             mockSerializer.fromJSON.withArgs({
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
@@ -105,7 +107,7 @@ describe('Registry', () => {
             }).returns(mockResource2);
         });
 
-        it('should get and parse all of the resources in the registry', () => {
+        it('should get and parse all of the resources from the registry if not in the object cache', () => {
             return registry.getAll()
                 .then((resources) => {
                     sinon.assert.calledTwice(mockAccessController.check);
@@ -114,6 +116,17 @@ describe('Registry', () => {
                     resources.should.all.be.an.instanceOf(Resource);
                     resources.should.deep.equal([mockResource1, mockResource2]);
                 });
+        });
+
+        it('should add objects to the object cache during the retrieval', async () => {
+            let map = registry.objectMap;
+            map.size.should.be.equal(0);
+            await registry.getAll();
+            map.size.should.be.equal(2);
+
+            for (let key of map.keys()){
+                map.get(key).should.be.an.instanceOf(Object);
+            }
         });
 
         it('should not throw or leak information about resources that cannot be accessed due to ACL rules', () => {
@@ -156,6 +169,7 @@ describe('Registry', () => {
     describe('#get', () => {
 
         let mockResource;
+        let mockResource2;
 
         beforeEach(() => {
             mockDataCollection.get.withArgs('doge1').resolves({
@@ -163,13 +177,19 @@ describe('Registry', () => {
                 assetId: 'doge1'
             });
             mockResource = sinon.createStubInstance(Resource);
+            mockResource2 = sinon.createStubInstance(Resource);
+            mockResource2.getIdentifier.returns('cached');
             mockSerializer.fromJSON.withArgs({
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
             }).returns(mockResource);
+            mockSerializer.fromJSON.withArgs({
+                $class: 'org.doge.Doge',
+                assetId: 'doge2'
+            }).returns(mockResource2);
         });
 
-        it('should get the specific resource in the registry', () => {
+        it('should get the specific resource from the registry if not in the cache', () => {
             return registry.get('doge1')
                 .then((resource) => {
                     sinon.assert.calledOnce(mockAccessController.check);
@@ -177,6 +197,27 @@ describe('Registry', () => {
                     resource.should.be.an.instanceOf(Resource);
                     resource.should.deep.equal(mockResource);
                 });
+        });
+
+        it('should add to the object cache after registry retrieval', async () => {
+            await registry.get('doge1');
+            let obj = registry.objectMap.get('doge1');
+            obj.should.be.an.instanceOf(Object);
+        });
+
+        it('should get the specific resource from the cache if present', async () => {
+            registry.objectMap.set('doge2', {
+                $class: 'org.doge.Doge',
+                assetId: 'doge2'
+            });
+
+            let resource = await registry.get('doge2');
+            resource.should.be.an.instanceOf(Resource);
+            resource.getIdentifier().should.equal('cached');
+
+            // Should not go the datacollection route
+            sinon.assert.notCalled(mockDataCollection.get);
+            sinon.assert.notCalled(mockAccessController.check);
         });
 
         it('should not throw or leak information about resources that cannot be accessed', () => {
@@ -210,12 +251,38 @@ describe('Registry', () => {
             }).returns(mockResource);
         });
 
-        it('should determine whether a specific resource exists in the registry', () => {
+        it('should determine whether a specific resource exists in the registry via direct lookup', () => {
             return registry.exists('doge1')
                 .should.eventually.be.true
                 .then((exists) => {
                     sinon.assert.calledOnce(mockAccessController.check);
                     sinon.assert.calledWith(mockAccessController.check, mockResource, 'READ');
+                });
+        });
+
+        it('should add to the cache after a direct lookup', () => {
+            return registry.exists('doge1')
+                .should.eventually.be.true
+                .then((exists) => {
+                    registry.objectMap.size.should.be.equal(1);
+                    registry.objectMap.get('doge1').should.deep.equal({
+                        $class: 'org.doge.Doge',
+                        assetId: 'doge1'
+                    });
+                });
+        });
+
+        it('should determine whether a specific resource exists via cache existence', async () => {
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.theValue = 'the value 1';
+            mockResource.getIdentifier.returns('doge1');
+            registry.objectMap.set('doge1', mockResource);
+
+            return registry.exists('doge1')
+                .should.eventually.be.true
+                .then((exists) => {
+                    sinon.assert.notCalled(mockAccessController.check);
+                    sinon.assert.notCalled(mockDataCollection.get);
                 });
         });
 
@@ -538,6 +605,7 @@ describe('Registry', () => {
 
         let mockResource, mockOldResource;
         let mockClassDeclaration, mockOldClassDeclaration;
+        let mockObject, mockOldObject;
 
         beforeEach(() => {
             // New resources.
@@ -548,11 +616,13 @@ describe('Registry', () => {
             mockClassDeclaration.getSystemType.returns('Asset');
             mockResource.getIdentifier.returns('doge1');
             mockResource.theValue = 'newValue';
-            mockSerializer.toJSON.withArgs(mockResource).onFirstCall().returns({
+            mockObject = {
                 $class: 'org.doge.Doge',
                 assetId: 'doge1',
                 newValue: 'newValue'
-            });
+            };
+            mockSerializer.toJSON.withArgs(mockResource).onFirstCall().returns(mockObject);
+            mockSerializer.fromJSON.withArgs(mockObject).returns(mockResource);
             // Old resources.
             mockOldResource = sinon.createStubInstance(Resource);
             mockOldClassDeclaration = sinon.createStubInstance(ClassDeclaration);
@@ -561,19 +631,16 @@ describe('Registry', () => {
             mockOldClassDeclaration.getSystemType.returns('Asset');
             mockOldResource.getIdentifier.returns('doge1');
             mockOldResource.theValue = 'oldValue';
-            mockDataCollection.get.withArgs('doge1').resolves({
+            mockOldObject = {
                 $class: 'org.doge.Doge',
                 assetId: 'doge1',
                 newValue: 'oldValue'
-            });
-            mockSerializer.fromJSON.withArgs({
-                $class: 'org.doge.Doge',
-                assetId: 'doge1',
-                newValue: 'oldValue'
-            }).returns(mockOldResource);
+            };
+            mockDataCollection.get.withArgs('doge1').resolves(mockOldObject);
+            mockSerializer.fromJSON.withArgs(mockOldObject).returns(mockOldResource);
         });
 
-        it('should update the resource in the registry', () => {
+        it('should update the resource in the registry via datacollection retrieval if not in the cache', () => {
             mockDataCollection.update.resolves();
             let mockEventHandler = sinon.stub();
             registry.on('resourceupdated', mockEventHandler);
@@ -596,8 +663,38 @@ describe('Registry', () => {
                     });
                 });
         });
-        it('should throw an error updating a resource to the wrong registry', () => {
 
+        it('should update the resource in the registry via cache retrieval if present', () => {
+            mockDataCollection.update.resolves();
+            let mockEventHandler = sinon.stub();
+            registry.objectMap.set('doge1', mockObject);
+            registry.on('resourceupdated', mockEventHandler);
+            return registry.update(mockResource)
+                .then(() => {
+                    sinon.assert.notCalled(mockDataCollection.get);
+                    sinon.assert.calledOnce(mockAccessController.check);
+                    sinon.assert.calledWith(mockAccessController.check, mockResource, 'UPDATE');
+                    sinon.assert.calledWith(mockDataCollection.update, 'doge1', {
+                        $registryType: 'Asset',
+                        $registryId: 'doges',
+                        $class: 'org.doge.Doge',
+                        assetId: 'doge1',
+                        newValue: 'newValue'
+                    });
+                    sinon.assert.calledOnce(mockEventHandler);
+                });
+        });
+
+        it('should remove the item from teh cache if updated via cache retrieval', async () => {
+            mockDataCollection.update.resolves();
+            let mockEventHandler = sinon.stub();
+            registry.objectMap.set('doge1', mockResource);
+            registry.on('resourceupdated', mockEventHandler);
+            await registry.update(mockResource);
+            registry.objectMap.has('doge1').should.be.false;
+        });
+
+        it('should throw an error updating a resource to the wrong registry', () => {
             mockDataCollection.update.resolves();
             mockClassDeclaration.getSystemType.returns('Transaction');
             mockOldClassDeclaration.getSystemType.returns('Transaction');
@@ -694,21 +791,20 @@ describe('Registry', () => {
     describe('#remove', () => {
 
         let mockResource;
+        let mockObject;
 
         beforeEach(() => {
             // Old resources.
             // Deleting a resource by ID currently requires that we read it from the registry.
-            mockDataCollection.get.withArgs('doge1').resolves({
+            mockObject = {
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
-            });
+            };
+            mockDataCollection.get.withArgs('doge1').resolves(mockObject);
             mockResource = sinon.createStubInstance(Resource);
             mockResource.theValue = 'the value 1';
             mockResource.getIdentifier.returns('doge1');
-            mockSerializer.fromJSON.withArgs({
-                $class: 'org.doge.Doge',
-                assetId: 'doge1'
-            }).returns(mockResource);
+            mockSerializer.fromJSON.withArgs(mockObject).returns(mockResource);
             // End of resources.
         });
 
@@ -729,7 +825,7 @@ describe('Registry', () => {
                 });
         });
 
-        it('should remove the resource by ID from the registry', () => {
+        it('should remove the resource by ID from the registry via registry lookup if not in the cache', () => {
             mockDataCollection.remove.resolves();
             let mockEventHandler = sinon.stub();
             registry.on('resourceremoved', mockEventHandler);
@@ -742,6 +838,32 @@ describe('Registry', () => {
                         resourceID: 'doge1'
                     });
                 });
+        });
+
+        it('should remove the resource by ID from the registry via cache retrieval if present', () => {
+            mockDataCollection.remove.resolves();
+            registry.objectMap.set('doge1', mockObject);
+            let mockEventHandler = sinon.stub();
+            registry.on('resourceremoved', mockEventHandler);
+            return registry.remove('doge1')
+                .then(() => {
+                    sinon.assert.notCalled(mockDataCollection.get);
+                    sinon.assert.calledWith(mockDataCollection.remove, 'doge1');
+                    sinon.assert.calledOnce(mockEventHandler);
+                    sinon.assert.calledWith(mockEventHandler, {
+                        registry: registry,
+                        resourceID: 'doge1'
+                    });
+                });
+        });
+
+        it('should remove the resource from the cache if present', async () => {
+            mockDataCollection.remove.resolves();
+            registry.objectMap.set('doge1', mockObject);
+            let mockEventHandler = sinon.stub();
+            registry.on('resourceremoved', mockEventHandler);
+            await registry.remove('doge1');
+            registry.objectMap.has('doge1').should.be.false;
         });
 
         it('should throw if the access controller throws an exception', () => {

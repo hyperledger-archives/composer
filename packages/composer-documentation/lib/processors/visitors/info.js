@@ -455,7 +455,7 @@ class InfoVisitor {
         // If this is a top level schema, now we need to write it to disk.
         if (jsonSchema.$schema) {
 
-            //     let fileName = `${classDeclaration.getFullyQualifiedName()}.json`;
+            // let fileName = `${classDeclaration.getFullyQualifiedName()}.json`;
             let newInfo = {
                 'fqn': classDeclaration.getFullyQualifiedName(),
                 'name': jsonSchema.title,
@@ -465,8 +465,11 @@ class InfoVisitor {
                 'allproperties' :jsonSchema.allproperties,
                 'decorators': jsonSchema.decorators
             };
-
-            parameters.data[jsonSchema.type].push(newInfo);
+            let ns = classDeclaration.getNamespace();
+            if (!parameters.data[jsonSchema.type][ns]){
+                parameters.data[jsonSchema.type][ns]=[];
+            }
+            parameters.data[jsonSchema.type][ns].push(newInfo);
         }
 
         // Return the created schema.

@@ -25,7 +25,7 @@ Options:
   -v, --version          Show version number  [boolean]
   --card, -c             Name of the network card to use  [string] [required]
   --participantId, -a    The particpant to issue the new identity to  [string] [required]
-  --certificateFile, -c  File containing the certificate  [string] [required]
+  --certificateFile, -e  File containing the certificate  [string] [required]
 ```
 
 ## Options
@@ -35,12 +35,26 @@ Options:
 Name of the business network card to use.
 Example: `admin@sample-network`
 
-`--certificateFile, -c`
+`--certificateFile, -e`
 
-The path a file containing the certificate for the existing identity in PEM format.  
+The path a file containing the public certificate for the existing identity in PEM format.  
 Example: `/tmp/cert.pem`
 
 `--participantId, -a`
 
-The fully qualified identifier of the participant that the identity should be issued to.  
+The fully qualified identifier of the participant that the identity should be bound to.  
 Example: `resource:net.biz.digitalPropertyNetwork.Person#lenny@biznet.org`
+
+## Javascript API Example
+
+```javascript
+const IdentityBind = require('composer-cli').Identity.Bind;
+
+let options = {
+  card: 'admin@sample-network',
+  certificateFile: '/tmp/cert.pem',
+  participantId: 'resource:net.biz.digitalPropertyNetwork.Person#lenny@biznet.org'
+};
+
+IdentityBind.handler(options);
+```

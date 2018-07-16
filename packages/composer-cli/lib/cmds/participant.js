@@ -22,3 +22,5 @@ exports.builder = function (yargs) {
    .commandDir('participant');
 };
 exports.handler = function (argv) {};
+
+module.exports.Add = require('./participant/lib/add');

@@ -433,7 +433,7 @@ class AdminConnection {
      * @param {String} networkName - Name of the business network to start
      * @param {String} networkVersion - Version of the business network to start
      * @param {Object} [startOptions] connector specific start options
-     *                  networkAdmins:   [ { userName, certificate } , { userName, enrollmentSecret  }]
+     *                  networkAdmins:   [ { userName, certificate, privateKey } , { userName, enrollmentSecret  }]
      *
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed - with a MAP of cards key is name
@@ -463,22 +463,30 @@ class AdminConnection {
                 if (networkAdmins){
                     networkAdmins.forEach( (networkAdmin) =>{
 
-                        let metadata= {
+                        const metadata = {
                             version : 1,
                             userName : networkAdmin.userName,
                             businessNetwork : networkName
                         };
 
-                        let newCard;
-                        if (networkAdmin.enrollmentSecret ){
-                            metadata.enrollmentSecret = networkAdmin.enrollmentSecret ;
-                            newCard = new IdCard(metadata,connectionProfile);
-                        } else {
-                            newCard = new IdCard(metadata,connectionProfile);
-                            newCard.setCredentials({ certificate : networkAdmin.certificate });
+                        const enrollmentSecret = networkAdmin.enrollmentSecret;
+                        if (enrollmentSecret) {
+                            metadata.enrollmentSecret = enrollmentSecret;
                         }
-                        createdCards.set(networkAdmin.userName,newCard);
 
+                        const newCard = new IdCard(metadata, connectionProfile);
+
+                        const certificate = networkAdmin.certificate;
+                        if (certificate) {
+                            const credentials = { certificate: certificate };
+                            const privateKey = networkAdmin.privateKey;
+                            if (privateKey) {
+                                credentials.privateKey = privateKey;
+                            }
+                            newCard.setCredentials(credentials);
+                        }
+
+                        createdCards.set(networkAdmin.userName,newCard);
                     });
                 }
                 LOG.exit(method);

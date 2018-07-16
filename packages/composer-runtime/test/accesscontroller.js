@@ -380,6 +380,24 @@ describe('AccessController', () => {
                 .should.be.rejectedWith(AccessException, /does not have/);
         });
 
+        it('should reject with cyclic error if rule seen before', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (true) action: ALLOW}');
+
+             // pretend that we've been here before....
+            controller.aclRuleStack.push('R1/READ/org.acme.test.TestParticipant#P5678/org.acme.test.TestTransaction#T9012/');
+            return controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0]).
+            should.be.rejectedWith(/Cyclic ACL Rule detected/);
+        });
+
+        it('should reject with cyclic error if rule seen before - minimal data', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (true) action: ALLOW}');
+
+             // pretend that we've been here before....
+            controller.aclRuleStack.push('R1/READ///');
+            return controller.checkRule(asset, 'READ', null, null, aclManager.getAclRules()[0]).
+            should.be.rejectedWith(/Cyclic ACL Rule detected/);
+        });
+
     });
 
     describe('#matchNoun', () => {

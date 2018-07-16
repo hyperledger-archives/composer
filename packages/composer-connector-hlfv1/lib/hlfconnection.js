@@ -858,7 +858,7 @@ class HLFConnection extends Connection {
         LOG.entry(method, securityContext, functionName, args);
 
         if (!this.businessNetworkIdentifier) {
-            return Promise.reject(new Error('No business network has been specified for this connection'));
+            throw new Error('No business network has been specified for this connection');
         }
 
         // Check that a valid security context has been specified.
@@ -866,9 +866,9 @@ class HLFConnection extends Connection {
 
         // Validate all the arguments.
         if (!functionName) {
-            return Promise.reject(new Error('functionName not specified'));
+            throw new Error('functionName not specified');
         } else if (!Array.isArray(args)) {
-            return Promise.reject(new Error('args not specified'));
+            throw new Error('args not specified');
         }
         try {
             args.forEach((arg) => {
@@ -877,11 +877,13 @@ class HLFConnection extends Connection {
                 }
             });
         } catch(error) {
-            return Promise.reject(error);
+            throw error;
         }
 
         let txId = this.client.newTransactionID();
-        return this.queryHandler.queryChaincode(txId, functionName, args);
+        let result = await this.queryHandler.queryChaincode(txId, functionName, args);
+        LOG.exit(method, result ? result : null);
+        return result ? result : null;
     }
 
     /**
@@ -894,12 +896,20 @@ class HLFConnection extends Connection {
      * @return {Promise} A promise that is resolved once the chaincode function
      * has been invoked, or rejected with an error.
      */
-    invokeChainCode(securityContext, functionName, args, options) {
+    async invokeChainCode(securityContext, functionName, args, options = {}) {
         const method = 'invokeChainCode';
         LOG.entry(method, securityContext, functionName, args, options);
 
+        // If commit has been set to false, we do not want to order the transaction or wait for any events.
+        if (options.commit === false) {
+            LOG.debug(method, 'Commit has been set to false, deferring to queryChainCode instead');
+            const result = await this.queryChainCode(securityContext, functionName, args, options);
+            LOG.exit(method, result);
+            return result;
+        }
+
         if (!this.businessNetworkIdentifier) {
-            return Promise.reject(new Error('No business network has been specified for this connection'));
+            throw new Error('No business network has been specified for this connection');
         }
 
         // Check that a valid security context has been specified.
@@ -907,9 +917,9 @@ class HLFConnection extends Connection {
 
         // Validate all the arguments.
         if (!functionName) {
-            return Promise.reject(new Error('functionName not specified'));
+            throw new Error('functionName not specified');
         } else if (!Array.isArray(args)) {
-            return Promise.reject(new Error('args not specified'));
+            throw new Error('args not specified');
         }
 
         try {
@@ -919,68 +929,77 @@ class HLFConnection extends Connection {
                 }
             });
         } catch(error) {
-            return Promise.reject(error);
+            throw error;
         }
 
         let txId = this._validateTxId(options);
 
         let eventHandler;
 
-        // initialize the channel if it hasn't been initialized already otherwise verification will fail.
-        LOG.debug(method, 'loading channel configuration');
-        return this._initializeChannel()
-            .then(() => {
+        try {
 
-                // check the event hubs and reconnect if possible. Do it here as the connection attempts are asynchronous
-                this._checkEventhubs();
+            // initialize the channel if it hasn't been initialized already otherwise verification will fail.
+            LOG.debug(method, 'loading channel configuration');
+            await this._initializeChannel();
 
-                // Submit the transaction to the endorsers.
-                const request = {
-                    chaincodeId: this.businessNetworkIdentifier,
-                    txId: txId,
-                    fcn: functionName,
-                    args: args
-                };
-                return this.channel.sendTransactionProposal(request); // node sdk will target all peers on the channel that are endorsingPeer
-            })
-            .then((results) => {
-                // Validate the endorsement results.
-                LOG.debug(method, `Received ${results.length} result(s) from invoking the composer runtime chaincode`, results);
-                const proposalResponses = results[0];
-                let {validResponses} = this._validatePeerResponses(proposalResponses, true);
+            // check the event hubs and reconnect if possible. Do it here as the connection attempts are asynchronous
+            this._checkEventhubs();
 
-                // Submit the endorsed transaction to the primary orderers.
-                const proposal = results[1];
-                const header = results[2];
+            // Submit the transaction to the endorsers.
+            const request = {
+                chaincodeId: this.businessNetworkIdentifier,
+                txId: txId,
+                fcn: functionName,
+                args: args
+            };
+            const results = await this.channel.sendTransactionProposal(request); // node sdk will target all peers on the channel that are endorsingPeer
 
-                // check that we have a Chaincode listener setup and ready.
-                this._checkCCListener();
-                eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
-                eventHandler.startListening();
-                return this.channel.sendTransaction({
-                    proposalResponses: validResponses,
-                    proposal: proposal,
-                    header: header
-                });
-            })
-            .then((response) => {
-                // If the transaction was successful, wait for it to be committed.
-                LOG.debug(method, 'Received response from orderer', response);
+            // Validate the endorsement results.
+            LOG.debug(method, `Received ${results.length} result(s) from invoking the composer runtime chaincode`, results);
+            const proposalResponses = results[0];
+            let {validResponses} = this._validatePeerResponses(proposalResponses, true);
 
-                if (response.status !== 'SUCCESS') {
-                    eventHandler.cancelListening();
-                    throw new Error(`Failed to send peer responses for transaction '${txId.getTransactionID()}' to orderer. Response status '${response.status}'`);
-                }
-                return eventHandler.waitForEvents();
-            })
-            .then(() => {
-                LOG.exit(method);
-            })
-            .catch((error) => {
-                const newError = new Error('Error trying invoke business network. ' + error);
-                LOG.error(method, newError);
-                throw newError;
+            // Extract the response data, if any.
+            const firstValidResponse = validResponses[0];
+            let result = null;
+            if (firstValidResponse.response.payload && firstValidResponse.response.payload.length > 0) {
+                result = firstValidResponse.response.payload;
+                LOG.debug(method, `Response includes payload data of ${firstValidResponse.response.payload.length} bytes`);
+            } else {
+                LOG.debug(method, 'Response does not include payload data');
+            }
+
+            // Submit the endorsed transaction to the primary orderers.
+            const proposal = results[1];
+            const header = results[2];
+
+            // check that we have a Chaincode listener setup and ready.
+            this._checkCCListener();
+            eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
+            eventHandler.startListening();
+            const response = await this.channel.sendTransaction({
+                proposalResponses: validResponses,
+                proposal: proposal,
+                header: header
             });
+
+            // If the transaction was successful, wait for it to be committed.
+            LOG.debug(method, 'Received response from orderer', response);
+
+            if (response.status !== 'SUCCESS') {
+                eventHandler.cancelListening();
+                throw new Error(`Failed to send peer responses for transaction '${txId.getTransactionID()}' to orderer. Response status '${response.status}'`);
+            }
+            await eventHandler.waitForEvents();
+
+            LOG.exit(method, result);
+            return result;
+
+        } catch (error) {
+            const newError = new Error('Error trying invoke business network. ' + error);
+            LOG.error(method, newError);
+            throw newError;
+        }
     }
 
     /**

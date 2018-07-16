@@ -18,7 +18,6 @@ require('chai').should();
 const expect = require('chai').expect;
 const Globalize = require('./../../lib/globalize');
 const fs = require('fs');
-const ClassDeclaration = require('./../../lib/introspect/classdeclaration');
 const IllegalModelException = require('./../../lib/introspect/illegalmodelexception');
 const Factory = require('./../../lib/factory');
 const Serializer = require('./../../lib/serializer');
@@ -85,38 +84,6 @@ describe('Globalization', function() {
     });
 
     describe('#check ClassDeclaration messages are correct', function() {
-        it('check message in constructor()', function() {
-            let modelFileReq = Globalize.messageFormatter('classdeclaration-constructor-modelastreq');
-            modelFileReq(0).should.equal('ModelFile and AST are required to create a ClassDecl.');
-
-             // create and populate the ModelManager with a model file
-            const modelManager = new ModelManager();
-            let fileName = './test/data/model/composer.cto';
-            let file = fs.readFileSync(fileName, 'utf8');
-            file.should.not.be.null;
-            modelManager.addModelFile(file,fileName);
-
-            let modelFile = modelManager.getModelFile('composer');
-            modelFile.getNamespace().should.equal('composer');
-            let classDeclaration = modelFile.getType('composer.MyParticipant');
-            classDeclaration.should.not.be.undefined;
-
-            expect(function(){
-                new ClassDeclaration(true, classDeclaration.ast);
-            }).to.not.throw(IllegalModelException, 'ModelFile and AST are required to create a ClassDecl.');
-
-            expect(function(){
-                new ClassDeclaration(false, true);
-            }).to.throw(IllegalModelException, 'ModelFile and AST are required to create a ClassDecl.');
-
-            expect(function(){
-                new ClassDeclaration(true, false);
-            }).to.throw(IllegalModelException, 'ModelFile and AST are required to create a ClassDecl.');
-
-            expect(function(){
-                new ClassDeclaration(false, false);
-            }).to.throw(IllegalModelException, 'ModelFile and AST are required to create a ClassDecl.');
-        });
 
         it('check message in process()', function() {
             let formatter = Globalize('en').messageFormatter('classdeclaration-process-unrecmodelelem');

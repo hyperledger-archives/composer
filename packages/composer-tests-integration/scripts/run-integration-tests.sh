@@ -46,12 +46,15 @@ rm -rf ${HOME}/.composer/cards/charlie*
 rm -rf ${HOME}/.composer/client-data/charlie*
 rm -rf ${HOME}/.composer/cards/yaml*
 rm -rf ${HOME}/.composer/client-data/yaml*
+rm -rf ${HOME}/.composer/cards/lostmymarbles*
+rm -rf ${HOME}/.composer/client-data/lostmymarbles*
 rm -rf ./tmp/*           # temp folder for BNA files that are generated
 rm -rf ./my-empty-bus-net      # a business network created from generator
 rm -rf ./my-bus-net      # a business network created from generator
 rm -rf ./tutorial-network      # business network created from generator in dev tut
 rm -f ./networkadmin.card
 rm -f ./composer-report-*
+rm -rf ./my-angular-app
 rm -rf ./my-loopback-app
 
 # remove anything already there
@@ -217,6 +220,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ${HOME}/.npmrc
     rm -f ./networkadmin.card
     rm -f ./composer-report-*
+    rm -rf ./my-angular-app
     rm -rf ./my-loopback-app
     if [ "${DOCKER_FILE}" != "" ]; then
         cd ../composer-runtime-hlfv1

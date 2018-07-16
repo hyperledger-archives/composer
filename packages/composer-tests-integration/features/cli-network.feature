@@ -46,6 +46,97 @@ Feature: Cli network steps
         And The stdout information should include text matching /registryType: Asset/
         And The stdout information should include text matching /Command succeeded/
 
+    Scenario: Using the CLI, I can create a Participant
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit
+              --card admin@marbles-network
+              -d '{
+                  "$class": "org.hyperledger.composer.system.AddParticipant",
+                  "targetRegistry": "resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger_composer.marbles.Player",
+                  "resources": [{
+                    "$class": "org.hyperledger_composer.marbles.Player",
+                    "email": "bob",
+                    "firstName": "bob",
+                    "lastName": "bobby"
+                  }]
+                }'
+            """
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can create a second Participant
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit
+              --card admin@marbles-network
+              -d '{
+                  "$class": "org.hyperledger.composer.system.AddParticipant",
+                  "targetRegistry": "resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger_composer.marbles.Player",
+                  "resources": [{
+                    "$class": "org.hyperledger_composer.marbles.Player",
+                    "email": "sal",
+                    "firstName": "sal",
+                    "lastName": "sally"
+                  }]
+                }'
+            """
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can create an asset
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit
+              --card admin@marbles-network
+              -d '{
+                  "$class": "org.hyperledger.composer.system.AddAsset",
+                  "targetRegistry": "resource:org.hyperledger.composer.system.AssetRegistry#org.hyperledger_composer.marbles.Marble",
+                  "resources": [{
+                    "$class": "org.hyperledger_composer.marbles.Marble",
+                    "marbleId": "101",
+                    "size": "SMALL",
+                    "color": "RED",
+                    "owner": "resource:org.hyperledger_composer.marbles.Player#bob"
+                  }]
+                }'
+            """
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can execute a transaction from within the business network
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit
+              -c admin@marbles-network
+              -d '{
+                    "$class": "org.hyperledger_composer.marbles.TradeMarble",
+                    "marble": "resource:org.hyperledger_composer.marbles.Marble#101",
+                    "newOwner": "resource:org.hyperledger_composer.marbles.Player#sal"
+                }'
+            """
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can execute a transaction that returns data from within the business network
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit
+              -c admin@marbles-network
+              -d '{
+                    "$class": "org.hyperledger_composer.marbles.TradeMarbleWithReceipt",
+                    "marble": "resource:org.hyperledger_composer.marbles.Marble#101",
+                    "newOwner": "resource:org.hyperledger_composer.marbles.Player#bob"
+                }'
+            """
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /\$class:   org.hyperledger_composer.marbles.TradeReceipt/
+        And The stdout information should include text matching /marble:/
+        And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob/
+        And The stdout information should include text matching /oldOwner:/
+        And The stdout information should include text matching /newOwner:/
+        And The stdout information should include text matching /Command succeeded/
+
     Scenario: Using the CLI, I can update the network to a newer version
         Given I have the following folders
             | ../resources/sample-networks/marbles-network-update |
@@ -102,15 +193,65 @@ Feature: Cli network steps
             """
         Then The stdout information should include text matching /ALL_YOUR_BASE_ARE_BELONG_TO_US/
 
-    Scenario: Using the CLI, I can create new Assets by submitting transactions
+    Scenario: Using the CLI, I can create a new Participant
         When I run the following expected pass CLI command
             """
-            composer transaction submit --card admin@marbles-network -d '{"$class": "org.hyperledger.composer.system.AddAsset", "targetRegistry": "resource:org.hyperledger.composer.system.AssetRegistry#org.hyperledger_composer.marbles.NewMarble", "resources": [{"$class": "org.hyperledger_composer.marbles.NewMarble","marbleId": "101","size": "SMALL","color": "RED","owner": "resource:org.hyperledger_composer.marbles.Player#bob"}]}'
+            composer transaction submit
+              --card admin@marbles-network
+              -d '{
+                  "$class": "org.hyperledger.composer.system.AddParticipant",
+                  "targetRegistry": "resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger_composer.marbles.Player",
+                  "resources": [{
+                    "$class": "org.hyperledger_composer.marbles.Player",
+                    "email": "bob2",
+                    "firstName": "bob2",
+                    "lastName": "bobby2"
+                  }]
+                }'
             """
         Then The stdout information should include text matching /Transaction Submitted./
         And The stdout information should include text matching /Command succeeded/
 
-    Scenario: Using the CLI, I can check that the assets were created
+    Scenario: Using the CLI, I can create a second new Participant
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit
+              --card admin@marbles-network
+              -d '{
+                  "$class": "org.hyperledger.composer.system.AddParticipant",
+                  "targetRegistry": "resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger_composer.marbles.Player",
+                  "resources": [{
+                    "$class": "org.hyperledger_composer.marbles.Player",
+                    "email": "sal2",
+                    "firstName": "sal2",
+                    "lastName": "sally2"
+                  }]
+                }'
+            """
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can create a new Asset
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit
+              --card admin@marbles-network
+              -d '{
+                  "$class": "org.hyperledger.composer.system.AddAsset",
+                  "targetRegistry": "resource:org.hyperledger.composer.system.AssetRegistry#org.hyperledger_composer.marbles.NewMarble",
+                  "resources": [{
+                    "$class": "org.hyperledger_composer.marbles.NewMarble",
+                    "marbleId": "201",
+                    "size": "SMALL",
+                    "color": "RED",
+                    "owner": "resource:org.hyperledger_composer.marbles.Player#bob2"
+                  }]
+                }'
+            """
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can check that the Asset was created
         When I run the following expected pass CLI command
             """
             composer network list --card admin@marbles-network -r org.hyperledger_composer.marbles.NewMarble
@@ -126,20 +267,46 @@ Feature: Cli network steps
         And The stdout information should include text matching /name:         Asset registry for org.hyperledger_composer.marbles.NewMarble/
         And The stdout information should include text matching /registryType: Asset/
         And The stdout information should include text matching /assets: /
-        And The stdout information should include text matching /101: /
+        And The stdout information should include text matching /201: /
         And The stdout information should include text matching /\$class:   org.hyperledger_composer.marbles.NewMarble/
-        And The stdout information should include text matching /marbleId: 101/
+        And The stdout information should include text matching /marbleId: 201/
         And The stdout information should include text matching /size:     SMALL/
         And The stdout information should include text matching /color:    RED/
-        And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob/
+        And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob2/
         And The stdout information should include text matching /Command succeeded/
 
-    Scenario: Using the CLI, I can count the number of marbles
+    Scenario: Using the CLI, I can execute a transaction from within the new business network
         When I run the following expected pass CLI command
             """
-            composer network list --card admin@marbles-network -r org.hyperledger_composer.marbles.NewMarble |grep 'marbleId:'|wc -l
+            composer transaction submit
+              -c admin@marbles-network
+              -d '{
+                    "$class": "org.hyperledger_composer.marbles.TradeMarble",
+                    "marble": "resource:org.hyperledger_composer.marbles.NewMarble#201",
+                    "newOwner": "resource:org.hyperledger_composer.marbles.Player#sal2"
+                }'
             """
-        Then The stdout information should include text matching /1/
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can execute a transaction that returns data from within the new business network
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit
+              -c admin@marbles-network
+              -d '{
+                    "$class": "org.hyperledger_composer.marbles.TradeMarbleWithReceipt",
+                    "marble": "resource:org.hyperledger_composer.marbles.NewMarble#201",
+                    "newOwner": "resource:org.hyperledger_composer.marbles.Player#bob2"
+                }'
+            """
+        Then The stdout information should include text matching /Transaction Submitted./
+        And The stdout information should include text matching /\$class:   org.hyperledger_composer.marbles.TradeReceipt/
+        And The stdout information should include text matching /marble:/
+        And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob2/
+        And The stdout information should include text matching /oldOwner:/
+        And The stdout information should include text matching /newOwner:/
+        And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can reset the network to remove all assets
         When I run the following expected pass CLI command

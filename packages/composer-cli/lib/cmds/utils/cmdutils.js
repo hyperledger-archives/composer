@@ -99,22 +99,28 @@ class CmdUtil {
     /**
      * Parse the business network administrators which have been specified using certificate files.
      * @param {string[]} networkAdmins Identity names for the business network administrators.
-     * @param {string[]} networkAdminCertificateFiles Certificate files for the business network administrators.
+     * @param {string[]} certificateFiles Certificate files for the business network administrators.
+     * @param {string[]} privateKeyFiles Private key files for the business network administrators.
      * @return {Object[]} The business network administrators.
      */
-    static parseNetworkAdminsWithCertificateFiles(networkAdmins, networkAdminCertificateFiles) {
+    static parseNetworkAdminsWithCertificateFiles(networkAdmins, certificateFiles, privateKeyFiles) {
 
         // Go through each network admin.
         return networkAdmins.map((networkAdmin, index) => {
 
             // Load the specified certificate for the network admin.
-            const certificateFile = networkAdminCertificateFiles[index];
-            const certificate = fs.readFileSync(certificateFile, { encoding: 'utf8' });
-            return {
+            const certificate = fs.readFileSync(certificateFiles[index], { encoding: 'utf8' });
+            const networkAdminInfo = {
                 userName: networkAdmin,
-                certificate
+                certificate: certificate
             };
 
+            const privateKeyFile = privateKeyFiles[index];
+            if (privateKeyFile) {
+                networkAdminInfo.privateKey = fs.readFileSync(privateKeyFile, { encoding: 'utf8' });
+            }
+
+            return networkAdminInfo;
         });
 
     }
@@ -151,6 +157,7 @@ class CmdUtil {
         // Convert the arguments into arrays.
         const networkAdmins = CmdUtil.arrayify(argv.networkAdmin);
         const networkAdminCertificateFiles = CmdUtil.arrayify(argv.networkAdminCertificateFile);
+        const networkAdminPrivateKeyFiles = CmdUtil.arrayify(argv.networkAdminPrivateKeyFile);
         const networkAdminEnrollSecrets = CmdUtil.arrayify(argv.networkAdminEnrollSecret);
         const files = CmdUtil.arrayify(argv.file);
 
@@ -167,7 +174,7 @@ class CmdUtil {
         // Check that enough certificate files have been specified.
         let result;
         if (networkAdmins.length === networkAdminCertificateFiles.length) {
-            result = CmdUtil.parseNetworkAdminsWithCertificateFiles(networkAdmins, networkAdminCertificateFiles);
+            result = CmdUtil.parseNetworkAdminsWithCertificateFiles(networkAdmins, networkAdminCertificateFiles, networkAdminPrivateKeyFiles);
         }
 
         // Check that enough enrollment secrets have been specified.

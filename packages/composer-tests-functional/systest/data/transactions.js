@@ -386,3 +386,151 @@ function handleTheTransactionUsingUtilityFunctions(transaction) {
 function utilityFunc2(transaction) {
     return utilityFuncB(transaction);
 }
+
+/**
+ * Handle a transaction that returns a concept.
+ * @param {systest.transactions.TransactionThatReturnsConcept} transaction The transaction
+ * @return {systest.transactions.TransactionReceipt} The transaction receipt
+ * @transaction
+ */
+async function transactionThatReturnsConcept(transaction) {
+    const concept = getFactory().newConcept('systest.transactions', 'TransactionReceipt');
+    concept.value = transaction.value;
+    return concept;
+}
+
+/**
+ * Handle a transaction that returns a concept array.
+ * @param {systest.transactions.TransactionThatReturnsConceptArray} transaction The transaction
+ * @return {systest.transactions.TransactionReceipt} The transaction receipt array
+ * @transaction
+ */
+async function transactionThatReturnsConceptArray(transaction) {
+    const concept1 = getFactory().newConcept('systest.transactions', 'TransactionReceipt');
+    concept1.value = transaction.value + '1';
+    const concept2 = getFactory().newConcept('systest.transactions', 'TransactionReceipt');
+    concept2.value = transaction.value + '2';
+    return [concept1, concept2];
+}
+
+/**
+ * Handle a transaction that returns a date/time.
+ * @param {systest.transactions.TransactionThatReturnsDateTime} transaction The transaction
+ * @return {Date} The date/time
+ * @transaction
+ */
+async function transactionThatReturnsDateTime(transaction) {
+    return transaction.value;
+}
+
+/**
+ * Handle a transaction that returns a integer.
+ * @param {systest.transactions.TransactionThatReturnsInteger} transaction The transaction
+ * @return {number} The integer
+ * @transaction
+ */
+async function transactionThatReturnsInteger(transaction) {
+    return transaction.value;
+}
+
+/**
+ * Handle a transaction that returns a long.
+ * @param {systest.transactions.TransactionThatReturnsLong} transaction The transaction
+ * @return {number} The long
+ * @transaction
+ */
+async function transactionThatReturnsLong(transaction) {
+    return transaction.value;
+}
+
+/**
+ * Handle a transaction that returns a double.
+ * @param {systest.transactions.TransactionThatReturnsDouble} transaction The transaction
+ * @return {number} The double
+ * @transaction
+ */
+async function transactionThatReturnsDouble(transaction) {
+    return transaction.value;
+}
+
+/**
+ * Handle a transaction that returns a double array.
+ * @param {systest.transactions.TransactionThatReturnsDoubleArray} transaction The transaction
+ * @return {number} The double array
+ * @transaction
+ */
+async function transactionThatReturnsDoubleArray(transaction) {
+    return [transaction.value + 1, transaction.value + 2];
+}
+
+/**
+ * Handle a transaction that returns a boolean.
+ * @param {systest.transactions.TransactionThatReturnsBoolean} transaction The transaction
+ * @return {boolean} The boolean
+ * @transaction
+ */
+async function transactionThatReturnsBoolean(transaction) {
+    return transaction.value;
+}
+
+/**
+ * Handle a transaction that returns a string.
+ * @param {systest.transactions.TransactionThatReturnsString} transaction The transaction
+ * @return {string} The string
+ * @transaction
+ */
+async function transactionThatReturnsString(transaction) {
+    return transaction.value;
+}
+
+/**
+ * Handle a transaction that returns a string array.
+ * @param {systest.transactions.TransactionThatReturnsStringArray} transaction The transaction
+ * @return {string[]} The string array
+ * @transaction
+ */
+async function transactionThatReturnsStringArray(transaction) {
+    return [transaction.value + '1', transaction.value + '2'];
+}
+
+/**
+ * Handle a transaction that returns a enum.
+ * @param {systest.transactions.TransactionThatReturnsEnum} transaction The transaction
+ * @return {systest.transactions.SimpleEnum} The enum
+ * @transaction
+ */
+async function transactionThatReturnsEnum(transaction) {
+    return 'WOW';
+}
+
+/**
+ * Handle a transaction that returns a enum array.
+ * @param {systest.transactions.TransactionThatReturnsEnumArray} transaction The transaction
+ * @return {systest.transactions.SimpleEnum[]} The enum array
+ * @transaction
+ */
+async function transactionThatReturnsEnumArray(transaction) {
+    return ['SUCH', 'MANY'];
+}
+
+/**
+ * Handle a transaction with @commit(true).
+ * @param {systest.transactions.TransactionWithCommitTrue} transaction The transaction
+ * @transaction
+ */
+async function transactionWithCommitTrue(transaction) {
+    const assetRegistry = await getAssetRegistry('systest.transactions.SimpleStringAsset');
+    const factory = getFactory();
+    const asset  = factory.newResource('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+    asset.stringValue = transaction.stringValue;
+    await assetRegistry.add(asset);
+}
+
+/**
+ * Handle a transaction with @commit(false).
+ * @param {systest.transactions.TransactionWithCommitFalse} transaction The transaction
+ * @transaction
+ */
+async function transactionWithCommitFalse(transaction) {
+    await transactionWithCommitTrue(transaction);
+}

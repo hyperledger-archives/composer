@@ -39,3 +39,16 @@ Example: `admin@tutorial-network`
 The serialized JSON representation of the participant to add to the participant registry. The data must be valid according to the model of the participant.  
 
 Example: `'{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'`
+
+## Javascript API Example
+
+``` javascript
+const ParticipantAdd = require('composer-cli').Participant.Add;
+
+let options = {
+  card: 'admin@tutorial-network',
+  data: '{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'
+};
+
+ParticipantAdd.handler(options);
+```

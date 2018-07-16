@@ -58,3 +58,17 @@ Identifier:digitalproperty-network@0.0.1
 Written Business Network Definition Archive file to digitalproperty-network@0.0.1.bna
 Command completed successfully.
 ```
+
+## Javascript API Example
+
+```javascript
+const ArchiveCreate = require('composer-cli').Archive.Create;
+
+let options = {
+  sourceType: 'dir',
+  sourceName: '.',
+  archiveFile: 'dist/digitalproperty-network.bna'
+};
+
+ArchiveCreate.handler(options);
+```

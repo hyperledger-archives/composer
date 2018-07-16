@@ -32,3 +32,11 @@ npm install -g composer-report
 ```
 
 Once installed, running `composer-report` will create a report archive in the current directory in the same way as the full `composer report` command.
+
+## Javascript API Example
+
+``` javascript
+const Report = require('composer-cli').Report.Report;
+
+Report.handler();
+```

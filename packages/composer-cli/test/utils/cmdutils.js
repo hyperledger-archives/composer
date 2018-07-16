@@ -31,9 +31,12 @@ chai.use(require('chai-as-promised'));
 
 describe('composer transaction cmdutils unit tests', () => {
 
-    const pem1 = '-----BEGIN CERTIFICATE-----\nsuch admin1\n-----END CERTIFICATE-----\n';
-    const pem2 = '-----BEGIN CERTIFICATE-----\nsuch admin2\n-----END CERTIFICATE-----\n';
-    const pem3 = '-----BEGIN CERTIFICATE-----\nsuch admin3\n-----END CERTIFICATE-----\n';
+    const cert1 = '-----BEGIN CERTIFICATE-----\nsuch admin1\n-----END CERTIFICATE-----\n';
+    const cert2 = '-----BEGIN CERTIFICATE-----\nsuch admin2\n-----END CERTIFICATE-----\n';
+    const cert3 = '-----BEGIN CERTIFICATE-----\nsuch admin3\n-----END CERTIFICATE-----\n';
+
+    const key1 = '-----BEGIN PRIVATE KEY-----\nsuch admin1\n-----END PRIVATE KEY-----\n';
+    const key2 = '-----BEGIN PRIVATE KEY-----\nsuch admin2\n-----END PRIVATE KEY-----\n';
 
     let sandbox;
     let fsStub;
@@ -41,9 +44,12 @@ describe('composer transaction cmdutils unit tests', () => {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         fsStub = sandbox.stub(fs, 'readFileSync');
-        fs.readFileSync.withArgs('admin1.pem').returns(pem1);
-        fs.readFileSync.withArgs('admin2.pem').returns(pem2);
-        fs.readFileSync.withArgs('admin3.pem').returns(pem3);
+        fsStub.withArgs('admin1-pub.pem').returns(cert1);
+        fsStub.withArgs('admin2-pub.pem').returns(cert2);
+        fsStub.withArgs('admin3-pub.pem').returns(cert3);
+        fsStub.withArgs('admin1-priv.pem').returns(key1);
+        fsStub.withArgs('admin2-priv.pem').returns(key2);
+        fsStub.withArgs('admin3-priv.pem').throws('Tried to read admin3-priv.pem');
     });
 
 
@@ -167,24 +173,30 @@ describe('composer transaction cmdutils unit tests', () => {
     describe('#parseNetworkAdminsWithCertificateFiles', () => {
 
         it('should parse a single network admin', () => {
-            const result = CmdUtil.parseNetworkAdminsWithCertificateFiles(['admin1'], ['admin1.pem']);
+            const result = CmdUtil.parseNetworkAdminsWithCertificateFiles(['admin1'], ['admin1-pub.pem'], ['admin1-priv.pem']);
             result.should.deep.equal([{
                 userName: 'admin1',
-                certificate: pem1
+                certificate: cert1,
+                privateKey: key1
             }]);
         });
 
         it('should parse multiple network admins', () => {
-            const result = CmdUtil.parseNetworkAdminsWithCertificateFiles(['admin1', 'admin2', 'admin3'], ['admin1.pem', 'admin2.pem', 'admin3.pem']);
+            const result = CmdUtil.parseNetworkAdminsWithCertificateFiles(
+                ['admin1', 'admin2', 'admin3'],
+                ['admin1-pub.pem', 'admin2-pub.pem', 'admin3-pub.pem'],
+                ['admin1-priv.pem', 'admin2-priv.pem']);
             result.should.deep.equal([{
                 userName: 'admin1',
-                certificate: pem1
+                certificate: cert1,
+                privateKey: key1
             }, {
                 userName: 'admin2',
-                certificate: pem2
+                certificate: cert2,
+                privateKey: key2
             }, {
                 userName: 'admin3',
-                certificate: pem3
+                certificate: cert3
             }]);
         });
 
@@ -227,21 +239,45 @@ describe('composer transaction cmdutils unit tests', () => {
             (() => {
                 CmdUtil.parseNetworkAdmins({
                     networkAdmin: ['admin1'],
-                    networkAdminCertificateFile: [pem1],
+                    networkAdminCertificateFile: ['admin1-pub.pem'],
                     networkAdminEnrollSecret: [true]
                 });
             }).should.throw(/You cannot specify both certificate files and enrollment secrets for network administrators/);
         });
 
-        it('should handle certificates', () => {
+        it('should handle certificate without private key', () => {
             const result = CmdUtil.parseNetworkAdmins({
                 networkAdmin: ['admin1'],
-                networkAdminCertificateFile: ['admin1.pem']
+                networkAdminCertificateFile: ['admin1-pub.pem']
             });
             result.should.deep.equal([{
                 userName: 'admin1',
-                certificate: pem1
+                certificate: cert1
             }]);
+        });
+
+        it('should handle certificate with private key', () => {
+            const result = CmdUtil.parseNetworkAdmins({
+                networkAdmin: ['admin1'],
+                networkAdminCertificateFile: ['admin1-pub.pem'],
+                networkAdminPrivateKeyFile: ['admin1-priv.pem']
+            });
+            result.should.deep.equal([
+                { userName: 'admin1', certificate: cert1, privateKey: key1 }
+            ]);
+        });
+
+        it('should handle more certificates than private keys', () => {
+            const result = CmdUtil.parseNetworkAdmins({
+                networkAdmin: ['admin1', 'admin2', 'admin3'],
+                networkAdminCertificateFile: ['admin1-pub.pem', 'admin2-pub.pem', 'admin3-pub.pem'],
+                networkAdminPrivateKeyFile: ['admin1-priv.pem', 'admin2-priv.pem']
+            });
+            result.should.deep.equal([
+                { userName: 'admin1', certificate: cert1, privateKey: key1 },
+                { userName: 'admin2', certificate: cert2, privateKey: key2 },
+                { userName: 'admin3', certificate: cert3 }
+            ]);
         });
 
         it('should handle secrets', () => {
@@ -259,7 +295,7 @@ describe('composer transaction cmdutils unit tests', () => {
             (() => {
                 CmdUtil.parseNetworkAdmins({
                     networkAdmin: ['admin1', 'admin2', 'admin3'],
-                    networkAdminCertificateFile: [pem1]
+                    networkAdminCertificateFile: ['admin1-pub.pem']
                 });
             }).should.throw(/You must specify certificate files or enrollment secrets for all network administrators/);
         });
@@ -311,12 +347,14 @@ describe('composer transaction cmdutils unit tests', () => {
         it('should handle certificates amd file names', () => {
             const result = CmdUtil.parseNetworkAdmins({
                 networkAdmin: ['admin1'],
-                networkAdminCertificateFile: ['admin1.pem'],
+                networkAdminCertificateFile: ['admin1-pub.pem'],
+                networkAdminPrivateKeyFile: ['admin1-priv.pem'],
                 file: ['admin1-doggo.card']
             });
             result.should.deep.equal([{
                 userName: 'admin1',
-                certificate: pem1,
+                certificate: cert1,
+                privateKey: key1,
                 file: 'admin1-doggo.card'
             }]);
         });

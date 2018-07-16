@@ -17,6 +17,7 @@
 const AclFile = require('./acl/aclfile');
 const AclManager = require('./aclmanager');
 const BusinessNetworkMetadata = require('./businessnetworkmetadata');
+const CommitDecoratorFactory = require('./commitdecoratorfactory');
 const fs = require('fs');
 const fsPath = require('path');
 const Introspector = require('./introspect/introspector');
@@ -26,10 +27,10 @@ const minimatch = require('minimatch');
 const ModelManager = require('./modelmanager');
 const QueryFile = require('./query/queryfile');
 const QueryManager = require('./querymanager');
+const ReturnsDecoratorFactory = require('./returnsdecoratorfactory');
 const ScriptManager = require('./scriptmanager');
 const semver = require('semver');
 const thenify = require('thenify');
-const util = require('util');
 
 const ENCODING = 'utf8';
 const LOG = Logger.getLog('BusinessNetworkDefinition');
@@ -115,6 +116,8 @@ class BusinessNetworkDefinition {
         }
 
         this.modelManager = new ModelManager();
+        this.modelManager.addDecoratorFactory(new CommitDecoratorFactory());
+        this.modelManager.addDecoratorFactory(new ReturnsDecoratorFactory());
         this.factory = this.modelManager.getFactory();
         this.serializer = this.modelManager.getSerializer();
         this.aclManager = new AclManager(this.modelManager);
@@ -717,8 +720,6 @@ class BusinessNetworkDefinition {
             mode: createFileMode
         };
 
-        const writeFile = util.promisify(fs.writeFile);
-
         const promises = [];
 
         for (let fileEntry of this._getAllArchiveFiles()) {
@@ -728,7 +729,7 @@ class BusinessNetworkDefinition {
             const filePath = fsPath.resolve(directoryPath, ...fileNameParts);
             const dirname = fsPath.dirname(filePath);
             const writeFilePromise = mkdirp(dirname, mkdirpOptions)
-                .then(() => writeFile(filePath, fileContent, writeFileOptions));
+                .then(() => fs.writeFileSync(filePath, fileContent, writeFileOptions));
             promises.push(writeFilePromise);
         }
 

@@ -32,27 +32,30 @@ class WebDataService extends PouchDBDataService {
      * Get a new data service for storing network (blockchain) data.
      * @param {String} containerName Name of the runtime container.
      * @param {boolean} [autocommit] true if the data service should be auto-commit; otherwise false.
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      * @return {DataService} the data service.
      */
-    static newNetworkDataService(containerName, autocommit = false) {
-        return new WebDataService(containerName, autocommit);
+    static newNetworkDataService(containerName, autocommit = false, additionalConnectorOptions = {}) {
+        return new WebDataService(containerName, autocommit, additionalConnectorOptions);
     }
 
     /**
      * Get the top-level Composer data service.
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      * @return {DataService} the data service.
      */
-    static newComposerDataService() {
-        return new WebDataService(null, true);
+    static newComposerDataService(additionalConnectorOptions = {}) {
+        return new WebDataService(null, true, additionalConnectorOptions);
     }
 
     /**
      * Constructor.
      * @param {string} [uuid] The UUID of the container.
      * @param {boolean} [autocommit] Should this data service auto commit?
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      */
-    constructor(uuid, autocommit) {
-        super(uuid, autocommit);
+    constructor(uuid, autocommit, additionalConnectorOptions = {}) {
+        super(uuid, autocommit, null, additionalConnectorOptions);
         const method = 'constructor';
         LOG.entry(method, uuid, autocommit);
         LOG.exit(method);

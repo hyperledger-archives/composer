@@ -12,8 +12,8 @@
     limitations under the License.
 #}
 # Asset Model
-
-{% for asset in types.asset %}
+{% for id,assets in types.asset %}
+{% for asset in assets %}
 #### {{asset.name}}
 **{{asset.fqn}}** - **{{asset.description}}**
 
@@ -26,6 +26,7 @@
 {{ asset.decorators[extra] }}
 {% endfor %}
 
+{% endfor %}
 {% endfor %}
 
 

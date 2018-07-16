@@ -36,7 +36,7 @@ import 'codemirror/addon/scroll/simplescrollbars';
 })
 export class EditorFileComponent implements DoCheck {
 
-    @Output() packageJsonVersionChange = new EventEmitter<string>();
+    @Output() packageJsonVersionChange = new EventEmitter<object>();
 
     private changingCurrentFile: boolean = false;
     private code: string = null;
@@ -102,20 +102,16 @@ export class EditorFileComponent implements DoCheck {
     }
 
     ngDoCheck() {
-        let versionChange;
-
         if (this._editorFile && this._editorFile.isPackage()) {
-            const version = JSON.parse(this._editorFile.getContent()).version;
-            if (this.previousPackageVersion !== version) {
-                this.previousPackageVersion = version;
-                versionChange = true;
+            try {
+                const version = JSON.parse(this._editorFile.getContent()).version;
+                if (this.previousPackageVersion !== version) {
+                    this.previousPackageVersion = version;
+                    this.loadFile();
+                }
+            } catch (err) {
+                // package.json is in error do nothing
             }
-        } else {
-            versionChange = false;
-        }
-
-        if (versionChange) {
-            this.loadFile();
         }
     }
 
@@ -203,12 +199,15 @@ export class EditorFileComponent implements DoCheck {
             } else if (this._editorFile.isPackage()) {
                 type = 'package';
                 let version;
+                let jsonErr;
                 try {
                     version = JSON.parse(this.editorContent).version;
+                    jsonErr = false;
                 } catch (syntaxError) {
-                    version = '';
+                    version = null;
+                    jsonErr = true;
                 }
-                this.packageJsonVersionChange.emit(version);
+                this.packageJsonVersionChange.emit({version: version, jsonErr: jsonErr});
             } else if (this._editorFile.isReadMe()) {
                 type = 'readme';
                 this.previewContent = marked(this.editorContent);

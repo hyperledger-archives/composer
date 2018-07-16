@@ -15,13 +15,13 @@
 'use strict';
 
 const { BusinessNetworkDefinition } = require('composer-common');
-const ConnectionManager = require('composer-common').ConnectionManager;
+const ProxyConnectionManager = require('../lib/proxyconnectionmanager');
 const ProxyConnection = require('../lib/proxyconnection');
 const ProxySecurityContext = require('../lib/proxysecuritycontext');
 const serializerr = require('serializerr');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
@@ -42,7 +42,7 @@ describe('ProxyConnection', () => {
     let mockSecurityContext;
 
     beforeEach(() => {
-        mockConnectionManager = sinon.createStubInstance(ConnectionManager);
+        mockConnectionManager = sinon.createStubInstance(ProxyConnectionManager);
         mockSocket = {
             emit: sinon.stub(),
             removeListener: sinon.stub()
@@ -60,6 +60,8 @@ describe('ProxyConnection', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
                     sinon.assert.calledWith(mockSocket.emit, '/api/connectionDisconnect', connectionID, sinon.match.func);
+                    sinon.assert.calledOnce(mockConnectionManager.disconnect);
+                    sinon.assert.calledWith(mockConnectionManager.disconnect, connection.connectionID);
                     mockSocket.removeListener.withArgs('events', sinon.match.func).yield();
                 });
         });
@@ -183,7 +185,17 @@ describe('ProxyConnection', () => {
         const functionName = 'func1';
         const args = [ 'arg1', 'arg2', 'arg3' ];
 
-        it('should send a queryChainCode call to the connector server', () => {
+        it('should send a queryChainCode call to the connector server that does not return data', () => {
+            mockSocket.emit.withArgs('/api/connectionQueryChainCode', connectionID, securityContextID, functionName, args, sinon.match.func).yields(null, null);
+            return connection.queryChainCode(mockSecurityContext, functionName, args)
+                .then((result) => {
+                    sinon.assert.calledOnce(mockSocket.emit);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionQueryChainCode', connectionID, securityContextID, functionName, args, sinon.match.func);
+                    should.equal(result, null);
+                });
+        });
+
+        it('should send a queryChainCode call to the connector server that does return data', () => {
             mockSocket.emit.withArgs('/api/connectionQueryChainCode', connectionID, securityContextID, functionName, args, sinon.match.func).yields(null, 'hello world');
             return connection.queryChainCode(mockSecurityContext, functionName, args)
                 .then((result) => {
@@ -207,12 +219,24 @@ describe('ProxyConnection', () => {
         const functionName = 'func1';
         const args = [ 'arg1', 'arg2', 'arg3' ];
 
-        it('should send a invokeChainCode call to the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, sinon.match.any, sinon.match.func).yields(null);
+        it('should send a invokeChainCode call to the connector server that does not return data', () => {
+            mockSocket.emit.withArgs('/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, sinon.match.any, sinon.match.func).yields(null, null);
             return connection.invokeChainCode(mockSecurityContext, functionName, args, {})
-                .then(() => {
+                .then((result) => {
                     sinon.assert.calledOnce(mockSocket.emit);
                     sinon.assert.calledWith(mockSocket.emit, '/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, {}, sinon.match.func);
+                    should.equal(result, null);
+                });
+        });
+
+        it('should send a invokeChainCode call to the connector server that does return data', () => {
+            mockSocket.emit.withArgs('/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, sinon.match.any, sinon.match.func).yields(null, 'hello world');
+            return connection.invokeChainCode(mockSecurityContext, functionName, args, {})
+                .then((result) => {
+                    sinon.assert.calledOnce(mockSocket.emit);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, {}, sinon.match.func);
+                    Buffer.isBuffer(result).should.be.true;
+                    Buffer.from('hello world').compare(result).should.equal(0);
                 });
         });
 

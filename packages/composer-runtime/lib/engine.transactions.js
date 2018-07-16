@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Logger = require('composer-common').Logger;
+const { Logger, Typed } = require('composer-common');
 const util = require('util');
 const LOG = Logger.getLog('EngineTransactions');
 
@@ -53,7 +53,7 @@ class EngineTransactions {
         // transaction registry, and is the one in the context (for adding log entries).
         LOG.debug(method, 'Parsing transaction from parsed JSON object');
         const transaction = context.getSerializer().fromJSON(transactionData);
-        const txClass = transaction.getFullyQualifiedType();
+        const transactionFQT = transaction.getFullyQualifiedType();
 
         // Store the transaction in the context.
         context.setTransaction(transaction);
@@ -61,14 +61,14 @@ class EngineTransactions {
         // Get the transaction and historian registries
         let registryManager = context.getRegistryManager();
 
-        LOG.debug(method, 'Getting default transaction registry for ' + txClass);
-        const txRegistry = await registryManager.get('Transaction', txClass);
+        LOG.debug(method, 'Getting default transaction registry for ' + transactionFQT);
+        const txRegistry = await registryManager.get('Transaction', transactionFQT);
 
         LOG.debug(method, 'Getting historian registry');
         const historian = await registryManager.get('Asset', 'org.hyperledger.composer.system.HistorianRecord');
 
         // Form the historian record
-        const record = await this.createHistorianRecord(transaction, context);
+        const record = this._createHistorianRecord(context, transaction);
 
         // check that we can add to both these registries ahead of time
         LOG.debug(method, 'Validating ability to create in Transaction and Historian registries');
@@ -79,68 +79,77 @@ class EngineTransactions {
             throw canTxAdd ? canTxAdd : canHistorianAdd;
         }
 
+        // Execute the transaction.
+        const returnValue = await this._executeTransaction(context, transaction);
+
+        // Store the transaction in the transaction registry.
+        LOG.debug(method, 'Storing executed transaction in Transaction registry');
+        await txRegistry.add(transaction, {noTest: true});
+
+        // Update the historian record before we store it.
+        this._updateHistorianRecord(context, record);
+
+        // Store the historian record in the historian registry.
+        LOG.debug(method, 'Storing Historian record in Historian registry');
+        await historian.add(record, {noTest: true});
+
+        context.clearTransaction();
+        LOG.exit(method, returnValue);
+        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        return returnValue;
+    }
+
+    /**
+     * Execute the transaction transaction processor functions for a transaction.
+     * @param {Context} context The request context.
+     * @param {Resource} transaction The transaction.
+     * @return {*} The return value if there was one.
+     */
+    async _executeTransaction(context, transaction) {
+        const method = 'executeTransaction';
+        LOG.entry(method, context, transaction);
+        const t0 = Date.now();
+
         // Resolve the users copy of the transaction.
         LOG.debug(method, 'Resolving transaction', transaction);
         const resolvedTransaction = await context.getResolver().resolve(transaction);
 
         // Execute any system transaction processor functions.
-        let count = 0;
-        let totalCount = 0;
+        let totalExecuted = 0;
         for (let transactionHandler of context.getTransactionHandlers()) {
-            count = await transactionHandler.execute(context.getApi(), resolvedTransaction);
-            totalCount += count;
+            const executed = await transactionHandler.execute(context.getApi(), resolvedTransaction);
+            totalExecuted += executed;
         }
 
         // Execute any user transaction processor functions.
-        count = await context.getCompiledScriptBundle().execute(context.getApi(), resolvedTransaction);
-        totalCount += count;
+        const { executed, returnValues } = await context.getCompiledScriptBundle().execute(context.getApi(), resolvedTransaction);
+        totalExecuted += executed;
 
         // Check that a transaction processor function was executed.
-        if (totalCount === 0) {
+        if (totalExecuted === 0) {
             const error = new Error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
             LOG.error(method, error);
             LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw error;
         }
 
-        // Store the transaction in the transaction registry.
-        LOG.debug(method, 'Storing executed transaction in Transaction registry');
-        await txRegistry.add(transaction, {noTest: true});
-
-        // Get the events that are generated - getting these as Resources - and add to the historian record
-        let evtSvr = context.getEventService();
-        record.eventsEmitted = [];
-
-        if(evtSvr) {
-            let s = evtSvr.getEvents();
-            if (s) {
-                s.forEach((element) => {
-                    let r = context.getSerializer().fromJSON(element);
-                    record.eventsEmitted.push(r);
-                } );
-            }
-        }
-
-        // Store the transaction in the historian registry.
-        LOG.debug(method, 'Storing Historian record in Historian registry');
-        await historian.add(record, {noTest: true});
-
-        context.clearTransaction();
-        LOG.exit(method);
+        // Handle the return values.
+        const returnValue = this._processReturnValues(context, transaction, returnValues);
         LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
-        return Promise.resolve();
+        LOG.exit(method, returnValue);
+        return returnValue;
     }
 
     /**
      * Creates the Historian Record for a given transaction
-     * @param {Transaction} transaction originally submitted transaction
      * @param {Context} context of the transaction
-     * @return {Promise} resolved with the Historian Record
+     * @param {Transaction} transaction originally submitted transaction
+     * @return {Resource} resolved with the Historian Record
      * @private
      */
-    createHistorianRecord(transaction,context) {
+    _createHistorianRecord(context, transaction) {
         const method = 'createHistorianRecord';
-        LOG.entry(method,transaction,context);
+        LOG.entry(method, context, transaction);
         const t0 = Date.now();
 
         // For reference the historian record looks like this
@@ -182,7 +191,275 @@ class EngineTransactions {
 
         LOG.exit(method);
         LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
-        return Promise.resolve(record);
+        return record;
+    }
+
+    /**
+     * Updates the Historian Record for a given transaction after it has executed
+     * @param {Context} context of the transaction
+     * @param {Resource} record the historian record
+     * @private
+     */
+    _updateHistorianRecord(context, record) {
+
+        // Get the events that are generated - getting these as Resources - and add to the historian record
+        const eventService = context.getEventService();
+        record.eventsEmitted = [];
+        eventService.getEvents().forEach((element) => {
+            const r = context.getSerializer().fromJSON(element);
+            record.eventsEmitted.push(r);
+        } );
+
+    }
+
+    /**
+     * Process all return values returned by a transaction processor function for a transaction.
+     * @param {Context} context The request context.
+     * @param {Resource} transaction The transaction.
+     * @param {*} returnValues The return values.
+     * @return {*} The return value if there was one.
+     */
+    _processReturnValues(context, transaction, returnValues) {
+        const method = 'processReturnValues';
+        LOG.entry(method, context, transaction, returnValues);
+
+        // Determine whether or not a result was expected.
+        const transactionDeclaration = transaction.getClassDeclaration();
+        const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        if (!returnsDecorator) {
+            LOG.exit(method, undefined);
+            return undefined;
+        }
+
+        // Find all results that aren't undefined.
+        const filteredReturnValues = returnValues.filter(result => result !== undefined);
+
+        // Ensure one, and only one result was returned.
+        if (filteredReturnValues.length === 0) {
+            const error = new Error(`A return value of type ${returnsDecorator.getType()} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but nothing was returned by any functions`);
+            LOG.error(method, error);
+            throw error;
+        } else if (filteredReturnValues.length !== 1) {
+            const error = new Error(`A return value of type ${returnsDecorator.getType()} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but more than one function returned a value`);
+            LOG.error(method, error);
+            throw error;
+        }
+        const actualReturnValue = filteredReturnValues[0];
+
+        // Handle enum return values.
+        if (returnsDecorator.isTypeEnum()) {
+            const result = this._processEnumReturnValue(context, transaction, actualReturnValue);
+            LOG.exit(method, result);
+            return result;
+        }
+
+        // Handle non-primitive return values.
+        if (!returnsDecorator.isPrimitive()) {
+            const result = this._processComplexReturnValue(context, transaction, actualReturnValue);
+            LOG.exit(method, result);
+            return result;
+        }
+
+        // Handle primitive return values.
+        const result = this._processPrimitiveReturnValue(context, transaction, actualReturnValue);
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Process a complex return value returned by a transaction processor function for a transaction.
+     * @param {Context} context The request context.
+     * @param {Resource} transaction The transaction.
+     * @param {*} actualReturnValue The return value.
+     * @return {*} The return value if there was one.
+     */
+    _processComplexReturnValue(context, transaction, actualReturnValue) {
+        const method = 'processComplexReturnValue';
+        LOG.entry(method, context, transaction, actualReturnValue);
+
+        // Get the type and resolved type.
+        const transactionDeclaration = transaction.getClassDeclaration();
+        const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        const returnValueType = returnsDecorator.getType();
+        const returnValueResolvedType = returnsDecorator.getResolvedType();
+        const isArray = returnsDecorator.isArray();
+        const formattedExpectedType = `${returnValueType}${isArray ? '[]' : ''}`;
+
+        // Validate the return value type.
+        const processComplexReturnValueInner = (actualReturnValue) => {
+            if (!(actualReturnValue instanceof Typed)) {
+                const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a non-typed value was returned`);
+                LOG.error(method, error);
+                throw error;
+            } else if (!actualReturnValue.instanceOf(returnValueResolvedType.getFullyQualifiedName())) {
+                const actualReturnValueType = actualReturnValue.getType();
+                const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                LOG.error(method, error);
+                throw error;
+            }
+            return context.getSerializer().toJSON(actualReturnValue, { convertResourcesToRelationships: true, permitResourcesForRelationships: false });
+        };
+
+        // Handle the non-array case - a single return value.
+        if (!returnsDecorator.isArray()) {
+            const returnValue = processComplexReturnValueInner(actualReturnValue);
+            LOG.exit(method, returnValue);
+            return returnValue;
+        }
+
+        // This is the array case - ensure the return value is an array.
+        if (!Array.isArray(actualReturnValue)) {
+            const actualReturnValueType = typeof actualReturnValue;
+            const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+            LOG.error(method, error);
+            throw error;
+        }
+
+        // Now handle all the elements of the array.
+        const returnValue = actualReturnValue.map((item) => {
+            return processComplexReturnValueInner(item);
+        });
+        LOG.exit(method, returnValue);
+        return returnValue;
+    }
+
+    /**
+     * Process an enum return value returned by a transaction processor function for a transaction.
+     * @param {Context} context The request context.
+     * @param {Resource} transaction The transaction.
+     * @param {*} actualReturnValue The return value.
+     * @return {*} The return value if there was one.
+     */
+    _processEnumReturnValue(context, transaction, actualReturnValue) {
+        const method = '_processEnumReturnValue';
+        LOG.entry(method, actualReturnValue);
+
+        // Get the type.
+        const transactionDeclaration = transaction.getClassDeclaration();
+        const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        const returnValueType = returnsDecorator.getType();
+        const returnValueResolvedType = returnsDecorator.getResolvedType();
+        const validEnumValues = returnValueResolvedType.getProperties().map(enumValueProperty => enumValueProperty.getName());
+        const isArray = returnsDecorator.isArray();
+        const formattedExpectedType = `${returnValueType}${isArray ? '[]' : ''}`;
+
+        // Validate the return value type.
+        const processPrimitiveReturnValueInner = (actualReturnValue) => {
+            if (typeof actualReturnValue !== 'string') {
+                const actualReturnValueType = typeof actualReturnValue;
+                const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                LOG.error(method, error);
+                throw error;
+            } else if (validEnumValues.indexOf(actualReturnValue) === -1) {
+                const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but an invalid enum value ${actualReturnValue} was returned`);
+                LOG.error(method, error);
+                throw error;
+            }
+            return actualReturnValue;
+        };
+
+        // Handle the non-array case - a single return value.
+        if (!returnsDecorator.isArray()) {
+            const returnValue = processPrimitiveReturnValueInner(actualReturnValue);
+            LOG.exit(method, returnValue);
+            return returnValue;
+        }
+
+        // This is the array case - ensure the return value is an array.
+        if (!Array.isArray(actualReturnValue)) {
+            const actualReturnValueType = typeof actualReturnValue;
+            const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+            LOG.error(method, error);
+            throw error;
+        }
+
+        // Now handle all the elements of the array.
+        const returnValue = actualReturnValue.map((item) => {
+            return processPrimitiveReturnValueInner(item);
+        });
+        LOG.exit(method, returnValue);
+        return returnValue;
+    }
+
+    /**
+     * Process a primitive return value returned by a transaction processor function for a transaction.
+     * @param {Context} context The request context.
+     * @param {Resource} transaction The transaction.
+     * @param {*} actualReturnValue The return value.
+     * @return {*} The return value if there was one.
+     */
+    _processPrimitiveReturnValue(context, transaction, actualReturnValue) {
+        const method = 'processPrimitiveReturnValue';
+        LOG.entry(method, actualReturnValue);
+
+        // Get the type.
+        const transactionDeclaration = transaction.getClassDeclaration();
+        const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        const returnValueType = returnsDecorator.getType();
+        const isArray = returnsDecorator.isArray();
+        const formattedExpectedType = `${returnValueType}${isArray ? '[]' : ''}`;
+
+        // Validate the return value type.
+        const processPrimitiveReturnValueInner = (actualReturnValue) => {
+            switch (returnValueType) {
+            case 'DateTime':
+                if (!(actualReturnValue instanceof Date)) {
+                    const actualReturnValueType = typeof actualReturnValue;
+                    const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                    LOG.error(method, error);
+                    throw error;
+                }
+                return actualReturnValue.toISOString();
+            case 'Integer':
+            case 'Long':
+            case 'Double':
+                if (typeof actualReturnValue !== 'number') {
+                    const actualReturnValueType = typeof actualReturnValue;
+                    const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                    LOG.error(method, error);
+                    throw error;
+                }
+                return actualReturnValue;
+            case 'Boolean':
+                if (typeof actualReturnValue !== 'boolean') {
+                    const actualReturnValueType = typeof actualReturnValue;
+                    const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                    LOG.error(method, error);
+                    throw error;
+                }
+                return actualReturnValue;
+            default:
+                if (actualReturnValue === undefined || actualReturnValue === null) {
+                    const actualReturnValueType = typeof actualReturnValue;
+                    const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                    LOG.error(method, error);
+                    throw error;
+                }
+                return actualReturnValue.toString();
+            }
+        };
+
+        // Handle the non-array case - a single return value.
+        if (!returnsDecorator.isArray()) {
+            const returnValue = processPrimitiveReturnValueInner(actualReturnValue);
+            LOG.exit(method, returnValue);
+            return returnValue;
+        }
+
+        // This is the array case - ensure the return value is an array.
+        if (!Array.isArray(actualReturnValue)) {
+            const actualReturnValueType = typeof actualReturnValue;
+            const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+            LOG.error(method, error);
+            throw error;
+        }
+
+        // Now handle all the elements of the array.
+        const returnValue = actualReturnValue.map((item) => {
+            return processPrimitiveReturnValueInner(item);
+        });
+        LOG.exit(method, returnValue);
+        return returnValue;
     }
 
 }

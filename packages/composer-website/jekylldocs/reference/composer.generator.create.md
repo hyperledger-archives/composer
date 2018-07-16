@@ -3,7 +3,7 @@ layout: default
 title: Hyperledger Composer Generator CLI
 section: reference-command
 sidebar: sidebars/accordion-toc0.md
-excerpt: Composer Archive List CLI
+excerpt: Composer Generator Create CLI
 ---
 
 ## Name
@@ -50,4 +50,18 @@ The output directory for the generated files.
 
 ```bash
 composer generator create --archiveFile digitalPropertyNetwork.bna --format Go --outputDir ./dev/go-app
+```
+
+## Javascript API Example
+
+```javascript
+const GeneratorCreate = require('composer-cli').Generator.Create;
+
+let options = {
+  archiveFile: 'digitalPropertyNetwork.bna',
+  format: 'Go',
+  outputDir: './dev/go-app'
+};
+
+GeneratorCreate.handler(options);
 ```

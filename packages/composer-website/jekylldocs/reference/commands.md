@@ -20,6 +20,8 @@ The {{site.data.conrefs.composer_full}} command line application can be installe
 
 *Please note: When using Ubuntu this command will fail when running in a root user shell.*
 
+A Javascript API is also available with the same behavior than the {{site.data.conrefs.composer_full}} command line application.
+
 ## Business Network Archives
 
 `composer archive create`
@@ -77,6 +79,14 @@ Test the connection to a deployed a Business Network: [composer network ping](./
 `composer network upgrade`
 
 Upgrade the {{site.data.conrefs.composer_full}} runtime of a specific deployed business network: [composer network upgrade](./composer.network.upgrade.html)
+
+`composer network download`
+
+Download the business network definition that is currently deployed to an instance of Hyperledger Fabric: [composer network download](./composer.network.download.html)
+
+`composer network reset`
+
+Reset the business network that is currently deployed to an instance of Hyperledger Fabric: [composer network reset](./composer.network.reset.html)
 
 ## Participant and Identity management
 

@@ -13,7 +13,8 @@
 #}
 # Asset Model
 
-{% for asset in types.asset %}
+{% for id,assets in types.asset %}
+{% for asset in assets %}
 ## {{asset.name}}
 The fully qualified name is **{{asset.fqn}}**
 
@@ -38,4 +39,4 @@ The fully qualified name is **{{asset.fqn}}**
 {% if asset.decorators.docsuri %}
 [{{asset.decorators.docsuri[0]}}]({{asset.decorators.docsuri[1]}})
 {% endif %}
-{% endfor %}
+{% endfor %}{% endfor %}

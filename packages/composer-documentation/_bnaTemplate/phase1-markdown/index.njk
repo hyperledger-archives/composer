@@ -18,20 +18,22 @@
 ## Asset Definition 
 | Namespace | Name | Description |
 | --------  | ---- | ----------- |
-{% for asset in types.asset %}| {{asset.fqn}} | {{asset.name}} | {{asset.description}}  |
-{% endfor %}
+{% for id,assets in types.asset %}{% for asset in assets %}| {{asset.fqn}} | {{asset.name}} | {{asset.description}}  |
+{% endfor %}{% endfor %}
+
 
 ## Transaction Definition 
 | Namespace | Name | Description |
 | --------  | ---- | ----------- |
-{% for tx in types.transaction %}| {{tx.fqn}} | {{tx.name}} | {{tx.description}}  |
-{% endfor %}
+{% for id,transactions in types.transaction %}{% for tx in transactions %}| {{tx.fqn}} | {{tx.name}} | {{tx.description}}  |
+{% endfor %}{% endfor %}
 
 ## Participant Definition 
 | Namespace | Name | Description |
 | --------  | ---- | ----------- |
-{% for pt in types.participant %}| {{pt.fqn}} | {{pt.name}} | {{pt.description}}  |
-{% endfor %}
+{% for id,participants in types.participant %}{% for pt in participants %}| {{pt.fqn}} | {{pt.name}} | {{pt.description}}  |
+{% endfor %}{% endfor %}
+
 
 ## ACL 
 {% for rule in acls %}- {{rule.description}}
