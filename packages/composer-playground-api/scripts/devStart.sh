@@ -13,8 +13,8 @@
 # limitations under the License.
 #
 
-# Exit on first error, print all commands
-set -ev
+# Stop on any errors
+set -e
 
 # Environment vaiable directs Playground (connector server) to an npmrc to supply to network install
 export NPMRC_FILE='/tmp/npmrc'
@@ -38,8 +38,15 @@ for package in composer-common composer-runtime composer-runtime-hlfv1; do
     npm publish --userconfig "${scriptDir}/publish.npmrc" "${packagesDir}/${package}"
 done
 
+Shutdown() {
+    # Stop the npm proxy
+    docker-compose -f "${scriptDir}/docker-compose.yaml" down
+    exit 0
+}
+
+echo ''
+echo '*** Ctrl-C to stop Playground API ***'
+trap Shutdown SIGINT
+
 # Start the Playground API
 npm start
-
-# Stop the npm proxy
-docker-compose -f "${scriptDir}/docker-compose.yaml" down
