@@ -172,7 +172,7 @@ export class SampleBusinessNetworkService {
             .then(() => {
                 this.alertService.busyStatus$.next({
                     title: 'Your new business network is being upgraded',
-                    text: 'Uprading business network using ' + channelCardRef + ' (2/2)',
+                    text: 'Upgrading business network using ' + channelCardRef + ' (2/2)',
                     force: true
                 });
 
