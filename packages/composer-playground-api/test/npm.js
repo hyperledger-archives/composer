@@ -84,7 +84,7 @@ let forceSearchFail = false, forceMetadataFail = false, sortableList = false;
 // class methods
 RegClient.prototype.get = function (url, options, callback) {
     let getSampleNames = {
-        objects : [{
+        results : [{
             package : {
                 name : 'bob'
             },
@@ -92,7 +92,7 @@ RegClient.prototype.get = function (url, options, callback) {
     };
 
     let getUnsortedSampleNames = {
-        objects : [
+        results : [
             {
                 package : {
                     name : 'cat',
@@ -224,13 +224,13 @@ RegClient.prototype.get = function (url, options, callback) {
         }
     };
 
-    if (url.startsWith('https://registry.npmjs.org/-/v1/search') && forceSearchFail) {
+    if (url.startsWith('https://api.npms.io/v2/search') && forceSearchFail) {
         forceSearchFail = false;
         return callback('some error');
-    } else if (url.startsWith('https://registry.npmjs.org/-/v1/search') && sortableList) {
+    } else if (url.startsWith('https://api.npms.io/v2/search') && sortableList) {
         sortableList = false;
         return callback(null, getUnsortedSampleNames);
-    } else if (url.startsWith('https://registry.npmjs.org/-/v1/search')) {
+    } else if (url.startsWith('https://api.npms.io/v2/search')) {
         return callback(null, getSampleNames);
     }
 
