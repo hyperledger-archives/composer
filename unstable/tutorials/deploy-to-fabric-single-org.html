@@ -468,8 +468,7 @@ composer card delete -c admin@tutorial-network
 <li><p>We must specify the host names and ports of all of the peer nodes in the Hyperledger Fabric network. There is only 1 peer and we give it a label of <code>peer0.org1.example.com</code>.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">    "peers": {
         "peer0.org1.example.com": {
-            "url": "grpc://localhost:7051",
-            "eventUrl": "grpc://localhost:7053"
+            "url": "grpc://localhost:7051"
         }
     },
 </code></pre></div>
@@ -555,8 +554,7 @@ The blockchain business network will be deployed to all of the specified peer no
     "version": "1.0.0",
     "peers": {
         "peer0.org1.example.com": {
-            "url": "grpc://localhost:7051",
-            "eventUrl": "grpc://localhost:7053"
+            "url": "grpc://localhost:7051"
         }
     },
     "certificateAuthorities": {

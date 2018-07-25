@@ -406,8 +406,7 @@
     },
     "peers": {
         "peer0.org1.example.com": {
-            "url": "grpc://peer0.org1.example.com:7051",
-            "eventUrl": "grpc://peer0.org1.example.com:7053"
+            "url": "grpc://peer0.org1.example.com:7051"
         }
     },
     "certificateAuthorities": {
@@ -484,16 +483,14 @@
 <p>Here we define all the peers in all organizations in the network. Each has a unique label so it can be referenced later. In the example the label is <code>peer0.org1.example.com</code>.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"peers": {
     "peer0.org1.example.com": {
-        "url": "grpc://peer0.org1.example.com:7051",
-        "eventUrl": "grpc://peer0.org1.example.com:7053"
+        "url": "grpc://peer0.org1.example.com:7051"
     }
 },
 </code></pre></div>
-<p>Peer definitions are similar to orderer definitions in structure, but you should define both the <code>url</code> and <code>eventUrl</code> of a peer. Older connection profile formats required that you only define the eventUrl for peers in your organization. Defining TLS for a peer is similar to orderers</p>
+<p>Peer definitions are similar to orderer definitions in structure.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"peers": {
     "peer0.org1.example.com": {
         "url": "grpc://peer0.org1.example.com:7051",
-        "eventUrl": "grpc://peer0.org1.example.com:7053"
         "grpcOptions": {
             "ssl-target-name-override": "peer.org1.example.com"
         },
@@ -506,16 +503,13 @@
 <p>To define multiple peers, use the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"peers": {
     "peer0.org1.example.com": {
-        "url": "grpc://peer0.org1.example.com:7051",
-        "eventUrl": "grpc://peer0.org1.example.com:7053"
+        "url": "grpc://peer0.org1.example.com:7051"
     },
     "peer1.org1.example.com": {
-        "url": "grpc://peer1.org1.example.com:7051",
-        "eventUrl": "grpc://peer1.org1.example.com:7053"
+        "url": "grpc://peer1.org1.example.com:7051"
     },
     "peer0.org2.example.com": {
-        "url": "grpc://peer0.org2.example.com:7051",
-        "eventUrl": "grpc://peer0.org2.example.com:7053"
+        "url": "grpc://peer0.org2.example.com:7051"
     },
 },
 </code></pre></div>
@@ -614,7 +608,6 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
 <p>For example a peer definition might look like:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"peer0.org1.example.com": {
     "url": "grpcs://peer0.org1.example.com:7051",
-    "eventUrl": "grpcs://peer0.org1.example.com:7053"
     "grpcOptions": {
         "ssl-target-name-override": "peer.org1.example.com",
         "grpc.keepalive_time_ms": 600000,
