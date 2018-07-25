@@ -253,7 +253,7 @@ We need a base connection profile that describes this fabric network which can t
         },
         "peers": {
             "peer0.org1.example.com": {
-                "url": "grpcs://localhost:7051"
+                "url": "grpcs://localhost:7051",
                 "grpcOptions": {
                     "ssl-target-name-override": "peer0.org1.example.com"
                 },

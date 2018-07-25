@@ -162,7 +162,7 @@ Peer definitions are similar to orderer definitions in structure.
 ```
 "peers": {
     "peer0.org1.example.com": {
-        "url": "grpc://peer0.org1.example.com:7051"
+        "url": "grpc://peer0.org1.example.com:7051",
         "grpcOptions": {
             "ssl-target-name-override": "peer.org1.example.com"
         },
@@ -287,7 +287,7 @@ For example a peer definition might look like:
 
 ```
 "peer0.org1.example.com": {
-    "url": "grpcs://peer0.org1.example.com:7051"
+    "url": "grpcs://peer0.org1.example.com:7051",
     "grpcOptions": {
         "ssl-target-name-override": "peer.org1.example.com",
         "grpc.keepalive_time_ms": 600000,
