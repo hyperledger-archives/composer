@@ -316,7 +316,6 @@ class TestUtil {
                             'peers': {
                                 'peer0.org1.example.com': {
                                     'url': 'grpcs://localhost:7051',
-                                    'eventUrl': 'grpcs://localhost:7053',
                                     'grpcOptions': {
                                         'ssl-target-name-override': 'peer0.org1.example.com',
                                     },
@@ -326,7 +325,6 @@ class TestUtil {
                                 },
                                 'peer0.org2.example.com': {
                                     'url': 'grpcs://localhost:8051',
-                                    'eventUrl': 'grpcs://localhost:8053',
                                     'grpcOptions': {
                                         'ssl-target-name-override': 'peer0.org2.example.com',
                                     },
@@ -415,7 +413,6 @@ class TestUtil {
                             'peers': {
                                 'peer0.org1.example.com': {
                                     'url': 'grpcs://localhost:7051',
-                                    'eventUrl': 'grpcs://localhost:7053',
                                     'grpcOptions': {
                                         'ssl-target-name-override': 'peer0.org1.example.com',
                                     },
@@ -425,7 +422,6 @@ class TestUtil {
                                 },
                                 'peer0.org2.example.com': {
                                     'url': 'grpcs://localhost:8051',
-                                    'eventUrl': 'grpcs://localhost:8053',
                                     'grpcOptions': {
                                         'ssl-target-name-override': 'peer0.org2.example.com',
                                     },
@@ -545,11 +541,9 @@ class TestUtil {
                             'peers': {
                                 'peer0.org1.example.com': {
                                     'url': 'grpc://localhost:7051',
-                                    'eventUrl': 'grpc://localhost:7053'
                                 },
                                 'peer0.org2.example.com': {
                                     'url': 'grpc://localhost:8051',
-                                    'eventUrl': 'grpc://localhost:8053'
                                 }
                             },
                             'certificateAuthorities': {
@@ -620,11 +614,9 @@ class TestUtil {
                             'peers': {
                                 'peer0.org1.example.com': {
                                     'url': 'grpc://localhost:7051',
-                                    'eventUrl': 'grpc://localhost:7053'
                                 },
                                 'peer0.org2.example.com': {
                                     'url': 'grpc://localhost:8051',
-                                    'eventUrl': 'grpc://localhost:8053'
                                 }
                             },
                             'certificateAuthorities': {
