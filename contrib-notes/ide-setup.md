@@ -19,7 +19,7 @@ Use the [linter-eslint plugin](https://atom.io/packages/linter-eslint) to help w
 
 ## Hyperledger Composer modelling language
 
-Use the [composer-atom plugin](https://github.com/hyperledger/composer-atom-plugin) for syntax highlighting of the Hyperledger Composer modelling language.  Follow the instructions in the README to install the plugin.
+Use the [composer-atom plugin](https://github.com/hyperledger/composer-atom-plugin) for syntax highlighting of the Hyperledger Composer modeling language.  Follow the instructions in the README to install the plugin.
 
 ## Find unfinished work items
 
