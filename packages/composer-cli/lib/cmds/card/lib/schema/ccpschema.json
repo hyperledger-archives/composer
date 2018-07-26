@@ -174,7 +174,7 @@
                 "grpcOptions" : { "$ref": "#/definitions/grpcOptions" },
                 "tlsCACerts" : { "$ref": "#/definitions/tlsCACerts" }
             },
-            "required": [ "url", "eventUrl"]
+            "required": [ "url"]
         }
     },
     "type" : "object",
