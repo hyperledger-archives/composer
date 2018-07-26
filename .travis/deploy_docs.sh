@@ -50,7 +50,7 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
     elif [[ "${BUILD_FOCUS}" = "next" ]]; then
         DOCS_DIR="next-unstable"
     else
-        _exit "Unknown build focus" 1
+        DOCS_DIR="${BUILD_FOCUS}-unstable"
     fi
 
 elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
@@ -60,7 +60,7 @@ elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
     elif [[ "${BUILD_FOCUS}" = "next" ]]; then
         DOCS_DIR="next"
     else
-        _exit "Unknown build focus" 1
+        DOCS_DIR="${BUILD_FOCUS}"
     fi
 
 else
