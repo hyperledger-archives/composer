@@ -1,6 +1,6 @@
 # Composer Improvement Proposal
 
-All CIPs should follow the specified template below. It is used to help cover all aspects behind the reasoning for the CIP, and bring in considerations that might otherwise have been neglected. Most of all we want all CIPs to be absolutey transaparent, so that the community can see the justification behind all CIPs that are delivered.
+All CIPs should follow the specified template below. It is used to help cover all aspects behind the reasoning for the CIP, and bring in considerations that might otherwise have been neglected. Most of all we want all CIPs to be absolutely transparent, so that the community can see the justification behind all CIPs that are delivered.
 
 ## CIP Template
 ```
@@ -37,7 +37,7 @@ Test requirements vary depending on what is being planned; the below template in
 ```
 Readiness Criteria
   - New hardware/infrastructure requirements?
-  - New test framework requirements? It is generally expected that CIP testing would involve extending existing test suites, but it is possible to introduce a requirment for a new framework to run specific tests. This needs to be identified as it can take a long time to get the framework in place.
+  - New test framework requirements? It is generally expected that CIP testing would involve extending existing test suites, but it is possible to introduce a requirement for a new framework to run specific tests. This needs to be identified as it can take a long time to get the framework in place.
   - Mitigation of above to enable progress
 
 User Acceptance Criteria
@@ -64,9 +64,9 @@ Test Deliverables
   - Test considerations
     -- Platform coverage: Are there any considerations such as specific OS requirements for the tests to be run on?
     -- Browser coverage
- 
+
 Assumptions
-  - Have any assumptions been made in the above? 
+  - Have any assumptions been made in the above?
   - What risks do these assumptions reveal?
 
 Exit Criteria

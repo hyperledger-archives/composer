@@ -9,7 +9,7 @@
 
 As a summary:
 
- - All changes should be developed in a fork of the relevant Hyperldger Composer repository, and the changes submitted for approval in the form of pull requests.
+ - All changes should be developed in a fork of the relevant Hyperledger Composer repository, and the changes submitted for approval in the form of pull requests.
  - All commits require DCO sign-off
  - All pull request must be linked to an issue
  - All delivered code must follow the linting rules
@@ -34,7 +34,7 @@ $ git remote add upstream git@github.com:hyperledger/composer.git
 ```
 - As this is just forked it will be up-to-date. But if you did this previously and now starting on something new, the the next step is to update your master branch.
 
-  *This is the point you would come to generally when starting anything new, a new clone/fork everytime is not necassary*
+  *This is the point you would come to generally when starting anything new, a new clone/fork every time is not necessary*
 
 ```
 $ git checkout master       # puts you into master branch if not there already
@@ -53,7 +53,7 @@ $ git checkout -b defect-1234    # Including reference to the git issue is usefu
 $ git pull upstream master
 ```
 You might at this point need to do manual merges.
-- **Retest to ensure everthing is Good**
+- **Retest to ensure everything is Good**
 - Push these changes to your local fork
 ```
 $ git push origin defect-1234   # note the branch you have been working on
@@ -143,7 +143,7 @@ these dependencies cannot be resolved when the business network is started.
 A solution to this problem is to package the dependencies required at runtime within the business network archive before
 install. To achieve this:
 
-1. Local versons of the following packages should be packaged up using the `npm pack` command:
+1. Local versions of the following packages should be packaged up using the `npm pack` command:
    - `composer-common`
    - `composer-runtime`
    - `composer-runtime-hlfv1`
@@ -156,7 +156,7 @@ current working directory, once the `packageDir` variable has been changed to po
 packages in your development environment.
 ```bash
 #!/bin/bash
-  
+
 localDir="$(pwd)"
 packageDir="${HOME}/DEV_DIRECTORY/composer/packages"
 
@@ -187,7 +187,7 @@ A business network archive containing package dependencies can be installed to F
 
 - Ensure you have the latest fabric-dev-servers package
 - Start the Fabric using `./startFabric.sh`
-- Create and import your PeerAdmin card if you haven't done so before using `./createPeerAdmin.sh` 
+- Create and import your PeerAdmin card if you haven't done so before using `./createPeerAdmin.sh`
 - Install your pre-prepared business network archive
 ```
 node composer-cli/cli.js network install --card PeerAdmin@hlfv1 --archiveFile test-network@0.0.1.bna`
