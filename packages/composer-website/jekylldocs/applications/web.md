@@ -38,6 +38,7 @@ Head to the `fabric-dev-servers` directory and start {{site.data.conrefs.hlf_ful
 
 ```bash
 cd ~/fabric-dev-servers
+{{site.data.conrefs.export_fabric_version_command}}
 ./startFabric.sh
 ./createPeerAdminCard.sh
 ```

@@ -10,3 +10,9 @@ hlf_full:
 
 hlf_latest:
   v1.1
+
+composer_version:
+  "0.19"
+
+export_fabric_version_command:
+  export FABRIC_VERSION=hlfv11
