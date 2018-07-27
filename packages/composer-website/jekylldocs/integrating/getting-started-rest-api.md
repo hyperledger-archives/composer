@@ -17,7 +17,7 @@ The {{site.data.conrefs.composer_full}} REST server can be installed either usin
 
 To install with npm, run the following command:
 
-    npm install -g composer-rest-server
+    npm install -g composer-rest-server@{{site.data.conrefs.composer_version}}
 
 To install the REST server using Docker see [deploying the REST server](./deploying-the-rest-server.html).
 
