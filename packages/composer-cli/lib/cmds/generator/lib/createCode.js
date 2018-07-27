@@ -24,6 +24,7 @@ const JavaVisitor = CodeGen.JavaVisitor;
 const JSONSchemaVisitor = CodeGen.JSONSchemaVisitor;
 const PlantUMLVisitor = CodeGen.PlantUMLVisitor;
 const TypescriptVisitor = CodeGen.TypescriptVisitor;
+const XmlSchemaVisitor = CodeGen.XmlSchemaVisitor;
 const cmdUtil = require('../../utils/cmdutils');
 /**
  * Composer Create Archive command
@@ -68,7 +69,10 @@ class Create {
             case 'JSONSchema':
                 visitor = new JSONSchemaVisitor();
                 break;
-            default:
+            case 'XmlSchema':
+                visitor = new XmlSchemaVisitor();
+                break;
+                default:
                 throw new Error ('Unrecognized code generator: ' + argv.format );
             }
 
