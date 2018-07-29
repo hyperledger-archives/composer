@@ -28,7 +28,7 @@ Any running instances of the CLI tools should be stopped before continuing. If y
 
 2. Install the latest version of all of the CLI tools:
 
-        npm install -g composer-cli composer-rest-server generator-hyperledger-composer
+        npm install -g composer-cli@{{site.data.conrefs.composer_version}} composer-rest-server@{{site.data.conrefs.composer_version}} generator-hyperledger-composer@{{site.data.conrefs.composer_version}}
 
 ### Step 2: Update Playground
 
@@ -40,7 +40,7 @@ If you have installed the browser app "Playground" on your development machine, 
 
 2. Install the latest version of the browser app:
 
-        npm install -g composer-playground
+        npm install -g composer-playground@{{site.data.conrefs.composer_version}}
 
 > Congratulations, you have updated your development environment with the latest version of the development tools. You can now continue developing your blockchain applications using the latest features and bug fixes!
 

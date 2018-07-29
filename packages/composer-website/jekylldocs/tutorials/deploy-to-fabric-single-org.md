@@ -29,6 +29,7 @@ The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} 
 1. Start a clean {{site.data.conrefs.hlf_full}} by running the following commands:
 
         cd ~/fabric-dev-servers
+        {{site.data.conrefs.export_fabric_version_command}}
         ./stopFabric.sh
         ./teardownFabric.sh
         ./downloadFabric.sh
@@ -123,8 +124,7 @@ A connection profile specifies all of the information required to locate and con
 
             "peers": {
                 "peer0.org1.example.com": {
-                    "url": "grpc://localhost:7051",
-                    "eventUrl": "grpc://localhost:7053"
+                    "url": "grpc://localhost:7051"
                 }
             },
 
@@ -220,8 +220,7 @@ Here we are specifying that we are in `Org1`. The timeouts are used to determine
             "version": "1.0.0",
             "peers": {
                 "peer0.org1.example.com": {
-                    "url": "grpc://localhost:7051",
-                    "eventUrl": "grpc://localhost:7053"
+                    "url": "grpc://localhost:7051"
                 }
             },
             "certificateAuthorities": {

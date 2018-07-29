@@ -31,15 +31,15 @@ Note that you **should not** use `su` or `sudo` for the following npm commands.
 
 1. Essential CLI tools:
 
-        npm install -g composer-cli
+        npm install -g composer-cli@{{site.data.conrefs.composer_version}}
 
 2. Utility for running a REST Server on your machine to expose your business networks as RESTful APIs:
 
-        npm install -g composer-rest-server
+        npm install -g composer-rest-server@{{site.data.conrefs.composer_version}}
 
 3. Useful utility for generating application assets:
 
-        npm install -g generator-hyperledger-composer
+        npm install -g generator-hyperledger-composer@{{site.data.conrefs.composer_version}}
 
 4. Yeoman is a tool for generating applications, which utilises `generator-hyperledger-composer`:
 
@@ -50,7 +50,7 @@ If you've already tried {{site.data.conrefs.composer_short}} online, you'll have
 
 5. Browser app for simple editing and testing Business Networks:
 
-        npm install -g composer-playground
+        npm install -g composer-playground@{{site.data.conrefs.composer_version}}
 
 ### Step 3: Set up your IDE
 Whilst the browser app _can_ be used to work on your Business Network code, most users will prefer to work in an IDE.  Our favourite is `VSCode`, because a {{site.data.conrefs.composer_short}} extension is available.
@@ -72,9 +72,10 @@ This step gives you a local {{site.data.conrefs.hlf_full}} runtime to deploy you
       A `zip` is also available if you prefer: just replace the `.tar.gz` file with `fabric-dev-servers.zip` and the `tar -xvf` command with a `unzip` command in the preceding snippet.
 
 
-9. Use the scripts you just downloaded and extracted to download a local {{site.data.conrefs.hlf_full}} runtime:
+9. Use the scripts you just downloaded and extracted to download a local {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} runtime:
 
         cd ~/fabric-dev-servers
+        {{site.data.conrefs.export_fabric_version_command}}
         ./downloadFabric.sh
 
 > Congratulations, you've now installed everything required for the typical Developer Environment.
@@ -88,6 +89,7 @@ You control your runtime using a set of scripts which you'll find in `~/fabric-d
 The first time you start up a new runtime, you'll need to run the start script, then generate a PeerAdmin card:
 
         cd ~/fabric-dev-servers
+        {{site.data.conrefs.export_fabric_version_command}}
         ./startFabric.sh
         ./createPeerAdminCard.sh
 
