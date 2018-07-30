@@ -72,7 +72,7 @@ class ScriptCompiler {
         this.processScriptManager(context, scriptManager);
 
         // Add the end section.
-        rootNode.add('    return {\n');
+        rootNode.add('\n return {\n');
         context.functionDeclarations.forEach((functionDeclaration) => {
             LOG.debug(method, 'Adding function declaration', functionDeclaration.getName());
             rootNode.add(`        '${functionDeclaration.getName()}': ${functionDeclaration.getName()},\n`);
