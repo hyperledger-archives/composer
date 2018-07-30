@@ -32,6 +32,7 @@ const QueryManager = require('composer-common').QueryManager;
 const QueryFile = require('composer-common').QueryFile;
 const NodeCache = require('node-cache');
 const ParticipantRegistry = require('composer-client/lib/participantregistry');
+const ReturnsDecoratorFactory = require('composer-common').ReturnsDecoratorFactory;
 const Serializer = require('composer-common').Serializer;
 const TransactionRegistry = require('composer-client/lib/transactionregistry');
 const Historian = require('composer-client/lib/historian');
@@ -66,6 +67,13 @@ describe('BusinessNetworkConnector', () => {
     participant Member extends BaseParticipant {
     }
     transaction BaseTransaction {
+    }
+    @returns(BaseConcept)
+    transaction BaseTransactionReturnsConcept {
+    }
+    @returns(String)
+    transaction BaseTransactionReturnsString {
+        o String value
     }`;
 
     let settings;
@@ -87,6 +95,7 @@ describe('BusinessNetworkConnector', () => {
 
         // create real instances
         modelManager = new ModelManager();
+        modelManager.addDecoratorFactory(new ReturnsDecoratorFactory());
         modelManager.addModelFile(MODEL_FILE);
         introspector = new Introspector(modelManager);
         factory = new Factory(modelManager);
@@ -1306,6 +1315,9 @@ describe('BusinessNetworkConnector', () => {
         let asset;
         let participant;
         let transaction;
+        let concept;
+        let transactionReturnsConcept;
+        let transactionReturnsString;
 
         beforeEach(() => {
             sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
@@ -1320,6 +1332,9 @@ describe('BusinessNetworkConnector', () => {
             asset = factory.newResource('org.acme.base', 'BaseAsset', 'myId');
             participant = factory.newResource('org.acme.base', 'BaseParticipant', 'myId');
             transaction = factory.newResource('org.acme.base', 'BaseTransaction', 'myId');
+            concept = factory.newConcept('org.acme.base', 'BaseConcept');
+            transactionReturnsConcept = factory.newResource('org.acme.base', 'BaseTransactionReturnsConcept', 'myId');
+            transactionReturnsString = transactionReturnsString = factory.newResource('org.acme.base', 'BaseTransactionReturnsString', 'myId');
         });
 
         it('should use the model name as the class name if not specified', () => {
@@ -1481,6 +1496,55 @@ describe('BusinessNetworkConnector', () => {
                     resolve();
                 });
             }).should.be.rejectedWith(/expected error/);
+        });
+
+        it('should return a Concept after submitting a returning transaction', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves(concept);
+            mockSerializer.toJSON.onFirstCall().returns({theValue: 'myId'});
+            mockSerializer.fromJSON.onFirstCall().returns(transactionReturnsConcept);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.BaseTransactionReturnsConcept', {
+                    $class : 'org.acme.base.BaseTransactionReturnsConcept',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionReturnsConcept);
+                    response.should.deep.equal({theValue: 'myId'});
+                });
+        });
+
+        it ('should return a string aftert submitting a returning transaction', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves('myId');
+            mockSerializer.fromJSON.onFirstCall().returns(transactionReturnsString);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsString', {
+                    $class: 'org.acme.base.MyTransactionThatReturnsString',
+                    some: 'data',
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionReturnsString);
+                    should.equal(response, 'myId');
+                });
         });
     });
 
@@ -2830,6 +2894,347 @@ describe('BusinessNetworkConnector', () => {
             }).should.be.rejectedWith(/Unit Test Error/);
         });
 
+    });
+
+    describe('#discoverReturningTransactions', () => {
+        let returningTransactionsNames = [
+            'BaseTransactionReturnsConcept',
+            'BaseTransactionReturnsString',
+            'MyTransactionThatReturnsString',
+            'MyTransactionThatReturnsStringArray',
+            'MyTransactionThatReturnsConcept',
+            'MyTransactionThatReturnsConceptArray',
+            'MyTransactionThatReturnsDateTime',
+            'MyTransactionThatReturnsInteger',
+            'MyTransactionThatReturnsLong',
+            'MyTransactionThatReturnsDouble',
+            'MyTransactionThatReturnsBoolean',
+            'MyTransactionThatReturnsDoubleArray',
+            'MyTransactionThatReturnsEnum',
+            'MyTransactionThatReturnsEnumArray',
+        ];
+
+        let returningTransactionsNamespaces = [
+            'org.acme.base',
+            'org.acme.base',
+            'org.acme',
+            'org.acme',
+            'org.acme',
+            'org.acme',
+            'org.acme',
+            'org.acme',
+            'org.acme',
+            'org.acme',
+            'org.acme',
+            'org.acme',
+            'org.acme',
+            'org.acme'
+        ];
+
+
+        let returningTransactionsReturnsDecorators = [
+            {
+                schema: {
+                    '$class': {
+                        type: 'string',
+                        default: 'org.acme.base.BaseConcept',
+                        required: false,
+                        description: 'The class identifier for this type'
+                    }, theValue: {type: 'string', required: true}
+                }, isArray: false
+            },
+            {schema: 'String', isArray: false},
+            {schema: 'String', isArray: false},
+            {schema: 'String', isArray: true},
+            {
+                schema: {
+                    '$class': {
+                        type: 'string',
+                        default: 'org.acme.base.BaseConcept',
+                        required: false,
+                        description: 'The class identifier for this type'
+                    }, theValue: {type: 'string', required: true}
+                }, isArray: false
+            },
+            {
+                schema: {
+                    '$class': {
+                        type: 'string',
+                        default: 'org.acme.base.BaseConcept',
+                        required: false,
+                        description: 'The class identifier for this type'
+                    }, theValue: {type: 'string', required: true}
+                }, isArray: true
+            },
+            {schema: 'DateTime', isArray: false},
+            {schema: 'Integer', isArray: false},
+            {schema: 'Long', isArray: false},
+            {schema: 'Double', isArray: false},
+            {schema: 'Boolean', isArray: false},
+            {schema: 'Double', isArray: true},
+            {schema: 'string', isArray: false},
+            {schema: 'string', isArray: true},
+        ];
+
+        beforeEach(() => {
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            testConnector.introspector = introspector;
+            testConnector.connected = true;
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            modelManager.addModelFile(`namespace org.acme
+            import org.acme.base.BaseConcept
+
+            enum MyEnum {
+                o WOW
+                o SUCH
+                o MANY
+                o MUCH
+            }
+            @returns(String)
+            transaction MyTransactionThatReturnsString {
+                o String value
+            }
+            @returns(String[])
+            transaction MyTransactionThatReturnsStringArray {
+                o String value
+            }
+            @returns(BaseConcept)
+            transaction MyTransactionThatReturnsConcept {
+                o String value
+            }
+            @returns(BaseConcept[])
+            transaction MyTransactionThatReturnsConceptArray {
+                o String value
+            }
+            @returns(DateTime)
+            transaction MyTransactionThatReturnsDateTime {
+                o String value
+            }
+            @returns(Integer)
+            transaction MyTransactionThatReturnsInteger {
+                o String value
+            }
+            @returns(Long)
+            transaction MyTransactionThatReturnsLong {
+                o String value
+            }
+            @returns(Double)
+            transaction MyTransactionThatReturnsDouble {
+                o String value
+            }
+            @returns(Boolean)
+            transaction MyTransactionThatReturnsBoolean {
+                o String value
+            }
+            @returns(Double[])
+            transaction MyTransactionThatReturnsDoubleArray {
+                o String value
+            }
+            @returns(MyEnum)
+            transaction MyTransactionThatReturnsEnum {
+                o String value
+            }
+            @returns(MyEnum[])
+            transaction MyTransactionThatReturnsEnumArray {
+                o String value
+            }`);
+        });
+
+        it('should discover the returning transactions with namespaces = always', () => {
+            testConnector.settings.namespaces = 'always';
+            return new Promise((resolve, reject) => {
+                testConnector.discoverReturningTransactions({test: 'options'}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).then((results) => {
+
+                results.length.should.be.equal(14);
+
+                let index = 0;
+                results.forEach(result => {
+                    result.should.deep.equal({
+                        type: 'table',
+                        namespaces: true,
+                        name: returningTransactionsNamespaces[index] + '.' + returningTransactionsNames[index],
+                        decorators: {
+                            commit: true,
+                            returns: returningTransactionsReturnsDecorators[index]
+                        }
+                    });
+                    index++;
+                });
+            });
+        });
+
+        it('should discover the returning transactions with namespaces = never', () => {
+            testConnector.settings.namespaces = 'never';
+            return new Promise((resolve, reject) => {
+                testConnector.discoverReturningTransactions({test: 'options'}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).then((results) => {
+
+                results.length.should.be.equal(14);
+
+                let index = 0;
+                results.forEach(result => {
+                    result.should.deep.equal({
+                        type: 'table',
+                        namespaces: false,
+                        name: returningTransactionsNames[index],
+                        decorators: {
+                            commit: true,
+                            returns: returningTransactionsReturnsDecorators[index]
+                        }
+                    });
+                    index++;
+                });
+            });
+        });
+
+        it('should discover the returning transactions with namespaces = required', () => {
+            testConnector.settings.namespaces = 'required';
+            modelManager.addModelFile(`namespace org.acme.extra
+                @returns(String)
+                transaction MyTransactionThatReturnsString{
+                    o String anotherAssetId
+                }`
+            );
+            returningTransactionsNamespaces.push('org.acme.extra');
+            returningTransactionsNames.push('MyTransactionThatReturnsString');
+            returningTransactionsReturnsDecorators.push({schema: 'String', isArray: false});
+
+            return new Promise((resolve, reject) => {
+                testConnector.discoverReturningTransactions({test: 'options'}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).then((results) => {
+
+                results.length.should.be.equal(15);
+
+                let index = 0;
+                results.forEach(result => {
+                    result.should.deep.equal({
+                        type: 'table',
+                        namespaces: true,
+                        name: returningTransactionsNamespaces[index] + '.' + returningTransactionsNames[index],
+                        decorators: {
+                            commit: true,
+                            returns: returningTransactionsReturnsDecorators[index]
+                        }
+                    });
+                    index++;
+                });
+            });
+        });
+
+        it('should throw discovering the schema from the business network if multiple matches for the short name', () => {
+            testConnector.settings.namespaces = 'never';
+            modelManager.addModelFile(`namespace org.acme.extra
+                @returns(String)
+                transaction MyTransactionThatReturnsString{
+                    o String anotherAssetId
+                }`
+            );
+            returningTransactionsNamespaces.push('org.acme.extra');
+            returningTransactionsNames.push('MyTransactionThatReturnsString');
+            returningTransactionsReturnsDecorators.push({schema: 'String', isArray: false});
+            return new Promise((resolve, reject) => {
+                testConnector.discoverReturningTransactions({test: 'options'}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith(/namespaces has been set to never, but type names in business network are not unique/);
+        });
+
+        it('should discover the read-only returning transactions', () => {
+            modelManager.addModelFile(`namespace org.acme.extra
+                @returns(String)
+                @commit(false)
+                transaction MyReadOnlyTransactionThatReturnsString{
+                    o String anotherAssetId
+                }`
+            );
+            returningTransactionsNamespaces.push('org.acme.extra');
+            returningTransactionsNames.push('MyReadOnlyTransactionThatReturnsString');
+            returningTransactionsReturnsDecorators.push({schema: 'String', isArray: false});
+            return new Promise((resolve, reject) => {
+                testConnector.discoverReturningTransactions({test: 'options'}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).then((results) => {
+
+                results.length.should.be.equal(15);
+
+                // The read only transaction is the last retrieved
+                const txIndex = results.length - 1;
+                results[txIndex].should.deep.equal({
+                    type: 'table',
+                    namespaces: true,
+                    name: 'org.acme.extra.MyReadOnlyTransactionThatReturnsString',
+                    decorators: {
+                        commit: false,
+                        returns: {
+                            schema: 'String',
+                            isArray: false
+                        }
+                    }
+                });
+            });
+        });
+
+        it('should discover returning transactions with commit = true', () => {
+            modelManager.addModelFile(`namespace org.acme.extra
+            @returns(String)
+            @commit(true)
+            transaction CommitTransactionThatReturnsString{
+                o String anotherAssetId
+            }`
+            );
+            returningTransactionsNamespaces.push('org.acme.extra');
+            returningTransactionsNames.push('CommitTransactionThatReturnsString');
+            returningTransactionsReturnsDecorators.push({schema: 'String', isArray: false});
+            return new Promise((resolve, reject) => {
+                testConnector.discoverReturningTransactions({test: 'options'}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).then((results) => {
+
+                results.length.should.be.equal(15);
+
+                // The read only transaction should be the last one
+                const txIndex = results.length - 1;
+                results[txIndex].should.deep.equal({
+                    type: 'table',
+                    namespaces: true,
+                    name: 'org.acme.extra.CommitTransactionThatReturnsString',
+                    decorators: {
+                        commit: true,
+                        returns: {
+                            schema: 'String',
+                            isArray: false
+                        }
+                    }
+                });
+            });
+        });
     });
 
     describe('#discoverSchemas', () => {
