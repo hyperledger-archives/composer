@@ -1225,17 +1225,17 @@ class BusinessNetworkConnector extends Connector {
                 // Determine whether or not we are going to use namespaces.
                 let namespaces;
                 switch (this.settings.namespaces) {
-                    case 'always':
-                        namespaces = true;
-                        break;
-                    case 'required':
-                        namespaces = !namesAreUnique;
-                        break;
-                    case 'never':
-                        if (!namesAreUnique) {
-                            throw new Error('namespaces has been set to never, but type names in business network are not unique');
-                        }
-                        namespaces = false;
+                case 'always':
+                    namespaces = true;
+                    break;
+                case 'required':
+                    namespaces = !namesAreUnique;
+                    break;
+                case 'never':
+                    if (!namesAreUnique) {
+                        throw new Error('namespaces has been set to never, but type names in business network are not unique');
+                    }
+                    namespaces = false;
                 }
                 this.visitor = new LoopbackVisitor(namespaces);
 
