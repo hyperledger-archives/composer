@@ -1191,6 +1191,12 @@ class BusinessNetworkConnector extends Connector {
             });
     }
 
+    /**
+     * Retrieve the list of all returning transactions in the business network
+     * @param {Object} options the options provided by Loopback.
+     * @param {function} callback the callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
     discoverReturningTransactions(options, callback) {
         debug('discoverReturningTransactions', options);
         let models = [];
