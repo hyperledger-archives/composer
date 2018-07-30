@@ -16,7 +16,7 @@ administrative, operational, and development tasks.
 
 The {{site.data.conrefs.composer_full}} command line application can be installed using npm:
 
-`npm install -g composer-cli`
+`npm install -g composer-cli@{{site.data.conrefs.composer_version}}`
 
 *Please note: When using Ubuntu this command will fail when running in a root user shell.*
 

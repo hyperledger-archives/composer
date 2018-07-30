@@ -54,10 +54,7 @@ module.exports = (app, testMode) => {
     function getSampleNames (callback) {
         const method = 'getSampleNames';
         LOG.entry(method, null);
-        const search = url.parse('https://registry.npmjs.org/-/v1/search');
-        search.query = {
-            text : 'keywords:composer-network maintainer:hyperledger-ci'
-        };
+        const search = url.parse('https://api.npms.io/v2/search?q=keywords:composer-network+maintainer:hyperledger-ci');
         const urlToGet = url.format(search);
         client.get(urlToGet, {}, (error, data) => {
             if (error) {
@@ -101,7 +98,7 @@ module.exports = (app, testMode) => {
         const method = 'getSampleMetaData';
         LOG.entry(method, packageNames);
 
-        async.map(packageNames.objects, extractMetaData, function (err, results) {
+        async.map(packageNames.results, extractMetaData, function (err, results) {
             if (err) {
                 return callback(err);
             }

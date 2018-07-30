@@ -749,7 +749,8 @@ describe('AdminConnection', () => {
 
             it('should import a new card to card store', function() {
                 const cardName = 'conga';
-                sandbox.stub(cardStore, 'has').returns(false);
+                sandbox.stub(cardStore, 'has').resolves(false);
+                sandbox.stub(cardStore, 'getWallet').resolves('something');
                 return adminConnection.importCard(cardName, userCard)
                 .then((updated) => {
                     updated.should.be.false;
@@ -762,10 +763,16 @@ describe('AdminConnection', () => {
                 const cardName = 'conga';
                 let expectedConnection = Object.assign({}, connection);
                 expectedConnection.cardName = cardName;
-                sandbox.stub(cardStore, 'has').returns(true);
+                expectedConnection.wallet = 'something';
+                sandbox.stub(cardStore, 'has').resolves(true);
+                sandbox.stub(cardStore, 'getWallet').resolves('something');
                 return adminConnection.importCard(cardName, userCard)
                 .then((updated) => {
                     sinon.assert.calledOnce(mockConnectionManager.removeIdentity);
+                    // A bug in sinon here: the object passed to removeIdentity is held as a reference by sinon
+                    // when recording the call was invoked. Such that if the object is updated later in the method
+                    // under test, it may look as though it was called with an object with the expected properties
+                    // but actually it wasn't.
                     sinon.assert.calledWith(mockConnectionManager.removeIdentity, 'connectionName', sinon.match(expectedConnection), 'user');
                     updated.should.be.true;
                     return cardStore.get(cardName).should.eventually.deep.equal(userCard);
@@ -783,11 +790,18 @@ describe('AdminConnection', () => {
             it('should import identity if card contains credentials', function () {
                 const certificate = 'CERTIFICATE_DATA';
                 const privateKey = 'PRIVATE_KEY_DATA';
+                const cardName = 'conga';
                 userCard.setCredentials({certificate : certificate, privateKey : privateKey});
-                return adminConnection.importCard('conga', userCard).then(() => {
+                let expectedConnection = Object.assign({}, connection);
+                expectedConnection.cardName = cardName;
+                expectedConnection.wallet = 'something';
+                sandbox.stub(cardStore, 'has').resolves(true);
+                sandbox.stub(cardStore, 'getWallet').resolves('something');
+
+                return adminConnection.importCard(cardName, userCard).then(() => {
                     return sinon.assert.calledWith(mockConnectionManager.importIdentity,
                         userCard.getConnectionProfile().name,
-                        sinon.match.object,
+                        sinon.match(expectedConnection),
                         userCard.getUserName(),
                         certificate,
                         privateKey

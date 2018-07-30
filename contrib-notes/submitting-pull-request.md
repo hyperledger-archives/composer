@@ -8,7 +8,7 @@
 
 # Submitting a Pull Request
 
-*Before* submitting a pull request, please search carefully for any open or closed pull requests that relate to the issue you are targetting.
+*Before* submitting a pull request, please search carefully for any open or closed pull requests that relate to the issue you are targeting.
 
 - Fork the repo and create your branch from `master`.
 - Follow our [coding guidelines](./coding-guidelines.md) when making your coding changes.

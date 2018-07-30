@@ -48,6 +48,7 @@ You control your local {{site.data.conrefs.hlf_full}} runtime using a set of scr
 
 1. Stop the local {{site.data.conrefs.hlf_full}} runtime and remove any runtime Docker containers or images:
 
+        {{site.data.conrefs.export_fabric_version_command}}
         ~/fabric-dev-servers/stopFabric.sh
         ~/fabric-dev-servers/teardownFabric.sh
 
