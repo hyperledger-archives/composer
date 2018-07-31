@@ -389,8 +389,7 @@ describe('ClientService', () => {
             idCard.connectionProfile = {
                 name: 'myProfile',
                 membershipServicesURL: 'memberURL\.blockchain\.ibm\.com',
-                peerURL: 'peerURL\.blockchain\.ibm\.com',
-                eventHubURL: 'eventURL\.blockchain\.ibm\.com'
+                peerURL: 'peerURL\.blockchain\.ibm\.com'
             };
 
             businessNetworkConMock.issueIdentity.returns(Promise.resolve({
