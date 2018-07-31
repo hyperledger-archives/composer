@@ -279,21 +279,6 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <th>
-                                Event Url*
-                            </th>
-                            <td>
-                                <input
-                                    [ngClass]="{'error-underline': peerEventUrl.invalid && (peerEventUrl.dirty || peerEventUrl.touched)}"
-                                    type="text"
-                                    [(ngModel)]="peer.eventUrl" #peerEventUrl="ngModel" name="peerEventUrl{{peerIndex}}" required>
-                                <div *ngIf="peerEventUrl.invalid && (peerEventUrl.dirty || peerEventUrl.touched)"
-                                     class="error-message">
-                                    Peer event url is required
-                                </div>
-                            </td>
-                        </tr>
                     </table>
                     <table class="profile-info">
                         <colgroup>
