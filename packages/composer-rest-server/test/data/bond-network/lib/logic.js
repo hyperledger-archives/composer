@@ -62,6 +62,34 @@ async function publishBondReturnConcept(publishBondReturnConcept) {
 }
 
 /**
+ * Publish a new bond and return the array of concept as response
+ * @param {org.acme.bond.PublishBondReturnConceptArray} publishBondReturnConceptArray - the publishBondReturnConcept transaction
+ * @returns {org.acme.bond.PublishBondResponse} response - The concept defining the structure of the response.
+ * @transaction
+ */
+async function publishBondReturnConceptArray(publishBondReturnConceptArray) {
+
+    const factory = getFactory();
+
+    const bondRegistry = await getAssetRegistry('org.acme.bond.BondAsset');
+    // Create the bond asset.
+    let bondAsset = factory.newResource('org.acme.bond', 'BondAsset', publishBondReturnConceptArray.ISINCode);
+    bondAsset.bond = publishBondReturnConceptArray.bond;
+    // Add the bond asset to the registry.
+    await bondRegistry.add(bondAsset);
+
+    let response = [];
+    let allBonds = await bondRegistry.getAll();
+    allBonds.forEach(bond => {
+        let bondConcept = factory.newConcept('org.acme.bond', 'PublishBondResponse');
+        bondConcept.ISINCode = bond.ISINCode;
+        bondConcept.bondIssuer = bond.bond.issuer;
+        response.push(bondConcept);
+    });
+    return response;
+}
+
+/**
  * Publish a new bond and return the ISINCode
  * @param {org.acme.bond.PublishBondReturnString} publishBondReturnString - the publishBondReturnString transaction
  * @returns {string} (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string)

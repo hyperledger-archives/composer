@@ -97,6 +97,28 @@ chai.use(require('chai-http'));
                     periodMultiplier: 6
                 }
             }
+        }, {
+            $class: 'org.acme.bond.BondAsset',
+            ISINCode: 'ISIN_4',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOM',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 1000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#1',
+                maturity: '2018-02-27T21:03:52.000Z',
+                parValue: 1000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            }
         }];
 
         const participantData = [{
@@ -208,6 +230,7 @@ chai.use(require('chai-http'));
                     .then((res) => {
                         res.should.have.status(200);
                         res.should.be.json;
+                        res.body.length.should.be.equal(1);
                         res.body[0].should.be.equal(assetData[1].ISINCode);
                         return assetRegistry.get(assetData[1].ISINCode);
                     })
@@ -235,6 +258,29 @@ chai.use(require('chai-http'));
                     .then((bondRecord) => {
                         bondRecord.should.not.be.null;
                         bondRecord.getIdentifier().should.be.equal(assetData[2].ISINCode);
+                    });
+            });
+
+            it('should submit the transaction and return an array of concepts', () => {
+                return chai.request(app)
+                    .post(`/api/${prefix}PublishBondReturnConceptArray`)
+                    .send({
+                        $class: 'org.acme.bond.PublishBondReturnConceptArray',
+                        ISINCode: assetData[3].ISINCode,
+                        bond: assetData[3].bond
+                    })
+                    .then((res) => {
+                        res.should.have.status(200);
+                        res.should.be.json;
+                        for (let i = 0; i < res.body.length; i++) {
+                            res.body[i].ISINCode.should.be.equal(assetData[i].ISINCode);
+                            res.body[i].bondIssuer.should.be.equal(assetData[i].bond.issuer);
+                        }
+                        return assetRegistry.get(assetData[3].ISINCode);
+                    })
+                    .then((bondRecord) => {
+                        bondRecord.should.not.be.null;
+                        bondRecord.getIdentifier().should.be.equal(assetData[3].ISINCode);
                     });
             });
 
