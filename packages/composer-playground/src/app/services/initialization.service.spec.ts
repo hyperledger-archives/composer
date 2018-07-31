@@ -69,8 +69,7 @@ describe('InitializationService', () => {
                     },
                     'peers': [
                         {
-                            requestURL: 'grpc://peer0.org1.example.com:7051',
-                            eventURL: 'grpc://peer0.org1.example.com:7053'
+                            requestURL: 'grpc://peer0.org1.example.com:7051'
                         }
                     ]
                 },
