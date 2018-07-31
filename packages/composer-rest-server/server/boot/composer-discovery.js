@@ -722,7 +722,7 @@ function registerQueryMethods(app, dataSource, namespaces) {
 }
 
 /**
- * Register a composer named transaction method at a POST method on the REST API.
+ * to register each composer named transaction method as a POST method on the REST API
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
  * @param {Object} Transaction The LoopBack Transaction model
@@ -788,7 +788,7 @@ function registerReturningTransactionMethod(app, dataSource, Transaction, connec
 }
 
 /**
- * Register all of the Composer query methods.
+ * Register the composer methods for returning transactions on the REST API
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
  * @param {Object[]} modelDefinitions An array of model definitions.
