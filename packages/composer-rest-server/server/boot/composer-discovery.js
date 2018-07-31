@@ -722,32 +722,6 @@ function registerQueryMethods(app, dataSource, namespaces) {
 }
 
 /**
- * Create all of the Composer Return Transactions models.
- * @param {Object} app The LoopBack application.
- * @param {Object} dataSource The LoopBack data source.
- */
-function createReturningTransactionModel(app, dataSource) {
-
-    // Create the query model schema.
-    let modelSchema = {
-        name: 'ReturningTransaction',
-        description: 'Transactions with a return Param',
-        plural: '/returningtx',
-        base: 'Model'
-    };
-    modelSchema = updateModelSchema(modelSchema);
-
-    // Create the ReturningTransaction model which is an anchor for all returning transactions methods.
-    const ReturningTransaction = app.loopback.createModel(modelSchema);
-
-    // Register the query model.
-    app.model(ReturningTransaction, {
-        dataSource: dataSource,
-        public: true
-    });
-}
-
-/**
  * Register a composer named transaction method at a POST method on the REST API.
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
@@ -868,9 +842,6 @@ module.exports = function (app, callback) {
 
         // Create the query model
         createQueryModel(app, dataSource);
-
-        // Create the ReturningTransaction model
-        createReturningTransactionModel(app, dataSource);
 
         // Discover the model definitions (types) from the connector.
         // This will go and find all of the types in the business network definition.
