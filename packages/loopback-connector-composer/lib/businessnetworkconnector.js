@@ -646,10 +646,29 @@ class BusinessNetworkConnector extends Connector {
 
                             // Return the response for returning transactions
                             if (response) {
-                                // Convert JSON data to Resource if the transaction returns a Concept
-                                if (response instanceof Object && !(response instanceof Array)){
+
+                                // If transactions returns a concept, convert to JSON the Resource
+                                if (response instanceof Object && !(response instanceof Array)) {
                                     return this.businessNetworkDefinition.getSerializer().toJSON(response);
+
+                                } else if (response instanceof Array) {
+                                    // If transactions returns an array of concept, convert all Concepts to JSON
+                                    let conceptArray = [];
+
+                                    response.forEach(item => {
+                                        if (item instanceof Object) {
+                                            let obj = this.businessNetworkDefinition.getSerializer().toJSON(item);
+                                            if (obj) {
+                                                conceptArray.push(obj);
+                                            }
+                                        } else {
+                                            conceptArray.push(item);
+                                        }
+                                    });
+
+                                    return conceptArray;
                                 }
+                                // Otherwise (Primitives and ENUMs) return the response
                                 return response;
                             }
                             return resource.getIdentifier();
