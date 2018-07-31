@@ -803,7 +803,6 @@ function registerReturningTransactionMethods(app, dataSource) {
 
     return new Promise((resolve, reject) => {
         connector.discoverReturningTransactions({}, (error, transactions) => {
-            console.log('discoverReturningTransactions');
             if (error) {
                 return reject(error);
             }
