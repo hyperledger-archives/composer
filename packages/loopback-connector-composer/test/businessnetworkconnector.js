@@ -60,6 +60,13 @@ describe('BusinessNetworkConnector', () => {
         o Long theLong optional
         --> Member theMember optional
     }
+    
+    enum BaseEnum {
+        o WOW
+        o SUCH
+        o MANY
+        o MUCH
+    }
     participant BaseParticipant identified by theValue {
         o String theValue
         o String theDescription optional
@@ -68,11 +75,52 @@ describe('BusinessNetworkConnector', () => {
     }
     transaction BaseTransaction {
     }
-    @returns(BaseConcept)
-    transaction BaseTransactionReturnsConcept {
-    }
     @returns(String)
-    transaction BaseTransactionReturnsString {
+    transaction MyTransactionThatReturnsString {
+        o String value
+    }
+    @returns(String[])
+    transaction MyTransactionThatReturnsStringArray {
+        o String value
+    }
+    @returns(BaseConcept)
+    transaction MyTransactionThatReturnsConcept {
+        o String value
+    }
+    @returns(BaseConcept[])
+    transaction MyTransactionThatReturnsConceptArray {
+        o String value
+    }
+    @returns(DateTime)
+    transaction MyTransactionThatReturnsDateTime {
+        o String value
+    }
+    @returns(Integer)
+    transaction MyTransactionThatReturnsInteger {
+        o String value
+    }
+    @returns(Long)
+    transaction MyTransactionThatReturnsLong {
+        o String value
+    }
+    @returns(Double)
+    transaction MyTransactionThatReturnsDouble {
+        o String value
+    }
+    @returns(Boolean)
+    transaction MyTransactionThatReturnsBoolean {
+        o String value
+    }
+    @returns(Double[])
+    transaction MyTransactionThatReturnsDoubleArray {
+        o String value
+    }
+    @returns(BaseEnum)
+    transaction MyTransactionThatReturnsEnum {
+        o String value
+    }
+    @returns(BaseEnum[])
+    transaction MyTransactionThatReturnsEnumArray {
         o String value
     }`;
 
@@ -1316,8 +1364,18 @@ describe('BusinessNetworkConnector', () => {
         let participant;
         let transaction;
         let concept;
-        let transactionReturnsConcept;
         let transactionReturnsString;
+        let transactionThatReturnsStringArray;
+        let transactionReturnsConcept;
+        let transactionThatReturnsConceptArray;
+        let transactionThatReturnsDateTime;
+        let transactionThatReturnsInteger;
+        let transactionThatReturnsLong;
+        let transactionThatReturnsDouble;
+        let transactionThatReturnsBoolean;
+        let transactionThatReturnsDoubleArray;
+        let transactionThatReturnsEnum;
+        let transactionThatReturnsEnumArray;
 
         beforeEach(() => {
             sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
@@ -1333,8 +1391,18 @@ describe('BusinessNetworkConnector', () => {
             participant = factory.newResource('org.acme.base', 'BaseParticipant', 'myId');
             transaction = factory.newResource('org.acme.base', 'BaseTransaction', 'myId');
             concept = factory.newConcept('org.acme.base', 'BaseConcept');
-            transactionReturnsConcept = factory.newResource('org.acme.base', 'BaseTransactionReturnsConcept', 'myId');
-            transactionReturnsString = transactionReturnsString = factory.newResource('org.acme.base', 'BaseTransactionReturnsString', 'myId');
+            transactionReturnsString = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsString', 'myId');
+            transactionThatReturnsStringArray = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsStringArray', 'myId');
+            transactionReturnsConcept = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsConcept', 'myId');
+            transactionThatReturnsConceptArray = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsConceptArray', 'myId');
+            transactionThatReturnsDateTime = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsDateTime', 'myId');
+            transactionThatReturnsInteger = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsInteger', 'myId');
+            transactionThatReturnsLong = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsLong', 'myId');
+            transactionThatReturnsDouble = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsDouble', 'myId');
+            transactionThatReturnsBoolean = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsBoolean', 'myId');
+            transactionThatReturnsDoubleArray = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsDoubleArray', 'myId');
+            transactionThatReturnsEnum = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsEnum', 'myId');
+            transactionThatReturnsEnumArray = factory.newTransaction('org.acme.base', 'MyTransactionThatReturnsEnumArray', 'myId');
         });
 
         it('should use the model name as the class name if not specified', () => {
@@ -1498,32 +1566,7 @@ describe('BusinessNetworkConnector', () => {
             }).should.be.rejectedWith(/expected error/);
         });
 
-        it('should return a Concept after submitting a returning transaction', () => {
-            mockBusinessNetworkConnection.submitTransaction.resolves(concept);
-            mockSerializer.toJSON.onFirstCall().returns({theValue: 'myId'});
-            mockSerializer.fromJSON.onFirstCall().returns(transactionReturnsConcept);
-
-            return new Promise((resolve, reject) => {
-                testConnector.create('org.acme.base.BaseTransactionReturnsConcept', {
-                    $class : 'org.acme.base.BaseTransactionReturnsConcept',
-                    some : 'data'
-                }, { test: 'options' }, (error, response) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    resolve(response);
-                });
-            })
-                .then((response) => {
-                    sinon.assert.calledOnce(testConnector.ensureConnected);
-                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
-                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
-                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionReturnsConcept);
-                    response.should.deep.equal({theValue: 'myId'});
-                });
-        });
-
-        it ('should return a string aftert submitting a returning transaction', () => {
+        it ('should submit a transaction returning a string', () => {
             mockBusinessNetworkConnection.submitTransaction.resolves('myId');
             mockSerializer.fromJSON.onFirstCall().returns(transactionReturnsString);
 
@@ -1544,6 +1587,371 @@ describe('BusinessNetworkConnector', () => {
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionReturnsString);
                     should.equal(response, 'myId');
+                });
+        });
+
+        it ('should submit a transaction returning a string array', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves(['myId']);
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsStringArray);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsStringArray', {
+                    $class: 'org.acme.base.MyTransactionThatReturnsStringArray',
+                    some: 'data',
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsStringArray);
+                    response.should.deep.equal(['myId']);
+                });
+        });
+
+        it ('should submit a transaction returning an array of multiple strings', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves(['myId', 'anotherId']);
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsStringArray);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsStringArray', {
+                    $class: 'org.acme.base.MyTransactionThatReturnsStringArray',
+                    some: 'data',
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsStringArray);
+                    response.should.deep.equal(['myId', 'anotherId']);
+                });
+        });
+
+        it ('should submit a transaction returning an empty string array', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves([]);
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsStringArray);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsStringArray', {
+                    $class: 'org.acme.base.MyTransactionThatReturnsStringArray',
+                    some: 'data',
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsStringArray);
+                    response.should.deep.equal([]);
+                });
+        });
+
+        it('should submit a transaction returning a concept', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves(concept);
+            mockSerializer.toJSON.onFirstCall().returns({theValue: 'myId'});
+            mockSerializer.fromJSON.onFirstCall().returns(transactionReturnsConcept);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsConcept', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsConcept',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionReturnsConcept);
+                    response.should.deep.equal({theValue: 'myId'});
+                });
+        });
+
+        it('should submit a transaction returning a concept array', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves([concept]);
+            mockSerializer.toJSON.onFirstCall().returns({theValue: 'myId'});
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsConceptArray);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsConceptArray', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsConceptArray',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsConceptArray);
+                    response.should.deep.equal([{theValue: 'myId'}]);
+                });
+        });
+
+        it('should submit a transaction returning an array of multiple concepts', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves([concept, concept]);
+            mockSerializer.toJSON.onFirstCall().returns({theValue: 'myId'});
+            mockSerializer.toJSON.onSecondCall().returns({theValue: 'anotherId'});
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsConceptArray);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsConceptArray', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsConceptArray',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsConceptArray);
+                    response.should.deep.equal([{theValue: 'myId'}, {theValue: 'anotherId'}]);
+                });
+        });
+
+        it('should submit a transaction returning an empty concept array', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves([concept]);
+            mockSerializer.toJSON.onFirstCall().returns(undefined);
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsConceptArray);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsConceptArray', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsConceptArray',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsConceptArray);
+                    response.should.deep.equal([]);
+                });
+        });
+
+        it('should submit a transaction returning a date time', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves('2018-07-30T21_29_26_659Z');
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsDateTime);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsDateTime', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsDateTime',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsDateTime);
+                    response.should.deep.equal('2018-07-30T21_29_26_659Z');
+                });
+        });
+
+        it('should submit a transaction returning an integer', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves(100);
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsInteger);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsInteger', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsInteger',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsInteger);
+                    response.should.deep.equal(100);
+                });
+        });
+
+        it('should submit a transaction returning a long', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves(10000000000000000000000);
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsLong);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsLong', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsLong',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsLong);
+                    response.should.deep.equal(10000000000000000000000);
+                });
+        });
+
+        it('should submit a transaction returning a double', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves(10.01);
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsDouble);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsDouble', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsDouble',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsDouble);
+                    response.should.deep.equal(10.01);
+                });
+        });
+
+        it('should submit a transaction returning a boolean', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves(true);
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsBoolean);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsBoolean', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsBoolean',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsBoolean);
+                    response.should.deep.equal(true);
+                });
+        });
+
+        it('should submit a transaction returning a double array', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves([90.90,12.12]);
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsDoubleArray);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsDoubleArray', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsDoubleArray',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsDoubleArray);
+                    response.should.deep.equal([90.90,12.12]);
+                });
+        });
+
+        it('should submit a transaction returning a enum', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves('WOW');
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsEnum);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsEnum', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsEnum',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsEnum);
+                    response.should.deep.equal('WOW');
+                });
+        });
+
+        it('should submit a transaction returning a enum array', () => {
+            mockBusinessNetworkConnection.submitTransaction.resolves(['WOW']);
+            mockSerializer.fromJSON.onFirstCall().returns(transactionThatReturnsEnumArray);
+
+            return new Promise((resolve, reject) => {
+                testConnector.create('org.acme.base.MyTransactionThatReturnsEnumArray', {
+                    $class : 'org.acme.base.MyTransactionThatReturnsEnumArray',
+                    some : 'data'
+                }, { test: 'options' }, (error, response) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(response);
+                });
+            })
+                .then((response) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, transactionThatReturnsEnumArray);
+                    response.should.deep.equal(['WOW']);
                 });
         });
     });
@@ -2898,8 +3306,6 @@ describe('BusinessNetworkConnector', () => {
 
     describe('#discoverReturningTransactions', () => {
         let returningTransactionsNames = [
-            'BaseTransactionReturnsConcept',
-            'BaseTransactionReturnsString',
             'MyTransactionThatReturnsString',
             'MyTransactionThatReturnsStringArray',
             'MyTransactionThatReturnsConcept',
@@ -2914,36 +3320,7 @@ describe('BusinessNetworkConnector', () => {
             'MyTransactionThatReturnsEnumArray',
         ];
 
-        let returningTransactionsNamespaces = [
-            'org.acme.base',
-            'org.acme.base',
-            'org.acme',
-            'org.acme',
-            'org.acme',
-            'org.acme',
-            'org.acme',
-            'org.acme',
-            'org.acme',
-            'org.acme',
-            'org.acme',
-            'org.acme',
-            'org.acme',
-            'org.acme'
-        ];
-
-
         let returningTransactionsReturnsDecorators = [
-            {
-                schema: {
-                    '$class': {
-                        type: 'string',
-                        default: 'org.acme.base.BaseConcept',
-                        required: false,
-                        description: 'The class identifier for this type'
-                    }, theValue: {type: 'string', required: true}
-                }, isArray: false
-            },
-            {schema: 'String', isArray: false},
             {schema: 'String', isArray: false},
             {schema: 'String', isArray: true},
             {
@@ -2981,63 +3358,6 @@ describe('BusinessNetworkConnector', () => {
             testConnector.introspector = introspector;
             testConnector.connected = true;
             sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
-            modelManager.addModelFile(`namespace org.acme
-            import org.acme.base.BaseConcept
-
-            enum MyEnum {
-                o WOW
-                o SUCH
-                o MANY
-                o MUCH
-            }
-            @returns(String)
-            transaction MyTransactionThatReturnsString {
-                o String value
-            }
-            @returns(String[])
-            transaction MyTransactionThatReturnsStringArray {
-                o String value
-            }
-            @returns(BaseConcept)
-            transaction MyTransactionThatReturnsConcept {
-                o String value
-            }
-            @returns(BaseConcept[])
-            transaction MyTransactionThatReturnsConceptArray {
-                o String value
-            }
-            @returns(DateTime)
-            transaction MyTransactionThatReturnsDateTime {
-                o String value
-            }
-            @returns(Integer)
-            transaction MyTransactionThatReturnsInteger {
-                o String value
-            }
-            @returns(Long)
-            transaction MyTransactionThatReturnsLong {
-                o String value
-            }
-            @returns(Double)
-            transaction MyTransactionThatReturnsDouble {
-                o String value
-            }
-            @returns(Boolean)
-            transaction MyTransactionThatReturnsBoolean {
-                o String value
-            }
-            @returns(Double[])
-            transaction MyTransactionThatReturnsDoubleArray {
-                o String value
-            }
-            @returns(MyEnum)
-            transaction MyTransactionThatReturnsEnum {
-                o String value
-            }
-            @returns(MyEnum[])
-            transaction MyTransactionThatReturnsEnumArray {
-                o String value
-            }`);
         });
 
         it('should discover the returning transactions with namespaces = always', () => {
@@ -3051,14 +3371,14 @@ describe('BusinessNetworkConnector', () => {
                 });
             }).then((results) => {
 
-                results.length.should.be.equal(14);
+                results.length.should.be.equal(12);
 
                 let index = 0;
                 results.forEach(result => {
                     result.should.deep.equal({
                         type: 'table',
                         namespaces: true,
-                        name: returningTransactionsNamespaces[index] + '.' + returningTransactionsNames[index],
+                        name: 'org.acme.base.' + returningTransactionsNames[index],
                         decorators: {
                             commit: true,
                             returns: returningTransactionsReturnsDecorators[index]
@@ -3080,7 +3400,7 @@ describe('BusinessNetworkConnector', () => {
                 });
             }).then((results) => {
 
-                results.length.should.be.equal(14);
+                results.length.should.be.equal(12);
 
                 let index = 0;
                 results.forEach(result => {
@@ -3100,14 +3420,13 @@ describe('BusinessNetworkConnector', () => {
 
         it('should discover the returning transactions with namespaces = required', () => {
             testConnector.settings.namespaces = 'required';
-            modelManager.addModelFile(`namespace org.acme.extra
+            modelManager.addModelFile(`namespace org.acme.base.extra
                 @returns(String)
                 transaction MyTransactionThatReturnsString{
                     o String anotherAssetId
                 }`
             );
-            returningTransactionsNamespaces.push('org.acme.extra');
-            returningTransactionsNames.push('MyTransactionThatReturnsString');
+            returningTransactionsNames.push('extra.MyTransactionThatReturnsString');
             returningTransactionsReturnsDecorators.push({schema: 'String', isArray: false});
 
             return new Promise((resolve, reject) => {
@@ -3119,14 +3438,14 @@ describe('BusinessNetworkConnector', () => {
                 });
             }).then((results) => {
 
-                results.length.should.be.equal(15);
+                results.length.should.be.equal(13);
 
                 let index = 0;
                 results.forEach(result => {
                     result.should.deep.equal({
                         type: 'table',
                         namespaces: true,
-                        name: returningTransactionsNamespaces[index] + '.' + returningTransactionsNames[index],
+                        name: 'org.acme.base.' + returningTransactionsNames[index],
                         decorators: {
                             commit: true,
                             returns: returningTransactionsReturnsDecorators[index]
@@ -3139,14 +3458,13 @@ describe('BusinessNetworkConnector', () => {
 
         it('should throw discovering the schema from the business network if multiple matches for the short name', () => {
             testConnector.settings.namespaces = 'never';
-            modelManager.addModelFile(`namespace org.acme.extra
+            modelManager.addModelFile(`namespace org.acme.base.extra
                 @returns(String)
                 transaction MyTransactionThatReturnsString{
                     o String anotherAssetId
                 }`
             );
-            returningTransactionsNamespaces.push('org.acme.extra');
-            returningTransactionsNames.push('MyTransactionThatReturnsString');
+            returningTransactionsNames.push('extra.MyTransactionThatReturnsString');
             returningTransactionsReturnsDecorators.push({schema: 'String', isArray: false});
             return new Promise((resolve, reject) => {
                 testConnector.discoverReturningTransactions({test: 'options'}, (error, result) => {
@@ -3159,15 +3477,14 @@ describe('BusinessNetworkConnector', () => {
         });
 
         it('should discover the read-only returning transactions', () => {
-            modelManager.addModelFile(`namespace org.acme.extra
+            modelManager.addModelFile(`namespace org.acme.base.extra
                 @returns(String)
                 @commit(false)
                 transaction MyReadOnlyTransactionThatReturnsString{
                     o String anotherAssetId
                 }`
             );
-            returningTransactionsNamespaces.push('org.acme.extra');
-            returningTransactionsNames.push('MyReadOnlyTransactionThatReturnsString');
+            returningTransactionsNames.push('extra.MyReadOnlyTransactionThatReturnsString');
             returningTransactionsReturnsDecorators.push({schema: 'String', isArray: false});
             return new Promise((resolve, reject) => {
                 testConnector.discoverReturningTransactions({test: 'options'}, (error, result) => {
@@ -3178,14 +3495,14 @@ describe('BusinessNetworkConnector', () => {
                 });
             }).then((results) => {
 
-                results.length.should.be.equal(15);
+                results.length.should.be.equal(13);
 
                 // The read only transaction is the last retrieved
                 const txIndex = results.length - 1;
                 results[txIndex].should.deep.equal({
                     type: 'table',
                     namespaces: true,
-                    name: 'org.acme.extra.MyReadOnlyTransactionThatReturnsString',
+                    name: 'org.acme.base.extra.MyReadOnlyTransactionThatReturnsString',
                     decorators: {
                         commit: false,
                         returns: {
@@ -3198,15 +3515,14 @@ describe('BusinessNetworkConnector', () => {
         });
 
         it('should discover returning transactions with commit = true', () => {
-            modelManager.addModelFile(`namespace org.acme.extra
+            modelManager.addModelFile(`namespace org.acme.base.extra
             @returns(String)
             @commit(true)
             transaction CommitTransactionThatReturnsString{
                 o String anotherAssetId
             }`
             );
-            returningTransactionsNamespaces.push('org.acme.extra');
-            returningTransactionsNames.push('CommitTransactionThatReturnsString');
+            returningTransactionsNames.push('extra.CommitTransactionThatReturnsString');
             returningTransactionsReturnsDecorators.push({schema: 'String', isArray: false});
             return new Promise((resolve, reject) => {
                 testConnector.discoverReturningTransactions({test: 'options'}, (error, result) => {
@@ -3217,14 +3533,14 @@ describe('BusinessNetworkConnector', () => {
                 });
             }).then((results) => {
 
-                results.length.should.be.equal(15);
+                results.length.should.be.equal(13);
 
                 // The read only transaction should be the last one
                 const txIndex = results.length - 1;
                 results[txIndex].should.deep.equal({
                     type: 'table',
                     namespaces: true,
-                    name: 'org.acme.extra.CommitTransactionThatReturnsString',
+                    name: 'org.acme.base.extra.CommitTransactionThatReturnsString',
                     decorators: {
                         commit: true,
                         returns: {
