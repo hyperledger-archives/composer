@@ -642,7 +642,35 @@ class BusinessNetworkConnector extends Connector {
                     // Ensure we return the generated identifier, so that LoopBack can return
                     // the generated identifier back to the user.
                     return businessNetworkConnection.submitTransaction(resource)
-                        .then(() => {
+                        .then((response) => {
+
+                            // Return the response for returning transactions
+                            if (response) {
+
+                                // If transactions returns a concept, convert to JSON the Resource
+                                if (response instanceof Object && !(response instanceof Array)) {
+                                    return this.businessNetworkDefinition.getSerializer().toJSON(response);
+
+                                } else if (response instanceof Array) {
+                                    // If transactions returns an array of concept, convert all Concepts to JSON
+                                    let conceptArray = [];
+
+                                    response.forEach(item => {
+                                        if (item instanceof Object) {
+                                            let obj = this.businessNetworkDefinition.getSerializer().toJSON(item);
+                                            if (obj) {
+                                                conceptArray.push(obj);
+                                            }
+                                        } else {
+                                            conceptArray.push(item);
+                                        }
+                                    });
+
+                                    return conceptArray;
+                                }
+                                // Otherwise (Primitives and ENUMs) return the response
+                                return response;
+                            }
                             return resource.getIdentifier();
                         });
 
@@ -1123,11 +1151,11 @@ class BusinessNetworkConnector extends Connector {
                 const classDeclarations = this.introspector.getClassDeclarations()
                     .filter((classDeclaration) => {
 
-                        // Filter out anything that isn't a type we want to represent.
+                        // Filter out anything that isn't a type we want to represent, including returning transactions
                         return (classDeclaration instanceof AssetDeclaration) ||
                                (classDeclaration instanceof ConceptDeclaration) ||
                                (classDeclaration instanceof ParticipantDeclaration) ||
-                               (classDeclaration instanceof TransactionDeclaration);
+                               (classDeclaration instanceof TransactionDeclaration && !classDeclaration.getDecorator('returns'));
 
                     })
                     .filter((classDeclaration) => {
@@ -1178,6 +1206,113 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('discoverModelDefinitions', 'error thrown discovering list of model class declarations', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Retrieve the list of all returning transactions in the business network
+     * @param {Object} options the options provided by Loopback.
+     * @param {function} callback the callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    discoverReturningTransactions(options, callback) {
+        debug('discoverReturningTransactions', options);
+        let models = [];
+        let modelNames = new Set();
+        let namesAreUnique = true;
+        return this.ensureConnected(options)
+            .then(() => {
+                // Find all the transactions in the business network
+                const transactions = this.introspector.getClassDeclarations()
+                    .filter((classDeclaration) => {
+                        // Filter out anything that isn't a returning transaction
+                        return classDeclaration instanceof TransactionDeclaration &&
+                            !classDeclaration.isSystemType();
+                    });
+
+                // Look for duplicate names for returning transactions, and set a flag if so
+                transactions.forEach((classDeclaration) => {
+                    const name = classDeclaration.getName();
+                    if (modelNames.has(name)) {
+                        namesAreUnique = false;
+                    } else {
+                        modelNames.add(name);
+                    }
+                });
+
+                // Determine whether or not we are going to use namespaces.
+                let namespaces;
+                switch (this.settings.namespaces) {
+                case 'always':
+                    namespaces = true;
+                    break;
+                case 'required':
+                    namespaces = !namesAreUnique;
+                    break;
+                case 'never':
+                    if (!namesAreUnique) {
+                        throw new Error('namespaces has been set to never, but type names in business network are not unique');
+                    }
+                    namespaces = false;
+                }
+                this.visitor = new LoopbackVisitor(namespaces);
+
+                // Add all the types to the result.
+                transactions.forEach((classDeclaration) => {
+
+                    const returnsDecorator = classDeclaration.getDecorator('returns');
+                    if (returnsDecorator) {
+
+                        let returningTransactionModel = {
+                            type : 'table',
+                            name : namespaces ? classDeclaration.getFullyQualifiedName() : classDeclaration.getName(),
+                            namespaces : namespaces,
+                            decorators : {
+                                commit: classDeclaration.getDecorator('commit') ? classDeclaration.getDecorator('commit').getArguments()[0] : true
+                            }
+                        };
+
+                        let returnDecoratorSchema = null;
+                        if (returnsDecorator.isTypeEnum()) {
+
+                            // ENUM
+                            returnDecoratorSchema = returnsDecorator.getResolvedType().accept(this.visitor, {
+                                first: true,
+                                modelFile: returnsDecorator.getResolvedType().getModelFile()
+                            });
+                            returnDecoratorSchema = returnDecoratorSchema.type;
+
+                        } else if (!returnsDecorator.isPrimitive()) {
+
+                            // COMPLEX
+                            returnDecoratorSchema = returnsDecorator.getResolvedType().accept(this.visitor, {
+                                first: true,
+                                modelFile: returnsDecorator.getResolvedType().getModelFile()
+                            });
+                            returnDecoratorSchema = returnDecoratorSchema.properties;
+
+                        } else {
+
+                            // PRIMITIVE
+                            returnDecoratorSchema = returnsDecorator.getResolvedType();
+                        }
+
+                        // Add Return Decorator
+                        returningTransactionModel.decorators.returns = {
+                            schema: returnDecoratorSchema,
+                            isArray: returnsDecorator.isArray()
+                        };
+
+                        models.push(returningTransactionModel);
+                    }
+                });
+
+                debug('discoverTransactions', 'returning list of model class declarations', models);
+                callback(null, models);
+            })
+            .catch((error) => {
+                debug('discoverTransactions', 'error thrown discovering list of transaction declarations', error);
                 callback(error);
             });
     }

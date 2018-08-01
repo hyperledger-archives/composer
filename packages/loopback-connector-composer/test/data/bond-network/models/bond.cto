@@ -72,6 +72,35 @@ transaction PublishBond  {
   o Bond bond
 }
 
+@returns(String)
+transaction PublishBondReturnString  {
+  o String ISINCode
+  o Bond bond
+}
+
+@returns(String[])
+transaction PublishBondReturnStringArray  {
+  o String ISINCode
+  o Bond bond
+}
+
+@returns(PublishBondResponse)
+transaction PublishBondReturnConcept  {
+  o String ISINCode
+  o Bond bond
+}
+
+@returns(Boolean)
+@commit(false)
+transaction ExistsBond {
+  o String ISINCode
+}
+
+concept PublishBondResponse {
+  o String ISINCode
+  --> Issuer bondIssuer
+}
+
 event BondEvent {
   o String prop1
   o String prop2
