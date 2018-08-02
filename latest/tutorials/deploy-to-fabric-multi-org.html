@@ -380,6 +380,7 @@
 
 <p>If you have previously installed the Composer development environment, you will need to first tear down the Hyperledger Fabric containers provided by the development environment:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-dev-servers
+export FABRIC_VERSION=hlfv11
 ./stopFabric.sh
 ./teardownFabric.sh
 </code></pre></div>
@@ -594,7 +595,6 @@ mkdir -p /tmp/composer/org2
     "peers": {
         "peer0.org1.example.com": {
             "url": "grpcs://localhost:7051",
-            "eventUrl": "grpcs://localhost:7053",
             "grpcOptions": {
                 "ssl-target-name-override": "peer0.org1.example.com"
             },
@@ -604,7 +604,6 @@ mkdir -p /tmp/composer/org2
         },
         "peer1.org1.example.com": {
             "url": "grpcs://localhost:8051",
-            "eventUrl": "grpcs://localhost:8053",
             "grpcOptions": {
                 "ssl-target-name-override": "peer1.org1.example.com"
             },
@@ -614,7 +613,6 @@ mkdir -p /tmp/composer/org2
         },
         "peer0.org2.example.com": {
             "url": "grpcs://localhost:9051",
-            "eventUrl": "grpcs://localhost:9053",
             "grpcOptions": {
                 "ssl-target-name-override": "peer0.org2.example.com"
             },
@@ -624,7 +622,6 @@ mkdir -p /tmp/composer/org2
         },
         "peer1.org2.example.com": {
             "url": "grpcs://localhost:10051",
-            "eventUrl": "grpcs://localhost:10053",
             "grpcOptions": {
                 "ssl-target-name-override": "peer1.org2.example.com"
             },
