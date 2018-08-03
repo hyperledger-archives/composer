@@ -178,7 +178,7 @@ for i in ${PUBLISH_DOCKER_IMAGES[@]}; do
 done
 
 # Push to public Bluemix for stable and unstable, latest and next release builds
-if [[ "${BUILD_FOCUS}" != "v0.16" ]]; then
+if [[ "${BUILD_FOCUS}" == 'latest' ]]; then
     pushd ${DIR}/packages/composer-playground
     rm -rf ${DIR}/packages/composer-playground/node_modules
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
