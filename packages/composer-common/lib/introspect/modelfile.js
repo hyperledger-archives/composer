@@ -292,7 +292,7 @@ class ModelFile {
      * @private
      */
     isLocalType(type) {
-        let result = (type !== null && this.getLocalType(type) !== null);
+        let result = (type && this.getLocalType(type) !== null);
         //console.log('isLocalType ' + this.getNamespace() + ' ' + type + '=' + result );
         return result;
     }

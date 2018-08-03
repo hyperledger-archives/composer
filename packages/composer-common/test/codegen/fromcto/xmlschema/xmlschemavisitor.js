@@ -21,7 +21,9 @@ const sinon = require('sinon');
 const XmlSchemaVisitor = require('../../../../lib/codegen/fromcto/xmlschema/xmlschemavisitor.js');
 
 const BusinessNetworkDefinition = require('../../../../lib/businessnetworkdefinition');
+const ModelManager = require('../../../../lib/modelmanager');
 const ScriptManager = require('../../../../lib/scriptmanager');
+const ModelFile = require('../../../../lib/introspect/modelfile');
 const ClassDeclaration = require('../../../../lib/introspect/classdeclaration');
 const Script = require('../../../../lib/introspect/script');
 const EnumDeclaration = require('../../../../lib/introspect/enumdeclaration');
@@ -156,17 +158,30 @@ describe('XmlSchemaVisitor', function () {
             let acceptSpy = sinon.spy();
 
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockModelManager = sinon.createStubInstance(ModelManager);
+
+            mockModelManager.accept = function(visitor, parameters) {
+                return visitor.visit(this, parameters);
+            };
+
+            let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+            mockClassDeclaration.getNamespace.returns('org.imported');
+            mockModelManager.getType.returns(mockClassDeclaration);
+
+            let mockModelFile = sinon.createStubInstance(ModelFile);
+            mockModelFile.getModelManager.returns(mockModelManager);
+
+            mockModelFile.accept = function(visitor, parameters) {
+                return visitor.visit(this, parameters);
+            };
+            mockModelFile.getNamespace.returns('org.foo');
+            mockModelFile.isSystemModelFile.returns(false);
+            mockModelFile.getImports.returns(['org.imported.ImportedType']);
+            mockModelFile.getAllDeclarations.returns([mockClassDeclaration]);
+
             mockBusinessNetwork.getDescription.returns('Business network description text');
-            mockBusinessNetwork.getIntrospector.returns({
-                getClassDeclarations: () => {
-                    return [{
-                        accept: acceptSpy
-                    },
-                    {
-                        accept: acceptSpy
-                    }];
-                }
-            });
+            mockBusinessNetwork.getModelManager.returns(mockModelManager);
+            mockModelManager.getModelFiles.returns([mockModelFile]);
             mockBusinessNetwork.getIdentifier.returns('Penguin');
             mockBusinessNetwork.getScriptManager.returns({
                 accept: acceptSpy
@@ -174,14 +189,20 @@ describe('XmlSchemaVisitor', function () {
 
             xmlSchemaVisitor.visitBusinessNetwork(mockBusinessNetwork, param);
 
-            param.fileWriter.openFile.withArgs('model.xsd').calledOnce.should.be.ok;
-            param.fileWriter.writeLine.callCount.should.deep.equal(3);
-            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<?xml version=\"1.0\"?>']);
-            param.fileWriter.writeLine.getCall(1).args.should.deep.equal([0, '<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">']);
-            param.fileWriter.writeLine.getCall(2).args.should.deep.equal([0, '</xs:schema>']);
-            param.fileWriter.closeFile.calledOnce.should.be.ok;
+            //console.log('Calls to openFile: ' + param.fileWriter.openFile.getCalls());
 
-            acceptSpy.withArgs(xmlSchemaVisitor, param).calledTwice.should.be.ok;
+            param.fileWriter.openFile.withArgs('org.foo.xsd').calledOnce.should.be.ok;
+            param.fileWriter.writeLine.callCount.should.deep.equal(8);
+            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<?xml version=\"1.0\"?>']);
+            param.fileWriter.writeLine.getCall(1).args.should.deep.equal([0, '<xs:schema xmlns:org.foo=\"org.foo\" targetNamespace=\"org.foo\" elementFormDefault=\"qualified\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" ']);
+            param.fileWriter.writeLine.getCall(2).args.should.deep.equal([1, 'xmlns:org.hyperledger.composer.system=\"org.hyperledger.composer.system\"']);
+            param.fileWriter.writeLine.getCall(3).args.should.deep.equal([0, '<xmlns:org.imported=\"org.imported\"']);
+            param.fileWriter.writeLine.getCall(4).args.should.deep.equal([0, '>']);
+            param.fileWriter.writeLine.getCall(5).args.should.deep.equal([0, '<xs:import namespace=\"org.hyperledger.composer.system\" schemaLocation=\"org.hyperledger.composer.system.xsd\"/>']);
+            param.fileWriter.writeLine.getCall(6).args.should.deep.equal([0, '<xs:import namespace=\"org.imported\" schemaLocation=\"org.imported.xsd\"/>']);
+            param.fileWriter.writeLine.getCall(7).args.should.deep.equal([0, '</xs:schema>']);
+
+            param.fileWriter.closeFile.calledOnce.should.be.ok;
         });
     });
 
@@ -251,7 +272,7 @@ describe('XmlSchemaVisitor', function () {
             };
 
             let mockEnumDeclaration = sinon.createStubInstance(EnumDeclaration);
-            mockEnumDeclaration.getFullyQualifiedName.returns('org.acme.Person');
+            mockEnumDeclaration.getName.returns('Person');
             mockEnumDeclaration.getOwnProperties.returns([{
                 accept: acceptSpy
             },
@@ -259,10 +280,15 @@ describe('XmlSchemaVisitor', function () {
                 accept: acceptSpy
             }]);
 
+            let mockModelManager = sinon.createStubInstance(ModelManager);
+            let mockModelFile = sinon.createStubInstance(ModelFile);
+            mockModelFile.getModelManager.returns(mockModelManager);
+            mockEnumDeclaration.getModelFile.returns(mockModelFile);
+
             xmlSchemaVisitor.visitEnumDeclaration(mockEnumDeclaration, param);
 
-            param.fileWriter.writeLine.callCount.should.deep.equal(4);
-            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<xs:simpleType name=\"org.acme.Person\">']);
+            param.fileWriter.writeLine.callCount.should.deep.equal(5);
+            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<xs:simpleType name=\"Person\">']);
             param.fileWriter.writeLine.getCall(1).args.should.deep.equal([1, '<xs:restriction base=\"xs:string\">']);
             param.fileWriter.writeLine.getCall(2).args.should.deep.equal([1, '</xs:restriction>']);
             param.fileWriter.writeLine.getCall(3).args.should.deep.equal([0, '</xs:simpleType>']);
@@ -277,25 +303,35 @@ describe('XmlSchemaVisitor', function () {
                 fileWriter: mockFileWriter
             };
 
-            let mockParticipantDeclaration = sinon.createStubInstance(EnumDeclaration);
-            mockParticipantDeclaration.getFullyQualifiedName.returns('org.acme.Person');
-            mockParticipantDeclaration.getOwnProperties.returns([{
+            let mockSuperType = sinon.createStubInstance(EnumDeclaration);
+            mockSuperType.getName.returns('Human');
+            mockSuperType.getNamespace.returns('org.acme');
+            let mockEnumDeclaration = sinon.createStubInstance(EnumDeclaration);
+            let mockModelManager = sinon.createStubInstance(ModelManager);
+            mockModelManager.getType.returns(mockSuperType);
+            let mockModelFile = sinon.createStubInstance(ModelFile);
+            mockModelFile.getModelManager.returns(mockModelManager);
+            mockEnumDeclaration.getModelFile.returns(mockModelFile);
+
+            mockEnumDeclaration.getName.returns('Person');
+            mockEnumDeclaration.getNamespace.returns('org.acme');
+            mockEnumDeclaration.getOwnProperties.returns([{
                 accept: acceptSpy
             },
             {
                 accept: acceptSpy
             }]);
-            mockParticipantDeclaration.getSuperType.returns('org.acme.Human');
+            mockEnumDeclaration.getSuperType.returns('org.acme.Human');
 
-            xmlSchemaVisitor.visitEnumDeclaration(mockParticipantDeclaration, param);
+            xmlSchemaVisitor.visitEnumDeclaration(mockEnumDeclaration, param);
 
-            param.fileWriter.writeLine.callCount.should.deep.equal(8);
-            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<xs:simpleType name=\"org.acme.Person_Own\">']);
+            param.fileWriter.writeLine.callCount.should.deep.equal(9);
+            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<xs:simpleType name=\"Person_Own\">']);
             param.fileWriter.writeLine.getCall(1).args.should.deep.equal([1, '<xs:restriction base=\"xs:string\">']);
             param.fileWriter.writeLine.getCall(2).args.should.deep.equal([1, '</xs:restriction>']);
             param.fileWriter.writeLine.getCall(3).args.should.deep.equal([0, '</xs:simpleType>']);
-            param.fileWriter.writeLine.getCall(4).args.should.deep.equal([0, '<xs:simpleType name=\"org.acme.Person\">']);
-            param.fileWriter.writeLine.getCall(5).args.should.deep.equal([1, '<xs:union memberTypes=\"org.acme.Person_Own org.acme.Human\">']);
+            param.fileWriter.writeLine.getCall(4).args.should.deep.equal([0, '<xs:simpleType name=\"Person\" type=\"org.acme:Person_Own\">']);
+            param.fileWriter.writeLine.getCall(5).args.should.deep.equal([1, '<xs:union memberTypes=\"org.acme:Person_Own  org.acme:Human\">']);
             param.fileWriter.writeLine.getCall(6).args.should.deep.equal([1, '</xs:union>']);
             param.fileWriter.writeLine.getCall(7).args.should.deep.equal([0, '</xs:simpleType>']);
 
@@ -313,7 +349,7 @@ describe('XmlSchemaVisitor', function () {
             };
 
             let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockClassDeclaration.getFullyQualifiedName.returns('org.acme.Person');
+            mockClassDeclaration.getName.returns('Person');
             mockClassDeclaration.getOwnProperties.returns([{
                 accept: acceptSpy
             },
@@ -323,8 +359,8 @@ describe('XmlSchemaVisitor', function () {
 
             xmlSchemaVisitor.visitClassDeclaration(mockClassDeclaration, param);
 
-            param.fileWriter.writeLine.callCount.should.deep.equal(4);
-            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<xs:complexType name=\"org.acme.Person\">']);
+            param.fileWriter.writeLine.callCount.should.deep.equal(5);
+            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<xs:complexType name=\"Person\">']);
             param.fileWriter.writeLine.getCall(1).args.should.deep.equal([1, '<xs:sequence>']);
             param.fileWriter.writeLine.getCall(2).args.should.deep.equal([1, '</xs:sequence>']);
             param.fileWriter.writeLine.getCall(3).args.should.deep.equal([0, '</xs:complexType>']);
@@ -339,8 +375,18 @@ describe('XmlSchemaVisitor', function () {
                 fileWriter: mockFileWriter
             };
 
+            let mockSuperType = sinon.createStubInstance(ClassDeclaration);
+            mockSuperType.getNamespace.returns('org.acme');
+            mockSuperType.getName.returns('Human');
+            let mockModelManager = sinon.createStubInstance(ModelManager);
+            mockModelManager.getType.returns(mockSuperType);
+            let mockModelFile = sinon.createStubInstance(ModelFile);
+            mockModelFile.getModelManager.returns(mockModelManager);
+
             let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockClassDeclaration.getFullyQualifiedName.returns('org.acme.Person');
+            mockClassDeclaration.getModelFile.returns(mockModelFile);
+            mockClassDeclaration.getName.returns('Person');
+            mockClassDeclaration.getNamespace.returns('org.acme');
             mockClassDeclaration.getOwnProperties.returns([{
                 accept: acceptSpy
             },
@@ -351,10 +397,10 @@ describe('XmlSchemaVisitor', function () {
 
             xmlSchemaVisitor.visitClassDeclaration(mockClassDeclaration, param);
 
-            param.fileWriter.writeLine.callCount.should.deep.equal(8);
-            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<xs:complexType name=\"org.acme.Person\">']);
+            param.fileWriter.writeLine.callCount.should.deep.equal(9);
+            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<xs:complexType name=\"Person\">']);
             param.fileWriter.writeLine.getCall(1).args.should.deep.equal([1, '<xs:complexContent>']);
-            param.fileWriter.writeLine.getCall(2).args.should.deep.equal([1, '<xs:extension base=\"org.acme.Human\">']);
+            param.fileWriter.writeLine.getCall(2).args.should.deep.equal([1, '<xs:extension base=\"org.acme:Human\">']);
             param.fileWriter.writeLine.getCall(3).args.should.deep.equal([1, '<xs:sequence>']);
             param.fileWriter.writeLine.getCall(4).args.should.deep.equal([1, '</xs:sequence>']);
             param.fileWriter.writeLine.getCall(5).args.should.deep.equal([1, '</xs:extension>']);
@@ -366,7 +412,7 @@ describe('XmlSchemaVisitor', function () {
     });
 
     describe('visitField', () => {
-        it('should write a line for a field', () => {
+        it('should write a line for a String field', () => {
             let param = {
                 fileWriter: mockFileWriter
             };
@@ -377,6 +423,84 @@ describe('XmlSchemaVisitor', function () {
 
             xmlSchemaVisitor.visitField(mockField, param);
             param.fileWriter.writeLine.withArgs(2, '<xs:element name="Bob" type="xs:string"/>').calledOnce.should.be.ok;
+        });
+
+        it('should write a line for a Long field', () => {
+            let param = {
+                fileWriter: mockFileWriter
+            };
+
+            let mockField = sinon.createStubInstance(Field);
+            mockField.getFullyQualifiedTypeName.returns('Long');
+            mockField.getName.returns('Bob');
+
+            xmlSchemaVisitor.visitField(mockField, param);
+            param.fileWriter.writeLine.withArgs(2, '<xs:element name="Bob" type="xs:long"/>').calledOnce.should.be.ok;
+        });
+
+        it('should write a line for a Double field', () => {
+            let param = {
+                fileWriter: mockFileWriter
+            };
+
+            let mockField = sinon.createStubInstance(Field);
+            mockField.getFullyQualifiedTypeName.returns('Double');
+            mockField.getName.returns('Bob');
+
+            xmlSchemaVisitor.visitField(mockField, param);
+            param.fileWriter.writeLine.withArgs(2, '<xs:element name="Bob" type="xs:double"/>').calledOnce.should.be.ok;
+        });
+
+        it('should write a line for a DateTime field', () => {
+            let param = {
+                fileWriter: mockFileWriter
+            };
+
+            let mockField = sinon.createStubInstance(Field);
+            mockField.getFullyQualifiedTypeName.returns('DateTime');
+            mockField.getName.returns('Bob');
+
+            xmlSchemaVisitor.visitField(mockField, param);
+            param.fileWriter.writeLine.withArgs(2, '<xs:element name="Bob" type="xs:dateTime"/>').calledOnce.should.be.ok;
+        });
+
+        it('should write a line for a Boolean field', () => {
+            let param = {
+                fileWriter: mockFileWriter
+            };
+
+            let mockField = sinon.createStubInstance(Field);
+            mockField.getFullyQualifiedTypeName.returns('Boolean');
+            mockField.getName.returns('Bob');
+
+            xmlSchemaVisitor.visitField(mockField, param);
+            param.fileWriter.writeLine.withArgs(2, '<xs:element name="Bob" type="xs:boolean"/>').calledOnce.should.be.ok;
+        });
+
+        it('should write a line for a Integer field', () => {
+            let param = {
+                fileWriter: mockFileWriter
+            };
+
+            let mockField = sinon.createStubInstance(Field);
+            mockField.getFullyQualifiedTypeName.returns('Integer');
+            mockField.getName.returns('Bob');
+
+            xmlSchemaVisitor.visitField(mockField, param);
+            param.fileWriter.writeLine.withArgs(2, '<xs:element name="Bob" type="xs:integer"/>').calledOnce.should.be.ok;
+        });
+
+        it('should write a line for an object field', () => {
+            let param = {
+                fileWriter: mockFileWriter
+            };
+
+            let mockField = sinon.createStubInstance(Field);
+            mockField.getFullyQualifiedTypeName.returns('org.acme.Foo');
+            mockField.getName.returns('Bob');
+
+            xmlSchemaVisitor.visitField(mockField, param);
+            param.fileWriter.writeLine.withArgs(2, '<xs:element name="Bob" type="org.acme:Foo"/>').calledOnce.should.be.ok;
         });
 
         it('should write a line for a field thats an array', () => {
@@ -416,8 +540,7 @@ describe('XmlSchemaVisitor', function () {
             };
 
             let mockRelationship = sinon.createStubInstance(RelationshipDeclaration);
-            mockRelationship.getType.returns('string');
-            mockRelationship.getName.returns('Bob');
+            mockRelationship.getFullyQualifiedTypeName.returns('String');
 
             xmlSchemaVisitor.visitRelationship(mockRelationship, param);
 
@@ -430,7 +553,7 @@ describe('XmlSchemaVisitor', function () {
             };
 
             let mockRelationship = sinon.createStubInstance(RelationshipDeclaration);
-            mockRelationship.getType.returns('string');
+            mockRelationship.getFullyQualifiedTypeName.returns('String');
             mockRelationship.getName.returns('Bob');
             mockRelationship.isArray.returns(true);
 

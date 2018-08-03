@@ -36,7 +36,7 @@ const cmdUtil = require('../../utils/cmdutils');
 class Create {
 
     /**
-    * Command process for deploy command
+    * Command process for generate command
     * @param {string} argv argument list from composer command
 
     * @return {Promise} promise when command complete
@@ -72,13 +72,19 @@ class Create {
             case 'XmlSchema':
                 visitor = new XmlSchemaVisitor();
                 break;
-                default:
+            default:
                 throw new Error ('Unrecognized code generator: ' + argv.format );
             }
 
             let parameters = {};
             parameters.fileWriter = new FileWriter(argv.outputDir);
-            businessNetwork.accept(visitor, parameters);
+
+            try {
+                businessNetwork.accept(visitor, parameters);
+            }
+            catch(err) {
+                console.log(err);
+            }
 
             return;
 
