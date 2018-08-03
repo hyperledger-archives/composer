@@ -21,6 +21,8 @@ const sinon = require('sinon');
 const XmlSchemaVisitor = require('../../../../lib/codegen/fromcto/xmlschema/xmlschemavisitor.js');
 
 const BusinessNetworkDefinition = require('../../../../lib/businessnetworkdefinition');
+const ModelUtil = require('../../../../lib/modelutil');
+
 const ModelManager = require('../../../../lib/modelmanager');
 const ScriptManager = require('../../../../lib/scriptmanager');
 const ModelFile = require('../../../../lib/introspect/modelfile');
@@ -205,6 +207,104 @@ describe('XmlSchemaVisitor', function () {
             param.fileWriter.closeFile.calledOnce.should.be.ok;
         });
     });
+
+    describe('visitModelFile', () => {
+        it('should handle system namespace', () => {
+            let param = {
+                fileWriter: mockFileWriter
+            };
+
+            let mockModelManager = sinon.createStubInstance(ModelManager);
+
+            mockModelManager.accept = function(visitor, parameters) {
+                return visitor.visit(this, parameters);
+            };
+
+            let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+            mockClassDeclaration.getNamespace.returns('org.imported');
+            mockModelManager.getType.returns(mockClassDeclaration);
+
+            let mockModelFile = sinon.createStubInstance(ModelFile);
+            mockModelFile.getModelManager.returns(mockModelManager);
+
+            mockModelFile.accept = function(visitor, parameters) {
+                return visitor.visit(this, parameters);
+            };
+            mockModelFile.getNamespace.returns(ModelUtil.getSystemNamespace());
+            mockModelFile.isSystemModelFile.returns(true);
+            mockModelFile.getAllDeclarations.returns([mockClassDeclaration]);
+            mockModelManager.getModelFiles.returns([mockModelFile]);
+
+            xmlSchemaVisitor.visitBusinessNetwork(mockModelFile, param);
+
+            param.fileWriter.openFile.withArgs('org.hyperledger.composer.system.xsd').calledOnce.should.be.ok;
+            param.fileWriter.writeLine.callCount.should.deep.equal(4);
+            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<?xml version=\"1.0\"?>']);
+            param.fileWriter.writeLine.getCall(1).args.should.deep.equal([0, '<xs:schema xmlns:org.hyperledger.composer.system=\"org.hyperledger.composer.system\" targetNamespace=\"org.hyperledger.composer.system\" elementFormDefault=\"qualified\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" ']);
+            param.fileWriter.writeLine.getCall(2).args.should.deep.equal([0, '>']);
+            param.fileWriter.writeLine.getCall(3).args.should.deep.equal([0, '</xs:schema>']);
+
+            param.fileWriter.closeFile.calledOnce.should.be.ok;
+        });
+
+        it('should not import the same namespace more than once', () => {
+            let param = {
+                fileWriter: mockFileWriter
+            };
+
+            let mockModelManager = sinon.createStubInstance(ModelManager);
+
+            mockModelManager.accept = function(visitor, parameters) {
+                return visitor.visit(this, parameters);
+            };
+
+            let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+            mockClassDeclaration.getNamespace.returns('org.imported');
+            mockClassDeclaration.getName.returns('ImportedType');
+            mockModelManager.getType.withArgs('org.imported.ImportedType').returns(mockClassDeclaration);
+
+            let mockClassDeclaration2 = sinon.createStubInstance(ClassDeclaration);
+            mockClassDeclaration2.getNamespace.returns('org.imported');
+            mockClassDeclaration.getName.returns('AnotherImportedType');
+            mockModelManager.getType.withArgs('org.imported.AnotherImportedType').returns(mockClassDeclaration2);
+
+            let mockClassDeclaration3 = sinon.createStubInstance(ClassDeclaration);
+            mockClassDeclaration3.getNamespace.returns('org.different');
+            mockClassDeclaration3.getName.returns('Type');
+            mockModelManager.getType.withArgs('org.different.Type').returns(mockClassDeclaration3);
+
+            let mockModelFile = sinon.createStubInstance(ModelFile);
+            mockModelFile.getModelManager.returns(mockModelManager);
+
+            mockModelFile.isSystemModelFile.returns(false);
+            mockModelFile.getImports.returns(['org.imported.ImportedType','org.imported.AnotherImportedType', 'org.different.Type']);
+
+            mockModelFile.accept = function(visitor, parameters) {
+                return visitor.visit(this, parameters);
+            };
+            mockModelFile.getNamespace.returns('org.foo');
+            mockModelFile.getAllDeclarations.returns([mockClassDeclaration]);
+            mockModelManager.getModelFiles.returns([mockModelFile]);
+
+            xmlSchemaVisitor.visitBusinessNetwork(mockModelFile, param);
+
+            param.fileWriter.openFile.withArgs('org.foo.xsd').calledOnce.should.be.ok;
+            param.fileWriter.writeLine.callCount.should.deep.equal(10);
+            param.fileWriter.writeLine.getCall(0).args.should.deep.equal([0, '<?xml version=\"1.0\"?>']);
+            param.fileWriter.writeLine.getCall(1).args.should.deep.equal([0, '<xs:schema xmlns:org.foo=\"org.foo\" targetNamespace=\"org.foo\" elementFormDefault=\"qualified\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" ']);
+            param.fileWriter.writeLine.getCall(2).args.should.deep.equal([1, 'xmlns:org.hyperledger.composer.system=\"org.hyperledger.composer.system\"']);
+            param.fileWriter.writeLine.getCall(3).args.should.deep.equal([0, '<xmlns:org.imported=\"org.imported\"']);
+            param.fileWriter.writeLine.getCall(4).args.should.deep.equal([0, '<xmlns:org.different=\"org.different\"']);
+            param.fileWriter.writeLine.getCall(5).args.should.deep.equal([0, '>']);
+            param.fileWriter.writeLine.getCall(6).args.should.deep.equal([0, '<xs:import namespace=\"org.hyperledger.composer.system\" schemaLocation=\"org.hyperledger.composer.system.xsd\"/>']);
+            param.fileWriter.writeLine.getCall(7).args.should.deep.equal([0, '<xs:import namespace=\"org.imported\" schemaLocation=\"org.imported.xsd\"/>']);
+            param.fileWriter.writeLine.getCall(8).args.should.deep.equal([0, '<xs:import namespace=\"org.different\" schemaLocation=\"org.different.xsd\"/>']);
+            param.fileWriter.writeLine.getCall(9).args.should.deep.equal([0, '</xs:schema>']);
+
+            param.fileWriter.closeFile.calledOnce.should.be.ok;
+        });
+    });
+
 
     describe('visitScriptManager', () => {
         it('should call accept for each function declaration', () => {
