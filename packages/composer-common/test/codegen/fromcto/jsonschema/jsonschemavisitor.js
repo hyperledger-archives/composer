@@ -705,6 +705,10 @@ describe('JSONSchema', function () {
             mockField.isPrimitive.returns(false);
             mockField.getType.returns('Crop');
 
+            let mockClass = sinon.createStubInstance(ClassDeclaration);
+            mockClass.getModelFile.returns(mockModelFile);
+            mockField.getParent.returns(mockClass);
+
             jsonSchemaVisit.visitField(mockField, param).should.deep.equal({status: 'Ploughed'});
 
         });
