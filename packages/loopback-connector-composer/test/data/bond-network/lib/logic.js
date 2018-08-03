@@ -38,6 +38,91 @@ function publish(publishBond) {
 }
 
 /**
+ * Publish a new bond and return the concept response
+ * @param {org.acme.bond.PublishBondReturnConcept} publishBondReturnConcept - the publishBondReturnConcept transaction
+ * @returns {org.acme.bond.PublishBondResponse} response - The concept defining the structure of the response.
+ * @transaction
+ */
+async function publishBondReturnConcept(publishBondReturnConcept) {
+
+    const factory = getFactory();
+
+    const bondRegistry = await getAssetRegistry('org.acme.bond.BondAsset');
+    // Create the bond asset.
+    let bondAsset = factory.newResource('org.acme.bond', 'BondAsset', publishBondReturnConcept.ISINCode);
+    bondAsset.bond = publishBondReturnConcept.bond;
+    // Add the bond asset to the registry.
+    await bondRegistry.add(bondAsset);
+
+    // Build the concept response
+    let response = factory.newConcept('org.acme.bond', 'PublishBondResponse');
+    response.ISINCode = publishBondReturnConcept.ISINCode;
+    response.bondIssuer = publishBondReturnConcept.bond.issuer;
+    return response;
+}
+
+/**
+ * Publish a new bond and return the ISINCode
+ * @param {org.acme.bond.PublishBondReturnString} publishBondReturnString - the publishBondReturnString transaction
+ * @returns {string} (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string)
+ * @transaction
+ */
+async function publishBondReturnString(publishBondReturnString) {
+
+    const factory = getFactory();
+
+    const bondRegistry = await getAssetRegistry('org.acme.bond.BondAsset');
+    // Create the bond asset.
+    let bondAsset = factory.newResource('org.acme.bond', 'BondAsset', publishBondReturnString.ISINCode);
+    bondAsset.bond = publishBondReturnString.bond;
+    // Add the bond asset to the registry.
+    await bondRegistry.add(bondAsset);
+
+    // Build the response
+    return publishBondReturnString.ISINCode;
+}
+
+/**
+ * Publish a new bond and return the ISINCode
+ * @param {org.acme.bond.PublishBondReturnStringArray} PublishBondReturnStringArray - the publishBondReturnString transaction
+ * @returns {string[]} (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string)
+ * @transaction
+ */
+async function PublishBondReturnStringArray(PublishBondReturnStringArray) {
+
+    const factory = getFactory();
+
+    const bondRegistry = await getAssetRegistry('org.acme.bond.BondAsset');
+    // Create the bond asset.
+    let bondAsset = factory.newResource('org.acme.bond', 'BondAsset', PublishBondReturnStringArray.ISINCode);
+    bondAsset.bond = PublishBondReturnStringArray.bond;
+    // Add the bond asset to the registry.
+    await bondRegistry.add(bondAsset);
+
+    // Build the response
+    return [PublishBondReturnStringArray.ISINCode];
+}
+
+/**
+ * Publish a new bond and return the ISINCode
+ * @param {org.acme.bond.ExistsBond} existsBond - the existsBond transaction
+ * @returns {Boolean} - True if bond exists, False otherwise
+ * @transaction
+ */
+async function existsBond(existsBond) {
+
+    const factory = getFactory();
+
+    const bondRegistry = await getAssetRegistry('org.acme.bond.BondAsset');
+
+    // Get the bond from the bondRegistry
+    let bondAsset = bondRegistry.get(existsBond.ISINCode);
+
+    // Return true if bond exists
+    return !!bondAsset;
+}
+
+/**
  * Publish a new bond
  * @param {org.acme.bond.EmitBondEvent} emitBondEvent - the publishBond transaction
  * @transaction

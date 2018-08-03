@@ -80,7 +80,6 @@ export class ConnectionProfileComponent {
    private defaultPeer = {
        name: 'peer.example.com',
        url: 'grpc://localhost:7051',
-       eventUrl: 'grpc://localhost:7053',
        grpcOptions: {
            sslTargetNameOverride: null,
            grpcMaxSendMessageLength: null,
