@@ -371,13 +371,13 @@ Note that the Business Networks you create can also be deployed to Hyperledger F
 
 <ol>
 <li><p>Essential CLI tools:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-cli@0.19
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-cli@0.20
 </code></pre></div></li>
 <li><p>Utility for running a REST Server on your machine to expose your business networks as RESTful APIs:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-rest-server@0.19
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-rest-server@0.20
 </code></pre></div></li>
 <li><p>Useful utility for generating application assets:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g generator-hyperledger-composer@0.19
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g generator-hyperledger-composer@0.20
 </code></pre></div></li>
 <li><p>Yeoman is a tool for generating applications, which utilises <code>generator-hyperledger-composer</code>:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">npm install -g yo
@@ -390,7 +390,7 @@ Note that the Business Networks you create can also be deployed to Hyperledger F
 
 <ol>
 <li><p>Browser app for simple editing and testing Business Networks:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-playground@0.19
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-playground@0.20
 </code></pre></div></li>
 </ol>
 
@@ -415,9 +415,9 @@ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/pack
 tar -xvf fabric-dev-servers.tar.gz
 </code></pre></div>
 <p>A <code>zip</code> is also available if you prefer: just replace the <code>.tar.gz</code> file with <code>fabric-dev-servers.zip</code> and the <code>tar -xvf</code> command with a <code>unzip</code> command in the preceding snippet.</p></li>
-<li><p>Use the scripts you just downloaded and extracted to download a local Hyperledger Fabric v1.1 runtime:</p>
+<li><p>Use the scripts you just downloaded and extracted to download a local Hyperledger Fabric v1.2 runtime:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-dev-servers
-export FABRIC_VERSION=hlfv11
+export FABRIC_VERSION=hlfv12
 ./downloadFabric.sh
 </code></pre></div></li>
 </ol>
@@ -435,7 +435,7 @@ Read on to learn some of the most common things you&#39;ll do with this environm
 
 <p>The first time you start up a new runtime, you&#39;ll need to run the start script, then generate a PeerAdmin card:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">    cd ~/fabric-dev-servers
-    export FABRIC_VERSION=hlfv11
+    export FABRIC_VERSION=hlfv12
     ./startFabric.sh
     ./createPeerAdminCard.sh
 </code></pre></div>

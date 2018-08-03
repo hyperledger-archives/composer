@@ -380,7 +380,7 @@
 
 <p>If you have previously installed the Composer development environment, you will need to first tear down the Hyperledger Fabric containers provided by the development environment:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-dev-servers
-export FABRIC_VERSION=hlfv11
+export FABRIC_VERSION=hlfv12
 ./stopFabric.sh
 ./teardownFabric.sh
 </code></pre></div>
@@ -398,7 +398,7 @@ export FABRIC_VERSION=hlfv11
 <div class="highlight"><pre><code class="language-" data-lang="">cd fabric-samples
 </code></pre></div></li>
 <li><p>Download the platform binaries, including cryptogen using this command (three parameters needed for the bash command):</p>
-<div class="highlight"><pre><code class="language-" data-lang="">curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0  1.1.0  0.4.6
+<div class="highlight"><pre><code class="language-" data-lang="">curl -sSL http://bit.ly/2ysbOFE | bash -s 1.2.0 1.2.0 0.4.10
 </code></pre></div>
 <p>Verify the list of docker images downloaded without issues.</p>
 
