@@ -37,24 +37,24 @@ if [ ! -f ${DIR}/build.cfg ]; then
     echo "ABORT_BUILD=false" > ${DIR}/build.cfg
     echo "ABORT_CODE=0" >> ${DIR}/build.cfg
     ## regexp to match the various versions required
-    V16_REGEXP=v0\.16\.\([0-9]{1,2}\|x\)
+    V16_REGEXP='v0\.16\.([0-9]+|x)'
+    V19_REGEXP='v0\.19\.([0-9]+|x)'
 
     ## determine the build type here
-    if [ -z "${TRAVIS_TAG}" ]; then
-        BUILD_RELEASE="unstable"
-        if [[ "${TRAVIS_BRANCH}" =~ ${V16_REGEXP} ]]; then
-            BUILD_FOCUS="v0.16"
-        else
-            BUILD_FOCUS="latest"
-        fi
+    if [[ "${TRAVIS_BRANCH}" =~ ${V16_REGEXP} ]]; then
+        BUILD_FOCUS='v0.16'
+    elif [[ "${TRAVIS_BRANCH}" =~ ${V19_REGEXP} ]]; then
+        BUILD_FOCUS='v0.19'
     else
-        BUILD_RELEASE="stable"
-        if [[ "${TRAVIS_BRANCH}" =~ ${V16_REGEXP} ]]; then
-            BUILD_FOCUS="v0.16"
-        else
-            BUILD_FOCUS="latest"
-        fi
+        BUILD_FOCUS='latest'
     fi
+
+    if [ -z "${TRAVIS_TAG}" ]; then
+        BUILD_RELEASE='unstable'
+    else
+        BUILD_RELEASE='stable'
+    fi
+
 
     echo "BUILD_FOCUS=${BUILD_FOCUS}" >> ${DIR}/build.cfg
     echo "BUILD_RELEASE=${BUILD_RELEASE}" >> ${DIR}/build.cfg
