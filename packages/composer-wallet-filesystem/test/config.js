@@ -22,12 +22,12 @@ const path= require('path');
 module.exports.getStore = require('../index.js').getStore;
 module.exports.wrongConfigs = [
     { c: null, text: 'Cannot read property' },
-    { c: {}, text: 'Path must be a string' },
-    { c: { storePath : '/nothere'  }, text: 'Path'}
+    { c: { storePath : {} }, text: 'Path must be a string' },
+    { c: { storePath : '/nothere'  }, text: 'permission denied'}
 ];
 module.exports.correctConfigs=[
-    { c: null, text: 'Need configuration' },
-    { c: { storePath : '/tmp'  }, text: 'custom location'}
+    { c: {}, text: 'Default Locations' },
+    { c: { storePath : '/tmp/filestemwallet'  }, text: 'custom location'}
 ];
 module.exports.clean=async ()=>{
     await rimraf('/tmp/filestemwallet');

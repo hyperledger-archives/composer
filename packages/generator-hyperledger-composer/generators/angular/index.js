@@ -368,6 +368,9 @@ module.exports = yeoman.Base.extend({
                     });
             } else {
                 fs.readFile(this.fileName, (err, buffer) => {
+                    if (err) {
+                        throw err;
+                    }
                     return BusinessNetworkDefinition.fromArchive(buffer)
                         .then((result) => {
                             businessNetworkDefinition = result;
@@ -382,6 +385,7 @@ module.exports = yeoman.Base.extend({
             }
         });
         return completedApp.then(() => {
+            // eslint-disable-next-line no-console
             console.log('Completed generation process');
         });
 
@@ -447,6 +451,7 @@ module.exports = yeoman.Base.extend({
                                     'type': property.getType()
                                 });
                             } else {
+                                // eslint-disable-next-line no-console
                                 console.log('Unknown property type: ' + property);
                             }
                         } else if (property.constructor.name === 'RelationshipDeclaration') {
@@ -455,6 +460,7 @@ module.exports = yeoman.Base.extend({
                                 'type': property.getType()
                             });
                         } else {
+                            // eslint-disable-next-line no-console
                             console.log('Unknown property constructor name: ' + property );
                         }
                     });
@@ -523,6 +529,7 @@ module.exports = yeoman.Base.extend({
                                     'type': property.getType()
                                 });
                             } else {
+                                // eslint-disable-next-line no-console
                                 console.log('Unknown property type: ' + property);
                             }
                         } else if (property.constructor.name === 'RelationshipDeclaration') {
@@ -531,6 +538,7 @@ module.exports = yeoman.Base.extend({
                                 'type': property.getType()
                             });
                         } else {
+                            // eslint-disable-next-line no-console
                             console.log('Unknown property constructor name: ' + property );
                         }
                     });
@@ -599,6 +607,7 @@ module.exports = yeoman.Base.extend({
                                 'type': property.getType()
                             });
                         } else {
+                            // eslint-disable-next-line no-console
                             console.log('Unknown property type: ' + property);
                         }
                     } else if (property.constructor.name === 'RelationshipDeclaration') {
@@ -607,6 +616,7 @@ module.exports = yeoman.Base.extend({
                             'type': property.getType()
                         });
                     } else {
+                        // eslint-disable-next-line no-console
                         console.log('Unknown property constructor name: ' + property );
                     }
                 });
@@ -673,6 +683,7 @@ module.exports = yeoman.Base.extend({
                                     'type': property.getType()
                                 });
                             } else {
+                                // eslint-disable-next-line no-console
                                 console.log('Unknown property type: ' + property);
                             }
                         } else if (property.constructor.name === 'RelationshipDeclaration') {
@@ -681,6 +692,7 @@ module.exports = yeoman.Base.extend({
                                 'type': property.getType()
                             });
                         } else {
+                            // eslint-disable-next-line no-console
                             console.log('Unknown property constructor name: ' + property );
                         }
                     });
@@ -733,7 +745,7 @@ module.exports = yeoman.Base.extend({
                 this.fs.copyTpl(
                     this.templatePath('src/app/asset/asset.component.spec.ts'),
                     this.destinationPath('src/app/' + assetList[x].name + '/' + assetList[x].name + '.component.spec.ts'), {
-                        assetName: assetList[x].name
+                        currentAsset: assetList[x]
                     }
                 );
                 this.fs.copyTpl(
@@ -770,7 +782,7 @@ module.exports = yeoman.Base.extend({
                 this.fs.copyTpl(
                     this.templatePath('src/app/participant/participant.component.spec.ts'),
                     this.destinationPath('src/app/' + participantList[x].name + '/' + participantList[x].name + '.component.spec.ts'), {
-                        participantName: participantList[x].name
+                        currentParticipant: participantList[x]
                     }
                 );
                 this.fs.copyTpl(
@@ -886,6 +898,7 @@ module.exports = yeoman.Base.extend({
             resolve();
         });
         return createdApp.then(() => {
+            // eslint-disable-next-line no-console
             console.log('Created application!');
         });
     },
@@ -897,6 +910,7 @@ module.exports = yeoman.Base.extend({
                 npm: true
             });
         } else {
+            // eslint-disable-next-line no-console
             console.log('Skipped installing dependencies');
         }
     },
@@ -935,7 +949,8 @@ module.exports = yeoman.Base.extend({
     },
 
     end: function () {
-        shell.exec('pkill yo');
+        // eslint-disable-next-line no-console
+        console.log('Application generated');
     }
 });
 

@@ -147,8 +147,14 @@ describe('Relationship', function () {
 
         it('should error on invalid URI content', function() {
             (function () {
-                Relationship.fromURI(modelManager, 'resource://USER:PASSWORD@HOSTNAME:PORT/org.acme.l1.Person#123');
-            }).should.throw(/USER:PASSWORD@HOSTNAME:PORT/);
+                Relationship.fromURI(modelManager, 'resource://NOT-A-URI:SUCH-WRONG/org.acme.l1.Person#123');
+            }).should.throw(/Invalid URI: resource:\/\/NOT-A-URI:SUCH-WRONG/);
+        });
+
+        it('should error on URI content that Composer does not support', function() {
+            (function () {
+                Relationship.fromURI(modelManager, 'resource://USER:PASSWORD@HOSTNAME:1567/org.acme.l1.Person#123');
+            }).should.throw(/Invalid resource URI format: resource:\/\/USER:PASSWORD@HOSTNAME:1567/);
         });
 
         it('should error on missing namespace in URI', function() {

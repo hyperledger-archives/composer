@@ -18,7 +18,7 @@ If some of the tools are already installed or to do the installation step-by-ste
 
 
 ```bash
-$ curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
+$ curl -O https://hyperledger.github.io/composer/latest/prereqs-ubuntu.sh
 $ chmod u+x prereqs-ubuntu.sh
 ```
 
@@ -60,7 +60,7 @@ Suggested Plugins:
 
 [Visual Studio Code](https://code.visualstudio.com/) is a lightweight and powerful editor.
 
-Extensions may be installed into VS Code by searching the Extensions repository for the desired extension package and selecting the install option once identified. Suggested extentions include:
+Extensions may be installed into VS Code by searching the Extensions repository for the desired extension package and selecting the install option once identified. Suggested extensions include:
 
 * Composer VS Code Plugin. Provides syntax highlighting for CTO files within VS Code
 
@@ -68,7 +68,7 @@ Extensions may be installed into VS Code by searching the Extensions repository 
 
 * TSLint. Integrates the tslint linter for the TypeScript language into VS Code.
 
-* EditorConfig for VS Code. Enables the definition and maintainance of consistent coding styles between different editors and IDEs.
+* EditorConfig for VS Code. Enables the definition and maintenance of consistent coding styles between different editors and IDEs.
 
 ## License <a name="license"></a>
 Hyperledger Project source code files are made available under the Apache License, Version 2.0 (Apache-2.0), located in the LICENSE file. Hyperledger Project documentation files are made available under the Creative Commons Attribution 4.0 International License (CC-BY-4.0), available at http://creativecommons.org/licenses/by/4.0/.

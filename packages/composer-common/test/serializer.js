@@ -18,6 +18,7 @@ const Factory = require('../lib/factory');
 const ModelManager = require('../lib/modelmanager');
 const Relationship = require('../lib/model/relationship');
 const Resource = require('../lib/model/resource');
+const Concept = require('../lib/model/concept');
 const Serializer = require('../lib/serializer');
 const TypeNotFoundException = require('../lib/typenotfoundexception');
 
@@ -41,7 +42,7 @@ describe('Serializer', () => {
         asset SampleAsset identified by assetId {
         o String assetId
         --> SampleParticipant owner
-        o String value
+        o String stringValue
         }
 
         participant SampleParticipant identified by participantId {
@@ -53,6 +54,11 @@ describe('Serializer', () => {
         transaction SampleTransaction {
         --> SampleAsset asset
         o String newValue
+        }
+
+        concept Address {
+            o String city
+            o String country
         }
 
         event SampleEvent{
@@ -90,7 +96,7 @@ describe('Serializer', () => {
         it('should throw if resource not a Resource', () => {
             (() => {
                 serializer.toJSON([{}]);
-            }).should.throw(/only accepts instances of Resource/);
+            }).should.throw(/only accepts/);
         });
 
         it('should throw if the class declaration cannot be found', () => {
@@ -101,29 +107,29 @@ describe('Serializer', () => {
             }).should.throw(TypeNotFoundException, /NoSuchAsset/);
         });
 
-        it('should validate if the validate flag is set to false', () => {
+        it('should generate a JSON object and validate if the validate flag is set to true', () => {
             let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
-            resource.value = 'the value';
+            resource.stringValue = 'the value';
             let json = serializer.toJSON(resource, {
-                validate: false
+                validate: true
             });
             json.should.deep.equal({
                 $class: 'org.acme.sample.SampleAsset',
                 assetId: '1',
                 owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com',
-                value: 'the value'
+                stringValue: 'the value'
             });
         });
 
-        it('should throw validation errors if the validate flag is not specified', () => {
+        it('should throw validation errors during JSON object generation if the validate flag is not specified and errors are present', () => {
             let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             (() => {
                 serializer.toJSON(resource);
             }).should.throw(/missing required field/);
         });
 
-        it('should throw validation errors if the validate flag is set to true', () => {
+        it('should throw validation errors during JSON object generation if the validate flag is set to true and errors are present', () => {
             let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             (() => {
                 serializer.toJSON(resource, {
@@ -132,7 +138,7 @@ describe('Serializer', () => {
             }).should.throw(/missing required field/);
         });
 
-        it('should not validate if the validate flag is set to false', () => {
+        it('should generate a JSON object if errors are present but the validate flag is set to false', () => {
             let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             let json = serializer.toJSON(resource, {
                 validate: false
@@ -143,17 +149,7 @@ describe('Serializer', () => {
             });
         });
 
-        it('should handle an error parsing the generated JSON', () => {
-            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
-            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
-            resource.value = 'the value';
-            sandbox.stub(JSON, 'parse').throws();
-            (() => {
-                serializer.toJSON(resource);
-            }).should.throw(/Generated invalid JSON/);
-        });
-
-        it('should not validate if the default options specifies the validate flag set to false', () => {
+        it('should not validate during JSON object generation if the default options specifies the validate flag set to false', () => {
             serializer.setDefaultOptions({ validate: false });
             let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             let json = serializer.toJSON(resource);
@@ -163,7 +159,7 @@ describe('Serializer', () => {
             });
         });
 
-        it('should validate if the default options specifies the validate flag set to false but the input options specify true', () => {
+        it('should validate during JSON object generation if the default options specifies the validate flag set to false but the input options specify true', () => {
             serializer.setDefaultOptions({ validate: false });
             let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             (() => {
@@ -173,6 +169,32 @@ describe('Serializer', () => {
             }).should.throw(/missing required field/);
         });
 
+        it('should generate a concept', () => {
+            let address = factory.newConcept('org.acme.sample', 'Address');
+            address.city = 'Winchester';
+            address.country = 'UK';
+            const json = serializer.toJSON(address);
+            json.should.deep.equal({
+                $class: 'org.acme.sample.Address',
+                country: 'UK',
+                city: 'Winchester'
+            });
+        });
+
+        it('should generate a field if an empty string is specififed', () => {
+            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+            resource.stringValue = '';
+            let json = serializer.toJSON(resource, {
+                validate: true
+            });
+            json.should.deep.equal({
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com',
+                stringValue: ''
+            });
+        });
     });
 
     describe('#fromJSON', () => {
@@ -198,13 +220,13 @@ describe('Serializer', () => {
                 $class: 'org.acme.sample.SampleAsset',
                 assetId: '1',
                 owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com',
-                value: 'the value'
+                stringValue: 'the value'
             };
             let resource = serializer.fromJSON(json);
             resource.should.be.an.instanceOf(Resource);
             resource.assetId.should.equal('1');
             resource.owner.should.be.an.instanceOf(Relationship);
-            resource.value.should.equal('the value');
+            resource.stringValue.should.equal('the value');
         });
 
         it('should deserialize a valid transaction', () => {
@@ -233,6 +255,18 @@ describe('Serializer', () => {
             resource.timestamp.should.exist;
             resource.asset.should.be.an.instanceOf(Relationship);
             resource.newValue.should.equal('the value');
+        });
+
+        it('should deserialize a valid concept', () => {
+            let json = {
+                $class: 'org.acme.sample.Address',
+                city: 'Winchester',
+                country: 'UK'
+            };
+            let resource = serializer.fromJSON(json);
+            resource.should.be.an.instanceOf(Concept);
+            resource.city.should.equal('Winchester');
+            resource.country.should.equal('UK');
         });
 
         it('should throw validation errors if the validate flag is not specified', () => {
@@ -267,7 +301,7 @@ describe('Serializer', () => {
             resource.should.be.an.instanceOf(Resource);
             resource.assetId.should.equal('1');
             resource.owner.should.be.an.instanceOf(Relationship);
-            should.equal(resource.value, undefined);
+            should.equal(resource.stringValue, undefined);
         });
 
         it('should not validate if the default options specifies the validate flag set to false', () => {
@@ -281,7 +315,7 @@ describe('Serializer', () => {
             resource.should.be.an.instanceOf(Resource);
             resource.assetId.should.equal('1');
             resource.owner.should.be.an.instanceOf(Relationship);
-            should.equal(resource.value, undefined);
+            should.equal(resource.stringValue, undefined);
         });
 
         it('should validate if the default options specifies the validate flag set to false but the input options specify true', () => {

@@ -42,6 +42,7 @@ Let's get started!
 If you have previously installed the Composer development environment, you will need to first tear down the {{site.data.conrefs.hlf_full}} containers provided by the development environment:
 
     cd ~/fabric-dev-servers
+    {{site.data.conrefs.export_fabric_version_command}}
     ./stopFabric.sh
     ./teardownFabric.sh
 
@@ -59,11 +60,13 @@ In order to follow this tutorial, you must start up a fresh {{site.data.conrefs.
 
         cd fabric-samples
 
-2. Download the platform binaries, including cryptogen :
+2. Download the platform binaries, including cryptogen using this command (three parameters needed for the bash command):
 
-        curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0
+        curl -sSL http://bit.ly/2ysbOFE | bash -s 1.2.0 1.2.0 0.4.10
 
-    Verify the list of docker images downloaded without issues
+    Verify the list of docker images downloaded without issues.
+    
+    (Please note that you can ignore the initial "error: pathspec v1.1.0 did not match" message in the output for now)
 
 3. change directory into `first-network` sample
 
@@ -252,7 +255,6 @@ We need a base connection profile that describes this fabric network which can t
         "peers": {
             "peer0.org1.example.com": {
                 "url": "grpcs://localhost:7051",
-                "eventUrl": "grpcs://localhost:7053",
                 "grpcOptions": {
                     "ssl-target-name-override": "peer0.org1.example.com"
                 },
@@ -262,7 +264,6 @@ We need a base connection profile that describes this fabric network which can t
             },
             "peer1.org1.example.com": {
                 "url": "grpcs://localhost:8051",
-                "eventUrl": "grpcs://localhost:8053",
                 "grpcOptions": {
                     "ssl-target-name-override": "peer1.org1.example.com"
                 },
@@ -272,7 +273,6 @@ We need a base connection profile that describes this fabric network which can t
             },
             "peer0.org2.example.com": {
                 "url": "grpcs://localhost:9051",
-                "eventUrl": "grpcs://localhost:9053",
                 "grpcOptions": {
                     "ssl-target-name-override": "peer0.org2.example.com"
                 },
@@ -282,7 +282,6 @@ We need a base connection profile that describes this fabric network which can t
             },
             "peer1.org2.example.com": {
                 "url": "grpcs://localhost:10051",
-                "eventUrl": "grpcs://localhost:10053",
                 "grpcOptions": {
                     "ssl-target-name-override": "peer1.org2.example.com"
                 },
@@ -610,7 +609,7 @@ Next we will create an asset - From the command line, submit a transaction to cr
 
 To create the asset using the CLI - copy the `transaction submit` sequence below - it creates a Commodity asset for you:
 
-    composer transaction submit --card jdoe@trade-network -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.example.trading.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.trading.Commodity", "resources": [{"$class": "org.example.trading.Commodity","tradingSymbol":"EMA", "description":"Corn commodity","mainExchange":"EURONEXT", "quantity":"10","owner":"resource:org.example.trading.Trader#trader1-org1"}]}'
+    composer transaction submit --card jdoe@trade-network -d '{"$class": "org.hyperledger.composer.system.AddAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.trading.Commodity", "resources": [{"$class": "org.example.trading.Commodity","tradingSymbol":"EMA", "description":"Corn commodity","mainExchange":"EURONEXT", "quantity":"10","owner":"resource:org.example.trading.Trader#trader1-org1"}]}'
 
 Or alternatively, to create in Playground - copy the following:
 

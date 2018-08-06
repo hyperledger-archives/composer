@@ -49,7 +49,7 @@ All the log APIs can take a variable number of data arguments for logging. Any *
 
 ## Enabling the logging
 
-In commong with other node.js applications, the `DEBUG` environment variable is used. This takes a comma separated list of the modules that need to be logged.
+In common with other node.js applications, the `DEBUG` environment variable is used. This takes a comma separated list of the modules that need to be logged.
 
 Examples
 

@@ -14,7 +14,7 @@
 
 'use strict';
 
-const URI = require('uri-js');
+const URIJS = require('urijs');
 
 const ModelUtils = require('../modelutil');
 
@@ -69,14 +69,19 @@ class ResourceId {
      * @throws {Error} - On an invalid resource URI.
      */
     static fromURI(uri, legacyNamespace, legacyType) {
-        const uriComponents = URI.parse(uri, { unicodeSupport: true });
+        let uriComponents;
+        try {
+            uriComponents = URIJS.parse(uri);
+        } catch (err){
+            throw new Error('Invalid URI: ' + uri);
+        }
 
-        const scheme = uriComponents.scheme;
+        const scheme = uriComponents.protocol;
         // Accept legacy identifiers with missing URI scheme as valid
         if (scheme && scheme !== RESOURCE_SCHEME) {
             throw new Error('Invalid URI scheme: ' + uri);
         }
-        if (uriComponents.userinfo || uriComponents.host || uriComponents.port || uriComponents.query) {
+        if (uriComponents.username || uriComponents.password || uriComponents.port || uriComponents.query) {
             throw new Error('Invalid resource URI format: ' + uri);
         }
 
@@ -102,11 +107,7 @@ class ResourceId {
      */
     toURI() {
         const qualifiedType = ModelUtils.getFullyQualifiedName(this.namespace, this.type);
-        return URI.serialize({
-            scheme: RESOURCE_SCHEME,
-            path: qualifiedType,
-            fragment: this.id
-        });
+        return RESOURCE_SCHEME + ':' +  qualifiedType + '#' + encodeURI(this.id);
     }
 
 }

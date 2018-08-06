@@ -16,7 +16,6 @@
 
 const Factory = require('../../lib/factory');
 const JSONGenerator = require('../../lib/serializer/jsongenerator');
-const JSONWriter = require('../../lib/codegen/jsonwriter');
 const ModelManager = require('../../lib/modelmanager');
 const TypedStack = require('../../lib/serializer/typedstack');
 const ModelUtil = require('../../lib/modelutil');
@@ -29,11 +28,8 @@ describe('JSONGenerator', () => {
 
     let modelManager;
     let factory;
-    // let mockFactory;
     let jsonGenerator;
-    let mockJSONWriter;
     let sandbox;
-    // let assetDeclaration1;
     let relationshipDeclaration1;
     let relationshipDeclaration2;
     let relationshipDeclaration3;
@@ -101,7 +97,6 @@ describe('JSONGenerator', () => {
 
         factory = new Factory(modelManager);
 
-        // assetDeclaration1 = modelManager.getType('org.acme.SimpleAssetCircle').getProperty('myAsset');
         relationshipDeclaration1 = modelManager.getType('org.acme.MyTx1').getProperty('myAsset');
         relationshipDeclaration2 = modelManager.getType('org.acme.MyTx2').getProperty('myAssets');
         relationshipDeclaration3 = modelManager.getType('org.acme.SimpleAssetCircle').getProperty('next');
@@ -110,9 +105,7 @@ describe('JSONGenerator', () => {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        // mockFactory = sinon.createStubInstance(Factory);
         jsonGenerator = new JSONGenerator();
-        mockJSONWriter = sinon.createStubInstance(JSONWriter);
     });
 
     afterEach(() => {
@@ -131,56 +124,53 @@ describe('JSONGenerator', () => {
 
     describe('#convertToJSON', () => {
 
-        it('should serialize an integer object', () => {
-            jsonGenerator.convertToJSON({ getType: () => { return 'Integer'; } }, 123456).should.equal('123456');
+        it('should pass through an integer object', () => {
+            jsonGenerator.convertToJSON({ getType: () => { return 'Integer'; } }, 123456).should.equal(123456);
         });
 
-        it('should serialize an double object', () => {
-            jsonGenerator.convertToJSON({ getType: () => { return 'Double'; } }, 3.142).should.equal('3.142');
+        it('should pass through a double object', () => {
+            jsonGenerator.convertToJSON({ getType: () => { return 'Double'; } }, 3.142).should.equal(3.142);
         });
 
-        it('should serialize an long object', () => {
-            jsonGenerator.convertToJSON({ getType: () => { return 'Long'; } }, 1234567890).should.equal('1234567890');
+        it('should pass through a long object', () => {
+            jsonGenerator.convertToJSON({ getType: () => { return 'Long'; } }, 1234567890).should.equal(1234567890);
         });
 
-        it('should serialize an string object', () => {
-            jsonGenerator.convertToJSON({ getType: () => { return 'String'; } }, 'hello world').should.equal('"hello world"');
-            jsonGenerator.convertToJSON({ getType: () => { return 'String'; } }, 'hello"world').should.equal('"hello\\"world"');
-            jsonGenerator.convertToJSON({ getType: () => { return 'String'; } }, 'hello\nworld').should.equal('"hello\\nworld"');
+        it('should pass through a string object', () => {
+            jsonGenerator.convertToJSON({ getType: () => { return 'String'; } }, 'hello world').should.equal('hello world');
+            jsonGenerator.convertToJSON({ getType: () => { return 'String'; } }, 'hello"world').should.equal('hello"world');
+            jsonGenerator.convertToJSON({ getType: () => { return 'String'; } }, 'hello\nworld').should.equal('hello\nworld');
         });
 
-        it('should serialize a date time object', () => {
+        it('should convert a date time object to ISOString', () => {
             let date = new Date('Wed, 09 Aug 1995 00:00:00 GMT');
-            jsonGenerator.convertToJSON({ getType: () => { return 'DateTime'; } }, date).should.equal('"1995-08-09T00:00:00.000Z"');
+            jsonGenerator.convertToJSON({ getType: () => { return 'DateTime'; } }, date).should.equal('1995-08-09T00:00:00.000Z');
         });
 
-        it('should serialize an boolean object', () => {
-            jsonGenerator.convertToJSON({ getType: () => { return 'Boolean'; } }, true).should.equal('true');
-            jsonGenerator.convertToJSON({ getType: () => { return 'Boolean'; } }, false).should.equal('false');
+        it('should pass through a boolean object', () => {
+            jsonGenerator.convertToJSON({ getType: () => { return 'Boolean'; } }, true).should.equal(true);
+            jsonGenerator.convertToJSON({ getType: () => { return 'Boolean'; } }, false).should.equal(false);
         });
 
     });
 
     describe('#visitRelationshipDeclaration', () => {
 
-        it('should serialize a relationship', () => {
+        it('should generate a relationship', () => {
             let relationship = factory.newRelationship('org.acme', 'MyAsset1', 'DOGE_1');
             let options = {
                 stack: new TypedStack({}),
-                writer: mockJSONWriter,
                 modelManager: modelManager
             };
             options.stack.push(relationship);
-            jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration1, options);
-            sinon.assert.calledOnce(mockJSONWriter.writeStringValue);
-            sinon.assert.calledWith(mockJSONWriter.writeStringValue, 'resource:org.acme.MyAsset1#DOGE_1');
+            let result = jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration1, options);
+            result.should.be.equal(result, 'resource:org.acme.MyAsset1#DOGE_1');
         });
 
-        it('should throw when serializing a resource by default', () => {
+        it('should throw when generating a resource by default', () => {
             let resource = factory.newResource('org.acme', 'MyAsset1', 'DOGE_1');
             let options = {
                 stack: new TypedStack({}),
-                writer: mockJSONWriter,
                 modelManager: modelManager
             };
             options.stack.push(resource);
@@ -189,22 +179,20 @@ describe('JSONGenerator', () => {
             }).should.throw(/Did not find a relationship/);
         });
 
-        it('should serialize a resource if option is specified', () => {
+        it('should generate a resource if option is specified', () => {
             jsonGenerator = new JSONGenerator(false, true);
             let resource = factory.newResource('org.acme', 'MyAsset1', 'DOGE_1');
             let options = {
                 stack: new TypedStack({}),
-                writer: mockJSONWriter,
                 modelManager: modelManager,
                 seenResources: new Set()
             };
             options.stack.push(resource);
-            jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration1, options);
-            sinon.assert.calledOnce(mockJSONWriter.openObject);
-            sinon.assert.calledOnce(mockJSONWriter.closeObject);
+            let result = jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration1, options);
+            result.should.deep.equal({ '$class': 'org.acme.MyAsset1', assetId: 'DOGE_1' });
         });
 
-        it('should serialize a circular resource if option is specified', () => {
+        it('should generate a circular resource if option is specified', () => {
             jsonGenerator = new JSONGenerator(false, true);
             let resource1 = factory.newResource('org.acme', 'SimpleAssetCircle', 'DOGE_1');
             let resource2 = factory.newResource('org.acme', 'SimpleAssetCircle', 'DOGE_2');
@@ -214,38 +202,31 @@ describe('JSONGenerator', () => {
             resource3.next = resource1;
             let options = {
                 stack: new TypedStack({}),
-                writer: new JSONWriter(),
                 modelManager: modelManager,
                 seenResources: new Set()
             };
             options.stack.push(resource1);
-            jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration3, options);
-            options.writer.getBuffer().should.equal('"next":{"$class":"org.acme.SimpleAssetCircle","assetId":"DOGE_1","next":{"$class":"org.acme.SimpleAssetCircle","assetId":"DOGE_2","next":{"$class":"org.acme.SimpleAssetCircle","assetId":"DOGE_3","next":"resource:org.acme.SimpleAssetCircle#DOGE_1"}}}');
+            let result = jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration3, options);
+            result.should.deep.equal({'$class':'org.acme.SimpleAssetCircle','assetId':'DOGE_1','next':{'$class':'org.acme.SimpleAssetCircle','assetId':'DOGE_2','next':{'$class':'org.acme.SimpleAssetCircle','assetId':'DOGE_3','next':'resource:org.acme.SimpleAssetCircle#DOGE_1'}}});
         });
 
-        it('should serialize an array of relationships', () => {
+        it('should generate an array of relationships', () => {
             let relationship1 = factory.newRelationship('org.acme', 'MyAsset1', 'DOGE_1');
             let relationship2 = factory.newRelationship('org.acme', 'MyAsset1', 'DOGE_2');
             let options = {
                 stack: new TypedStack({}),
-                writer: mockJSONWriter,
                 modelManager: modelManager
             };
             options.stack.push([relationship1, relationship2]);
-            jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration2, options);
-            sinon.assert.calledOnce(mockJSONWriter.openArray);
-            sinon.assert.calledTwice(mockJSONWriter.writeArrayStringValue);
-            sinon.assert.calledWith(mockJSONWriter.writeArrayStringValue, 'resource:org.acme.MyAsset1#DOGE_1');
-            sinon.assert.calledWith(mockJSONWriter.writeArrayStringValue, 'resource:org.acme.MyAsset1#DOGE_2');
-            sinon.assert.calledOnce(mockJSONWriter.closeArray);
+            let result = jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration2, options);
+            result.should.deep.equal(['resource:org.acme.MyAsset1#DOGE_1', 'resource:org.acme.MyAsset1#DOGE_2']);
         });
 
-        it('should throw when serializing an array of resources by default', () => {
+        it('should throw when generating an array of resources by default', () => {
             let resource1 = factory.newResource('org.acme', 'MyAsset1', 'DOGE_1');
             let resource2 = factory.newResource('org.acme', 'MyAsset1', 'DOGE_2');
             let options = {
                 stack: new TypedStack({}),
-                writer: mockJSONWriter,
                 modelManager: modelManager
             };
             options.stack.push([resource1, resource2]);
@@ -254,23 +235,18 @@ describe('JSONGenerator', () => {
             }).should.throw(/Did not find a relationship/);
         });
 
-        it('should serialize an array of resources if option is specified', () => {
+        it('should generate an array of resources if option is specified', () => {
             jsonGenerator = new JSONGenerator(false, true);
             let resource1 = factory.newResource('org.acme', 'MyAsset1', 'DOGE_1');
             let resource2 = factory.newResource('org.acme', 'MyAsset1', 'DOGE_2');
             let options = {
                 stack: new TypedStack({}),
-                writer: mockJSONWriter,
                 modelManager: modelManager,
                 seenResources: new Set()
             };
             options.stack.push([resource1, resource2]);
-            jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration2, options);
-            sinon.assert.calledOnce(mockJSONWriter.openArray);
-            sinon.assert.calledTwice(mockJSONWriter.writeComma);
-            sinon.assert.calledTwice(mockJSONWriter.openObject);
-            sinon.assert.calledTwice(mockJSONWriter.closeObject);
-            sinon.assert.calledOnce(mockJSONWriter.closeArray);
+            let result = jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration2, options);
+            result.should.deep.equal([{ '$class': 'org.acme.MyAsset1', assetId: 'DOGE_1' }, { '$class': 'org.acme.MyAsset1', assetId: 'DOGE_2' }]);
         });
 
         it('should serialize a circular array of resources if option is specified', () => {
@@ -283,19 +259,17 @@ describe('JSONGenerator', () => {
             resource3.next = [resource1, resource2];
             let options = {
                 stack: new TypedStack({}),
-                writer: new JSONWriter(),
                 modelManager: modelManager,
                 seenResources: new Set()
             };
             options.stack.push([resource1, resource2, resource3]);
-            jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration4, options);
-            options.writer.getBuffer().should.equal('"next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_1","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_2","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_3","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_1""resource:org.acme.SimpleAssetCircleArray#DOGE_2"]}"resource:org.acme.SimpleAssetCircleArray#DOGE_1"]},{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_3","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_1",{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_2","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_3""resource:org.acme.SimpleAssetCircleArray#DOGE_1"]}]}]},{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_2","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_3","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_1","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_2""resource:org.acme.SimpleAssetCircleArray#DOGE_3"]}"resource:org.acme.SimpleAssetCircleArray#DOGE_2"]},{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_1","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_2",{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_3","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_1""resource:org.acme.SimpleAssetCircleArray#DOGE_2"]}]}]},{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_3","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_1","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_2","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_3""resource:org.acme.SimpleAssetCircleArray#DOGE_1"]}"resource:org.acme.SimpleAssetCircleArray#DOGE_3"]},{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_2","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_3",{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_1","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_2""resource:org.acme.SimpleAssetCircleArray#DOGE_3"]}]}]}]');
+            let result = jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration4, options);
+            result.should.deep.equal([{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_1','next':[{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_2','next':[{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_3','next':['resource:org.acme.SimpleAssetCircleArray#DOGE_1','resource:org.acme.SimpleAssetCircleArray#DOGE_2']},'resource:org.acme.SimpleAssetCircleArray#DOGE_1']},{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_3','next':['resource:org.acme.SimpleAssetCircleArray#DOGE_1',{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_2','next':['resource:org.acme.SimpleAssetCircleArray#DOGE_3','resource:org.acme.SimpleAssetCircleArray#DOGE_1']}]}]},{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_2','next':[{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_3','next':[{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_1','next':['resource:org.acme.SimpleAssetCircleArray#DOGE_2','resource:org.acme.SimpleAssetCircleArray#DOGE_3']},'resource:org.acme.SimpleAssetCircleArray#DOGE_2']},{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_1','next':['resource:org.acme.SimpleAssetCircleArray#DOGE_2',{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_3','next':['resource:org.acme.SimpleAssetCircleArray#DOGE_1','resource:org.acme.SimpleAssetCircleArray#DOGE_2']}]}]},{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_3','next':[{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_1','next':[{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_2','next':['resource:org.acme.SimpleAssetCircleArray#DOGE_3','resource:org.acme.SimpleAssetCircleArray#DOGE_1']},'resource:org.acme.SimpleAssetCircleArray#DOGE_3']},{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_2','next':['resource:org.acme.SimpleAssetCircleArray#DOGE_3',{'$class':'org.acme.SimpleAssetCircleArray','assetId':'DOGE_1','next':['resource:org.acme.SimpleAssetCircleArray#DOGE_2','resource:org.acme.SimpleAssetCircleArray#DOGE_3']}]}]}]);
         });
 
         it('should throw if stack contains something other than a Resource or Concept', () => {
             jsonGenerator = new JSONGenerator(false, true);
             let options = {
-                writer: new JSONWriter(),
                 stack: new TypedStack({})
             };
             options.stack.push('string');
@@ -334,19 +308,216 @@ describe('JSONGenerator', () => {
 
     describe('#visitField', () => {
 
-        it('should visit field', () => {
-            let field = {'getName':function(){return 'vehicle';},'isArray':function(){return false;},'isPrimitive':function(){return false;},
-                'getParent':function(){return 'vehicle';}};
-            let concept = factory.newConcept('org.acme.sample','Car');
+        let isEnumStub;
+
+        before(() => {
+            isEnumStub = sandbox.stub(ModelUtil,'isEnum');
+        });
+
+        it('should populate if a primitive string', () => {
+            let field = {
+                'isArray':function(){return false;},
+                'isPrimitive':function(){return true;},
+                'getType':function(){return 'String';}
+            };
+            isEnumStub.returns(false);
+            let primitive = 'WONGA-1';
             let parameters = {
                 stack: new TypedStack({}),
-                writer: new JSONWriter(),
+                modelManager: modelManager,
+                seenResources: new Set()
+            };
+            parameters.stack.push(primitive);
+            should.equal(jsonGenerator.visitField(field, parameters), 'WONGA-1');
+        });
+
+        it('should populate if a primitive integer', () => {
+            let field = {
+                'isArray':function(){return false;},
+                'isPrimitive':function(){return true;},
+                'getType':function(){return 'Integer';}
+            };
+            isEnumStub.returns(false);
+            let primitive = 2;
+            let parameters = {
+                stack: new TypedStack({}),
+                modelManager: modelManager,
+                seenResources: new Set()
+            };
+            parameters.stack.push(primitive);
+            should.equal(jsonGenerator.visitField(field, parameters), 2);
+        });
+
+        it('should populate if a primitive double', () => {
+            let field = {
+                'isArray':function(){return false;},
+                'isPrimitive':function(){return true;},
+                'getType':function(){return 'Double';}
+            };
+            isEnumStub.returns(false);
+            let primitive = 2.1212;
+            let parameters = {
+                stack: new TypedStack({}),
+                modelManager: modelManager,
+                seenResources: new Set()
+            };
+            parameters.stack.push(primitive);
+            should.equal(jsonGenerator.visitField(field, parameters), 2.1212);
+        });
+
+        it('should populate if a primitive Long', () => {
+            let field = {
+                'isArray':function(){return false;},
+                'isPrimitive':function(){return true;},
+                'getType':function(){return 'Long';}
+            };
+            isEnumStub.returns(false);
+            let primitive = 1234567890;
+            let parameters = {
+                stack: new TypedStack({}),
+                modelManager: modelManager,
+                seenResources: new Set()
+            };
+            parameters.stack.push(primitive);
+            should.equal(jsonGenerator.visitField(field, parameters), 1234567890);
+        });
+
+        it('should populate if a primitive Boolean', () => {
+            let field = {
+                'isArray':function(){return false;},
+                'isPrimitive':function(){return true;},
+                'getType':function(){return 'Boolean';}
+            };
+            isEnumStub.returns(false);
+            let primitive = true;
+            let parameters = {
+                stack: new TypedStack({}),
+                modelManager: modelManager,
+                seenResources: new Set()
+            };
+            parameters.stack.push(primitive);
+            should.equal(jsonGenerator.visitField(field, parameters), true);
+        });
+
+        it('should populate if an Enum', () => {
+            let field = {
+                'isArray':function(){return false;},
+                'isPrimitive':function(){return false;},
+                'getType':function(){return 'String';}
+            };
+            isEnumStub.returns(true);
+
+            let primitive = 'WONGA-1';
+            let parameters = {
+                stack: new TypedStack({}),
+                modelManager: modelManager,
+                seenResources: new Set()
+            };
+            parameters.stack.push(primitive);
+            should.equal(jsonGenerator.visitField(field, parameters), 'WONGA-1');
+        });
+
+        it('should recurse if an object', () => {
+            let field = {
+                'getName':function(){return 'vehicle';},
+                'isArray':function(){return false;},
+                'isPrimitive':function(){return false;},
+                'getParent':function(){return 'vehicle';},
+                'getType':function(){return 'String';}
+            };
+            isEnumStub.returns(false);
+
+            let concept = factory.newConcept('org.acme.sample','Car');
+            concept.numberPlate = 'PENGU1N';
+            concept.numberOfSeats = '2';
+            concept.color = 'GREEN';
+
+            let parameters = {
+                stack: new TypedStack({}),
                 modelManager: modelManager,
                 seenResources: new Set()
             };
             parameters.stack.push(concept);
-            sinon.stub(ModelUtil.prototype.constructor,'isEnum').returns(false);
-            should.equal(jsonGenerator.visitField(field,parameters),null);
+
+            let spy = sinon.spy(jsonGenerator, 'visitField');
+
+            let result = jsonGenerator.visitField(field,parameters);
+            result.should.deep.equal({ '$class': 'org.acme.sample.Car',
+                color: 'GREEN',
+                numberOfSeats: '2',
+                numberPlate: 'PENGU1N' });
+            spy.callCount.should.equal(4); // We call it once at the start, then it recurses three times
+        });
+
+        it('should populate an array if array contains primitives', () => {
+            let field = {
+                'isArray':function(){return true;},
+                'isPrimitive':function(){return true;},
+                'getType':function(){return 'String';}
+            };
+            let array = ['WOMBAT','RULEZ', 'OK'];
+            let parameters = {
+                stack: new TypedStack({}),
+                modelManager: modelManager,
+                seenResources: new Set()
+            };
+            parameters.stack.push(array);
+            isEnumStub.returns(false);
+
+            let result = jsonGenerator.visitField(field,parameters);
+            result.should.be.deep.equal([ 'WOMBAT', 'RULEZ', 'OK' ]);
+        });
+
+        it('should populate an array if array contains a Enums', () => {
+            let field = {
+                'getName':function(){return 'vehicle';},
+                'isArray':function(){return false;},
+                'isPrimitive':function(){return false;},
+                'getParent':function(){return 'vehicle';},
+                'getType':function(){return 'Integer';}
+            };
+            let myEnum = {
+                RED : 0,
+                GREEN : 1,
+                BLUE : 2
+            };
+            let array = [myEnum.RED, myEnum.BLUE, myEnum.GREEN];
+            let parameters = {
+                stack: new TypedStack({}),
+                modelManager: modelManager,
+            };
+            parameters.stack.push(array);
+            isEnumStub.returns(true);
+
+            let result = jsonGenerator.visitField(field,parameters);
+            result.should.deep.equal([0, 2, 1]);
+        });
+
+        it('should recurse if array contains an object', () => {
+            let field = {
+                'getName':function(){return 'vehicle';},
+                'isArray':function(){return true;},
+                'isPrimitive':function(){return false;},
+                'getParent':function(){return 'vehicle';},
+                'getType':function(){return 'String';}
+            };
+            let child1 = factory.newResource('org.acme','MyAsset1','child1');
+            let child2 = factory.newResource('org.acme','MyAsset1','child2');
+            let myAssets = [child1, child2];
+            let parameters = {
+                stack: new TypedStack({}),
+                modelManager: modelManager
+            };
+            parameters.stack.push(myAssets);
+            isEnumStub.returns(false);
+            let spy = sinon.spy(jsonGenerator, 'visitField');
+
+            let result = jsonGenerator.visitField(field,parameters);
+            result.should.deep.equal([
+                { '$class': 'org.acme.MyAsset1', assetId: 'child1' },
+                { '$class': 'org.acme.MyAsset1', assetId: 'child2' } ]);
+
+            spy.callCount.should.equal(3); // we call it once at the start, the function recurses into it twice
         });
 
     });

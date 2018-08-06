@@ -14,7 +14,7 @@
 
 'use strict';
 
-const { Certificate, CertificateUtil, Connection } = require('composer-common');
+const { Certificate, CertificateUtil, Connection, Util } = require('composer-common');
 const { EmbeddedContainer, EmbeddedContext, EmbeddedDataService } = require('composer-runtime-embedded');
 const EmbeddedSecurityContext = require('./embeddedsecuritycontext');
 const { Engine, InstalledBusinessNetwork } = require('composer-runtime');
@@ -266,8 +266,8 @@ class EmbeddedConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that is resolved with the data returned by the
-     * chaincode function once it has been invoked, or rejected with an error.
+     * @return {Buffer} A buffer containing the data returned by the chaincode function,
+     * or null if no data was returned.
      */
     async queryChainCode(securityContext, functionName, args) {
         if (!this.businessNetworkIdentifier) {
@@ -278,7 +278,7 @@ class EmbeddedConnection extends Connection {
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
         let context = new EmbeddedContext(chaincode.engine, identity, this, chaincode.installedBusinessNetwork);
         const data = await chaincode.engine.query(context, functionName, args);
-        return Buffer.from(JSON.stringify(data));
+        return !Util.isNull(data) ? Buffer.from(JSON.stringify(data)) : null;
     }
 
     /**
@@ -286,17 +286,20 @@ class EmbeddedConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
+     * @return {Buffer} A buffer containing the data returned by the chaincode function,
+     * or null if no data was returned.
      */
-    async invokeChainCode(securityContext, functionName, args) {
+    async invokeChainCode(securityContext, functionName, args, additionalConnectorOptions = {}) {
         if (!this.businessNetworkIdentifier) {
             throw new Error('No business network has been specified for this connection');
         }
-
         let identity = securityContext.getIdentity();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
-        let context = new EmbeddedContext(chaincode.engine, identity, this, chaincode.installedBusinessNetwork);
-        await chaincode.engine.invoke(context, functionName, args);
+        let context = new EmbeddedContext(chaincode.engine, identity, this, chaincode.installedBusinessNetwork, additionalConnectorOptions);
+        const data = await chaincode.engine.invoke(context, functionName, args);
+        return !Util.isNull(data) ? Buffer.from(JSON.stringify(data)) : null;
     }
 
     /**
@@ -442,6 +445,18 @@ class EmbeddedConnection extends Connection {
      */
     async createTransactionId(securityContext) {
         return null;
+    }
+
+    /**
+     * Undeploy a business network definition.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {String} networkName Name of the business network to remove
+     * @async
+     */
+    async undeploy(securityContext, networkName) {
+        await this.dataService.removeAllData();
+        delete businessNetworks[networkName];
+        delete chaincodes[networkName];
     }
 
     /**

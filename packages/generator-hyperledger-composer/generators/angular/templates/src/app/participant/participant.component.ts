@@ -41,7 +41,7 @@ export class <%= currentParticipant.name %>Component implements OnInit {
         <%_}_%>
 
 
-  constructor(private service<%= currentParticipant.name %>: <%= currentParticipant.name %>Service, fb: FormBuilder) {
+  constructor(public service<%= currentParticipant.name %>: <%= currentParticipant.name %>Service, fb: FormBuilder) {
     this.myForm = fb.group({
           <%_ for(var x=0;x<currentParticipant.properties.length;x++){ _%>
               <%_ if(x == currentParticipant.properties.length-1){ _%>
@@ -138,6 +138,7 @@ export class <%= currentParticipant.name %>Component implements OnInit {
               <%_ } _%>
             <%_ }_%>
       });
+      this.loadAll(); 
     })
     .catch((error) => {
       if (error === 'Server error') {
@@ -169,6 +170,7 @@ export class <%= currentParticipant.name %>Component implements OnInit {
     .toPromise()
     .then(() => {
       this.errorMessage = null;
+      this.loadAll();
     })
     .catch((error) => {
       if (error === 'Server error') {
@@ -188,6 +190,7 @@ export class <%= currentParticipant.name %>Component implements OnInit {
     .toPromise()
     .then(() => {
       this.errorMessage = null;
+      this.loadAll();
     })
     .catch((error) => {
       if (error === 'Server error') {

@@ -16,9 +16,8 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 /* tslint:disable:object-literal-key-quotes */
-import { ComponentFixture, TestBed, fakeAsync, tick, async } from '@angular/core/testing';
-import { EventEmitter } from '@angular/core';
-import { FormsModule, Validators } from '@angular/forms';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { ConnectionProfileComponent } from './connection-profile.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
@@ -95,7 +94,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'].should.deep.equal([{
                 name: 'peer.example.com',
                 url: 'grpc://localhost:7051',
-                eventUrl: 'grpc://localhost:7053',
                 grpcOptions: {
                     sslTargetNameOverride: null,
                     grpcMaxSendMessageLength: null,
@@ -186,7 +184,6 @@ describe('ConnectionProfileComponent', () => {
                 peers: {
                     myPeer1: {
                         url: 'myUrl',
-                        eventUrl: 'myEventUrl',
                         grpcOptions: {
                           'ssl-target-name-override': 'myPeer1',
                           'grpc-max-send-message-length': 25,
@@ -198,7 +195,6 @@ describe('ConnectionProfileComponent', () => {
                     },
                     myPeer2: {
                         url: 'myUrl2',
-                        eventUrl: 'myEventUrl2',
                         grpcOptions: {
                           'ssl-target-name-override': 'myPeer2',
                           'grpc-max-send-message-length': 35,
@@ -261,7 +257,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'][0].should.deep.equal({
                 name: 'myPeer1',
                 url: 'myUrl',
-                eventUrl: 'myEventUrl',
                 grpcOptions: {
                     sslTargetNameOverride: 'myPeer1',
                     grpcMaxSendMessageLength: 25,
@@ -275,7 +270,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'][1].should.deep.equal({
                 name: 'myPeer2',
                 url: 'myUrl2',
-                eventUrl: 'myEventUrl2',
                 grpcOptions: {
                   sslTargetNameOverride: 'myPeer2',
                   grpcMaxSendMessageLength: 35,
@@ -360,7 +354,6 @@ describe('ConnectionProfileComponent', () => {
                 peers: {
                     myPeer1: {
                         url: 'myUrl',
-                        eventUrl: 'myEventUrl',
                         tlsCACerts: {
                             pem: 'myCert'
                         }
@@ -368,7 +361,6 @@ describe('ConnectionProfileComponent', () => {
                     myPeer2: {
                         url:
                             'myUrl2',
-                        eventUrl: 'myEventUrl2',
                         tlsCACerts: {
                             pem: 'myCert2'
                         }
@@ -430,7 +422,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'][0].should.deep.equal({
                 name: 'myPeer1',
                 url: 'myUrl',
-                eventUrl: 'myEventUrl',
                 grpcOptions: {},
                 tlsCACerts: {
                     pem: 'myCert'
@@ -440,7 +431,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'][1].should.deep.equal({
                 name: 'myPeer2',
                 url: 'myUrl2',
-                eventUrl: 'myEventUrl2',
                 grpcOptions: {},
                 tlsCACerts: {
                     pem: 'myCert2'
@@ -522,7 +512,6 @@ describe('ConnectionProfileComponent', () => {
                 peers: {
                     myPeer1: {
                         url: 'myUrl',
-                        eventUrl: 'myEventUrl',
                         tlsCACerts: {
                             pem: 'myCert'
                         },
@@ -531,7 +520,6 @@ describe('ConnectionProfileComponent', () => {
                     myPeer2: {
                         url:
                             'myUrl2',
-                        eventUrl: 'myEventUrl2',
                         tlsCACerts: {
                             pem: 'myCert2'
                         },
@@ -594,7 +582,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'][0].should.deep.equal({
                 name: 'myPeer1',
                 url: 'myUrl',
-                eventUrl: 'myEventUrl',
                 grpcOptions: {},
                 tlsCACerts: {
                     pem: 'myCert'
@@ -604,7 +591,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'][1].should.deep.equal({
                 name: 'myPeer2',
                 url: 'myUrl2',
-                eventUrl: 'myEventUrl2',
                 grpcOptions: {},
                 tlsCACerts: {
                     pem: 'myCert2'
@@ -692,7 +678,6 @@ describe('ConnectionProfileComponent', () => {
                 peers: {
                     myPeer1: {
                         url: 'myUrl',
-                        eventUrl: 'myEventUrl',
                         grpcOptions: {
                           'ssl-target-name-override': 'myPeer1',
                           'grpc-max-send-message-length': 25,
@@ -704,7 +689,6 @@ describe('ConnectionProfileComponent', () => {
                     },
                     myPeer2: {
                         url: 'myUrl2',
-                        eventUrl: 'myEventUrl2',
                         grpcOptions: {
                           'ssl-target-name-override': 'myPeer2',
                           'grpc-max-send-message-length': 35,
@@ -764,7 +748,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'][0].should.deep.equal({
                 name: 'myPeer1',
                 url: 'myUrl',
-                eventUrl: 'myEventUrl',
                 grpcOptions: {
                     sslTargetNameOverride: 'myPeer1',
                     grpcMaxSendMessageLength: 25,
@@ -778,7 +761,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'][1].should.deep.equal({
                 name: 'myPeer2',
                 url: 'myUrl2',
-                eventUrl: 'myEventUrl2',
                 grpcOptions: {
                   sslTargetNameOverride: 'myPeer2',
                   grpcMaxSendMessageLength: 35,
@@ -865,7 +847,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'][1].should.deep.equal({
               name: 'peer1.example.com',
               url: 'grpc://localhost:7051',
-              eventUrl: 'grpc://localhost:7053',
               grpcOptions: {
                   sslTargetNameOverride: null,
                   grpcMaxSendMessageLength: null,
@@ -1049,7 +1030,6 @@ describe('ConnectionProfileComponent', () => {
                 peers: {
                     myPeer1: {
                         url: 'myUrl',
-                        eventUrl: 'myEventUrl',
                         tlsCACerts: {
                             pem: 'myCert'
                         },
@@ -1066,7 +1046,6 @@ describe('ConnectionProfileComponent', () => {
                     myPeer2: {
                         url:
                             'myUrl2',
-                        eventUrl: 'myEventUrl2',
                         tlsCACerts: {
                             pem: 'myCert2'
                         },
@@ -1130,7 +1109,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'].push({
                 name: 'myPeer1',
                 url: 'myUrl',
-                eventUrl: 'myEventUrl',
                 grpcOptions: {
                     sslTargetNameOverride: 'myPeer1',
                     grpcMaxSendMessageLength: 25,
@@ -1149,7 +1127,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'].push({
                 name: 'myPeer2',
                 url: 'myUrl2',
-                eventUrl: 'myEventUrl2',
                 grpcOptions: {
                     sslTargetNameOverride: 'myPeer2',
                     grpcMaxSendMessageLength: 35,
@@ -1238,7 +1215,6 @@ describe('ConnectionProfileComponent', () => {
                 peers: {
                     myPeer1: {
                         url: 'myUrl',
-                        eventUrl: 'myEventUrl',
                         grpcOptions: {},
                         endorsingPeer: true,
                         chaincodeQuery: true,
@@ -1248,7 +1224,6 @@ describe('ConnectionProfileComponent', () => {
                     myPeer2: {
                         url:
                             'myUrl2',
-                        eventUrl: 'myEventUrl2',
                         grpcOptions: {},
                         endorsingPeer: true,
                         chaincodeQuery: true,
@@ -1293,7 +1268,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'].push({
                 name: 'myPeer1',
                 url: 'myUrl',
-                eventUrl: 'myEventUrl',
                 grpcOptions: {},
                 organization: true,
                 endorsingPeer: true,
@@ -1305,7 +1279,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'].push({
                 name: 'myPeer2',
                 url: 'myUrl2',
-                eventUrl: 'myEventUrl2',
                 grpcOptions: {},
                 organization: true,
                 endorsingPeer: true,
@@ -1393,7 +1366,6 @@ describe('ConnectionProfileComponent', () => {
                 peers: {
                     myPeer1: {
                         url: 'myUrl',
-                        eventUrl: 'myEventUrl',
                         tlsCACerts: {
                             pem: 'myCert'
                         },
@@ -1410,7 +1382,6 @@ describe('ConnectionProfileComponent', () => {
                     myPeer2: {
                         url:
                             'myUrl2',
-                        eventUrl: 'myEventUrl2',
                         tlsCACerts: {
                             pem: 'myCert2'
                         },
@@ -1471,7 +1442,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'].push({
                 name: 'myPeer1',
                 url: 'myUrl',
-                eventUrl: 'myEventUrl',
                 grpcOptions: {
                     sslTargetNameOverride: 'myPeer1',
                     grpcMaxSendMessageLength: 25,
@@ -1490,7 +1460,6 @@ describe('ConnectionProfileComponent', () => {
             component['peers'].push({
                 name: 'myPeer2',
                 url: 'myUrl2',
-                eventUrl: 'myEventUrl2',
                 grpcOptions: {
                     sslTargetNameOverride: 'myPeer2',
                     grpcMaxSendMessageLength: 35,

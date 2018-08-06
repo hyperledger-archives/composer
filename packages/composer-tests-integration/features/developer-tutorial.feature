@@ -113,4 +113,5 @@ Feature: Developer tutorial
     Scenario: Finally, shutdown the REST server and angular app
          When I kill task named REST-SERVER
          When I kill task named NPM
+         When I kill process on port 4200
 

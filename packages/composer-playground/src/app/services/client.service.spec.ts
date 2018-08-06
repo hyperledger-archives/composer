@@ -15,30 +15,29 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
 import { ClientService } from './client.service';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
-
-let should = chai.should();
-let expect = chai.expect;
-
 import { AdminService } from './admin.service';
 import { AlertService } from '../basic-modals/alert.service';
 import {
-    BusinessNetworkDefinition,
-    ModelFile,
-    Script,
     AclFile,
-    QueryFile,
+    BusinessNetworkCardStore,
+    BusinessNetworkDefinition,
     IdCard,
-    BusinessNetworkCardStore
+    ModelFile,
+    QueryFile,
+    Script
 } from 'composer-common';
 import { BusinessNetworkConnection } from 'composer-client';
 import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
 import { BusinessNetworkCardStoreService } from './cardStores/businessnetworkcardstore.service';
+
+let should = chai.should();
+let expect = chai.expect;
 
 describe('ClientService', () => {
 
@@ -75,7 +74,7 @@ describe('ClientService', () => {
         alertMock.errorStatus$ = {next: sinon.stub()};
         alertMock.busyStatus$ = {next: sinon.stub()};
 
-        idCard = new IdCard({userName: 'banana'}, {type: 'web', name: 'myProfile'});
+        idCard = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': '$default'});
         identityCardServiceMock.getCurrentIdentityCard.returns(idCard);
         identityCardServiceMock.getCurrentCardRef.returns('cardRef');
 
@@ -213,7 +212,36 @@ describe('ClientService', () => {
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
                 title: 'Establishing connection',
-                text: 'Using the connection profile myProfile'
+                text: 'Using the connection profile web',
+                force: true
+            });
+
+            adminMock.connect.should.have.been.calledWith('cardRef', idCard, false);
+
+            refreshMock.should.have.been.called;
+
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith(null);
+
+            service['isConnected'].should.equal(true);
+            should.not.exist(service['connectingPromise']);
+        })));
+
+        it('should connect if not connected to hlfv1 connection', fakeAsync(inject([ClientService], (service: ClientService) => {
+            idCard = new IdCard({userName: 'banana'}, {'x-type': 'hlfv1', 'name': 'myProfile'});
+            identityCardServiceMock.getCurrentIdentityCard.returns(idCard);
+
+            adminMock.connect.returns(Promise.resolve());
+            let refreshMock = sinon.stub(service, 'refresh').returns(Promise.resolve());
+
+            service.ensureConnected(false);
+
+            tick();
+
+            alertMock.busyStatus$.next.should.have.been.calledTwice;
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
+                title: 'Establishing connection',
+                text: 'Using the connection profile myProfile',
+                force: true
             });
 
             adminMock.connect.should.have.been.calledWith('cardRef', idCard, false);
@@ -272,7 +300,29 @@ describe('ClientService', () => {
             businessNetworkConMock.connect.should.have.been.calledWith('cardRef');
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Refreshing Connection',
-                text: 'refreshing the connection to myProfile'
+                text: 'refreshing the connection to web',
+                force: true
+            });
+        })));
+
+        it('should diconnect and reconnect the business network connection with hlfv1 connection', fakeAsync(inject([ClientService], (service: ClientService) => {
+            idCard = new IdCard({userName: 'banana'}, {'x-type': 'hlfv1', 'name': 'myProfile'});
+            identityCardServiceMock.getCurrentIdentityCard.returns(idCard);
+
+            let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+            businessNetworkConMock.disconnect.returns(Promise.resolve());
+
+            service.refresh();
+
+            tick();
+
+            businessNetworkConMock.disconnect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledWith('cardRef');
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Refreshing Connection',
+                text: 'refreshing the connection to myProfile',
+                force: true
             });
         })));
 
@@ -289,7 +339,8 @@ describe('ClientService', () => {
             businessNetworkConMock.connect.should.have.been.calledWith('cardRef');
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Refreshing Connection',
-                text: 'refreshing the connection to myProfile'
+                text: 'refreshing the connection to web',
+                force: true
             });
         })));
     });
@@ -338,8 +389,7 @@ describe('ClientService', () => {
             idCard.connectionProfile = {
                 name: 'myProfile',
                 membershipServicesURL: 'memberURL\.blockchain\.ibm\.com',
-                peerURL: 'peerURL\.blockchain\.ibm\.com',
-                eventHubURL: 'eventURL\.blockchain\.ibm\.com'
+                peerURL: 'peerURL\.blockchain\.ibm\.com'
             };
 
             businessNetworkConMock.issueIdentity.returns(Promise.resolve({

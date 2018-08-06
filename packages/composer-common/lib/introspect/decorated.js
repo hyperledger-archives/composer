@@ -16,7 +16,6 @@
 
 const Decorator = require('./decorator');
 const IllegalModelException = require('./illegalmodelexception');
-const Globalize = require('../globalize');
 
 /**
  * Decorated defines a model element that may have decorators attached.
@@ -32,15 +31,27 @@ class Decorated {
      * Create a Decorated from an Abstract Syntax Tree. The AST is the
      * result of parsing.
      *
+     * @param {ModelFile} modelFile - the model file
      * @param {string} ast - the AST created by the parser
      * @throws {IllegalModelException}
      */
-    constructor(ast) {
-        if(!ast) {
-            throw new IllegalModelException(Globalize.formatMessage('classdeclaration-constructor-modelastreq'));
+    constructor(modelFile, ast) {
+        if(!modelFile) {
+            throw new Error('modelFile not specified');
+        } else if(!ast) {
+            throw new Error('ast not specified');
         }
-
+        this.modelFile = modelFile;
         this.ast = ast;
+    }
+
+    /**
+     * Returns the ModelFile that defines this class.
+     *
+     * @return {ModelFile} the owning ModelFile
+     */
+    getModelFile() {
+        return this.modelFile;
     }
 
     /**
@@ -66,7 +77,20 @@ class Decorated {
         if(this.ast.decorators) {
             for(let n=0; n < this.ast.decorators.length; n++ ) {
                 let thing = this.ast.decorators[n];
-                this.decorators.push( new Decorator(this, thing) );
+                let modelFile = this.getModelFile();
+                let modelManager = modelFile.getModelManager();
+                let factories = modelManager.getDecoratorFactories();
+                let decorator;
+                for (let factory of factories) {
+                    decorator = factory.newDecorator(this, thing);
+                    if (decorator) {
+                        break;
+                    }
+                }
+                if (!decorator) {
+                    decorator = new Decorator(this, thing);
+                }
+                this.decorators.push(decorator);
             }
         }
     }

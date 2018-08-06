@@ -161,4 +161,143 @@ describe('Transaction system tests', function() {
             });
     });
 
+    it('should submit and execute a transaction processor function that returns a concept', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsConcept');
+        const value = new Date().toISOString();
+        transaction.value = value;
+        const concept = await client.submitTransaction(transaction);
+        concept.value.should.equal(value);
+    });
+
+    it('should submit and execute a transaction processor function that returns a concept array', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsConceptArray');
+        const value = new Date().toISOString();
+        transaction.value = value;
+        const concept = await client.submitTransaction(transaction);
+        concept[0].value.should.equal(value + '1');
+        concept[1].value.should.equal(value + '2');
+    });
+
+    it('should submit and execute a transaction processor function that returns a date/time', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsDateTime');
+        const inputValue = new Date();
+        transaction.value = inputValue;
+        const outputValue = await client.submitTransaction(transaction);
+        inputValue.toISOString().should.equal(outputValue.toISOString());
+    });
+
+    it('should submit and execute a transaction processor function that returns an integer', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsInteger');
+        const inputValue = 16384;
+        transaction.value = inputValue;
+        const outputValue = await client.submitTransaction(transaction);
+        inputValue.should.equal(outputValue);
+    });
+
+    it('should submit and execute a transaction processor function that returns a long', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsLong');
+        const inputValue = 1000000000;
+        transaction.value = inputValue;
+        const outputValue = await client.submitTransaction(transaction);
+        inputValue.should.equal(outputValue);
+    });
+
+    it('should submit and execute a transaction processor function that returns a double', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsDouble');
+        const inputValue = 3.142;
+        transaction.value = inputValue;
+        const outputValue = await client.submitTransaction(transaction);
+        inputValue.should.equal(outputValue);
+    });
+
+    it('should submit and execute a transaction processor function that returns a double array', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsDoubleArray');
+        const inputValue = 3.142;
+        transaction.value = inputValue;
+        const outputValue = await client.submitTransaction(transaction);
+        [inputValue + 1, inputValue + 2].should.deep.equal(outputValue);
+    });
+
+    it('should submit and execute a transaction processor function that returns a boolean', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsBoolean');
+        const inputValue = true;
+        transaction.value = inputValue;
+        const outputValue = await client.submitTransaction(transaction);
+        inputValue.should.equal(outputValue);
+    });
+
+    it('should submit and execute a transaction processor function that returns a string', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsString');
+        const inputValue = new Date().toISOString();
+        transaction.value = inputValue;
+        const outputValue = await client.submitTransaction(transaction);
+        inputValue.should.equal(outputValue);
+    });
+
+    it('should submit and execute a transaction processor function that returns a string array', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsStringArray');
+        const inputValue = new Date().toISOString();
+        transaction.value = inputValue;
+        const outputValue = await client.submitTransaction(transaction);
+        [inputValue + '1', inputValue + '2'].should.deep.equal(outputValue);
+    });
+
+    it('should submit and execute a transaction processor function that returns an enum', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsEnum');
+        const inputValue = new Date().toISOString();
+        transaction.value = inputValue;
+        const outputValue = await client.submitTransaction(transaction);
+        'WOW'.should.equal(outputValue);
+    });
+
+    it('should submit and execute a transaction processor function that returns an enum array', async () => {
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.transactions', 'TransactionThatReturnsEnumArray');
+        const inputValue = new Date().toISOString();
+        transaction.value = inputValue;
+        const outputValue = await client.submitTransaction(transaction);
+        ['SUCH', 'MANY'].should.deep.equal(outputValue);
+    });
+
+    it('should submit and execute a transaction processor function annotated with @commit(true)', async () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions', 'TransactionWithCommitTrue');
+        transaction.stringValue = 'hello from single annotated transaction';
+        await client.submitTransaction(transaction);
+        const assetRegistry = await client.getAssetRegistry('systest.transactions.SimpleStringAsset');
+        const exists = await assetRegistry.exists('stringAsset1');
+        exists.should.be.true;
+    });
+
+    it('should submit and execute a transaction processor function annotated with @commit(false)', async () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions', 'TransactionWithCommitFalse');
+        transaction.stringValue = 'hello from single annotated transaction';
+        await client.submitTransaction(transaction);
+        const assetRegistry = await client.getAssetRegistry('systest.transactions.SimpleStringAsset');
+        const exists = await assetRegistry.exists('stringAsset1');
+        exists.should.be.false;
+    });
+
+    it('should submit and execute a transaction processor function with the commit option set to false', async () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions', 'TransactionWithCommitTrue');
+        transaction.stringValue = 'hello from single annotated transaction';
+        await client.submitTransaction(transaction, { commit: false });
+        const assetRegistry = await client.getAssetRegistry('systest.transactions.SimpleStringAsset');
+        const exists = await assetRegistry.exists('stringAsset1');
+        exists.should.be.false;
+    });
+
 });

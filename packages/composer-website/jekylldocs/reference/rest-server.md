@@ -110,10 +110,18 @@ The REST server can be configured using environment variables, instead of supply
 
         COMPOSER_TLS_KEY=/tmp/key.pem
         
-9. `COMPOSER_APIKEY`
+10. `COMPOSER_APIKEY`
         
-        You can use the `COMPOSER_APIKEY` environment variable to specify the API key the server should accept for each request as a header parameter `x-api-key`.
+    You can use the `COMPOSER_APIKEY` environment variable to specify the API key the server should accept for each request as a header parameter `x-api-key`.
         
-        For example:
+    For example:
         
         COMPOSER_APIKEY=REPLACE_WITH_YOUR_API_KEY
+        
+11. `COMPOSER_WEBSOCKETS`
+        
+    You can use the `COMPOSER_WEBSOCKETS` environment variable to specify whether the REST server publishes events.  The default value is true
+        
+    For example:
+        
+        COMPOSER_WEBSOCKETS=true

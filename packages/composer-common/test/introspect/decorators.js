@@ -14,11 +14,13 @@
 
 'use strict';
 
+const Decorator = require('../../lib/introspect/decorator');
+const DecoratorFactory = require('../../lib/introspect/decoratorfactory');
 const ModelManager = require('../../lib/modelmanager');
 const Introspector = require('../../lib/introspect/introspector');
 const fs = require('fs');
 
-require('chai').should();
+const should = require('chai').should();
 const sinon = require('sinon');
 
 describe('Decorators', () => {
@@ -124,6 +126,37 @@ describe('Decorators', () => {
             const enm = introspector.getClassDeclaration('org.acme.MyEnum');
             enm.getDecorator('bar').getArguments()[0].should.equal('enum');
             enm.getProperty('VALUE').getDecorator('bar').getArguments()[0].should.equal('enumValue');
+
+            const tx1 = introspector.getClassDeclaration('org.acme.MyTransactionIdentifier1');
+            tx1.getDecorator('returns').getArguments()[0].should.deep.equal({
+                name: 'MyConcept',
+                type: 'Identifier',
+                array: false
+            });
+
+            const tx2 = introspector.getClassDeclaration('org.acme.MyTransactionIdentifier2');
+            tx2.getDecorator('returns').getArguments()[0].should.deep.equal({
+                name: 'MyConcept',
+                type: 'Identifier',
+                array: true
+            });
+
+            const tx3 = introspector.getClassDeclaration('org.acme.MyTransactionIdentifier3');
+            tx3.getDecorator('returns').getArguments()[0].should.deep.equal({
+                name: 'String',
+                type: 'Identifier',
+                array: false
+            });
+
+            const tx4 = introspector.getClassDeclaration('org.acme.MyTransactionIdentifier4');
+            tx4.getDecorator('returns').getArguments()[0].should.deep.equal({
+                name: 'String',
+                type: 'Identifier',
+                array: true
+            });
+
+            const tx5 = introspector.getClassDeclaration('org.acme.MyTransactionIdentifier5');
+            tx5.getDecorator('returns').getArguments()[0].should.be.true;
         });
     });
 
@@ -138,4 +171,59 @@ describe('Decorators', () => {
             }).should.throw(/Duplicate decorator/);
         });
     });
+
+    describe('#factories', () => {
+
+        it('should let a factory specify a decorator implementation', () => {
+
+            const decoratorFactory = new(class MyDecoratorFactory extends DecoratorFactory {
+                /**
+                 * Process the decorator, and return a specific implementation class for that
+                 * decorator, or return null if this decorator is not handled by this processor.
+                 * @abstract
+                 * @param {ClassDeclaration | Property} parent - the owner of this property
+                 * @param {Object} ast - The AST created by the parser
+                 * @return {Decorator} The decorator.
+                 */
+                newDecorator(parent, ast) {
+                    if (ast.name !== 'bar') {
+                        return null;
+                    }
+                    return new(class MyDecorator extends Decorator {
+                        /**
+                         * Create a Decorator.
+                         * @param {ClassDeclaration | Property} parent - the owner of this property
+                         * @param {Object} ast - The AST created by the parser
+                         * @throws {IllegalModelException}
+                         */
+                        constructor(parent, ast) {
+                            super(parent, ast);
+                        }
+                        /**
+                         * My method.
+                         * @returns {string} returns 'woop'.
+                         */
+                        myMethod() {
+                            return 'woop';
+                        }
+                    })(parent, ast);
+                }
+            });
+
+            const modelManager = new ModelManager();
+            modelManager.addDecoratorFactory(decoratorFactory);
+            let modelDefinitions = fs.readFileSync('test/data/decorators/model.cto', 'utf8');
+            modelManager.addModelFile(modelDefinitions);
+            const introspector = new Introspector(modelManager);
+
+            const driver = introspector.getClassDeclaration('org.acme.Driver');
+            driver.getDecorator('bar').myMethod().should.equal('woop');
+
+            const tx1 = introspector.getClassDeclaration('org.acme.MyTransactionIdentifier1');
+            should.equal(tx1.getDecorator('returns').myMethod, undefined);
+
+        });
+
+    });
+
 });

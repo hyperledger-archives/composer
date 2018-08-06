@@ -242,7 +242,8 @@ describe('AdminConnection', () => {
         const identityName = 'admin';
         const networkAdmins = [
             { userName: 'admin', enrollmentSecret: 'adminpw' },
-            { userName: 'adminc', certificate: 'certcertcert'}
+            { userName: 'adminc', certificate: 'certcertcert' },
+            { userName: 'admincp', certificate: 'certcertcert', privateKey: 'keykeykey' },
         ];
         const bootstrapTransactions = [
             {
@@ -298,6 +299,18 @@ describe('AdminConnection', () => {
                     transactionId : sinon.match.string
                 },
                 {
+                    $class : 'org.hyperledger.composer.system.AddParticipant',
+                    resources : [
+                        {
+                            $class : 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId : 'admincp'
+                        }
+                    ],
+                    targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                    timestamp : '1970-01-01T00:00:00.000Z',
+                    transactionId : sinon.match.string
+                },
+                {
                     $class : 'org.hyperledger.composer.system.IssueIdentity',
                     identityName : 'admin',
                     participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
@@ -308,6 +321,13 @@ describe('AdminConnection', () => {
                     $class : 'org.hyperledger.composer.system.BindIdentity',
                     certificate : 'certcertcert',
                     participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#adminc',
+                    timestamp : '1970-01-01T00:00:00.000Z',
+                    transactionId : sinon.match.string
+                },
+                {
+                    $class : 'org.hyperledger.composer.system.BindIdentity',
+                    certificate : 'certcertcert',
+                    participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admincp',
                     timestamp : '1970-01-01T00:00:00.000Z',
                     transactionId : sinon.match.string
                 }
@@ -415,6 +435,26 @@ describe('AdminConnection', () => {
                     const actualStartTransactions = JSON.parse(mockConnection.start.getCall(0).args[3]);
                     sinon.assert.match(actualStartTransactions, startOptions);
                 });
+        });
+
+        it('should create network admin cards', async () => {
+            const cards = await adminConnection.start(networkName, networkVersion, { networkAdmins: networkAdmins });
+            cards.size.should.equal(networkAdmins.length);
+            networkAdmins.forEach((networkAdmin) => {
+                const card = cards.get(networkAdmin.userName);
+                should.exist(card);
+
+                if (networkAdmin.enrollmentSecret) {
+                    card.getEnrollmentCredentials().secret.should.equal(networkAdmin.enrollmentSecret);
+                } else {
+                    const expectedCredentials = { certificate: networkAdmin.certificate };
+                    const privateKey = networkAdmin.privateKey;
+                    if (privateKey) {
+                        expectedCredentials.privateKey = privateKey;
+                    }
+                    card.getCredentials().should.deep.equal(expectedCredentials);
+                }
+            });
         });
 
     });
@@ -709,7 +749,8 @@ describe('AdminConnection', () => {
 
             it('should import a new card to card store', function() {
                 const cardName = 'conga';
-                sandbox.stub(cardStore, 'has').returns(false);
+                sandbox.stub(cardStore, 'has').resolves(false);
+                sandbox.stub(cardStore, 'getWallet').resolves('something');
                 return adminConnection.importCard(cardName, userCard)
                 .then((updated) => {
                     updated.should.be.false;
@@ -722,10 +763,16 @@ describe('AdminConnection', () => {
                 const cardName = 'conga';
                 let expectedConnection = Object.assign({}, connection);
                 expectedConnection.cardName = cardName;
-                sandbox.stub(cardStore, 'has').returns(true);
+                expectedConnection.wallet = 'something';
+                sandbox.stub(cardStore, 'has').resolves(true);
+                sandbox.stub(cardStore, 'getWallet').resolves('something');
                 return adminConnection.importCard(cardName, userCard)
                 .then((updated) => {
                     sinon.assert.calledOnce(mockConnectionManager.removeIdentity);
+                    // A bug in sinon here: the object passed to removeIdentity is held as a reference by sinon
+                    // when recording the call was invoked. Such that if the object is updated later in the method
+                    // under test, it may look as though it was called with an object with the expected properties
+                    // but actually it wasn't.
                     sinon.assert.calledWith(mockConnectionManager.removeIdentity, 'connectionName', sinon.match(expectedConnection), 'user');
                     updated.should.be.true;
                     return cardStore.get(cardName).should.eventually.deep.equal(userCard);
@@ -743,11 +790,18 @@ describe('AdminConnection', () => {
             it('should import identity if card contains credentials', function () {
                 const certificate = 'CERTIFICATE_DATA';
                 const privateKey = 'PRIVATE_KEY_DATA';
+                const cardName = 'conga';
                 userCard.setCredentials({certificate : certificate, privateKey : privateKey});
-                return adminConnection.importCard('conga', userCard).then(() => {
+                let expectedConnection = Object.assign({}, connection);
+                expectedConnection.cardName = cardName;
+                expectedConnection.wallet = 'something';
+                sandbox.stub(cardStore, 'has').resolves(true);
+                sandbox.stub(cardStore, 'getWallet').resolves('something');
+
+                return adminConnection.importCard(cardName, userCard).then(() => {
                     return sinon.assert.calledWith(mockConnectionManager.importIdentity,
                         userCard.getConnectionProfile().name,
-                        sinon.match.object,
+                        sinon.match(expectedConnection),
                         userCard.getUserName(),
                         certificate,
                         privateKey

@@ -175,16 +175,15 @@
 
 
 
-<div class="container">
+<div class="container col-md-6">
     <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
         <strong>Error:</strong> {{errorMessage}}
     </div>
   
   <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-12">
         <h1 class="transaction-title" id='transactionName'><%= currentTransaction.name %></h1>
-    </div>
-    <div class="col-md-3">
+        <p class="invoke_cancel" id='invoke_cancel'>Invoke</p>
     </div>
   </div>
   <br>
@@ -196,11 +195,15 @@
           <br>
           <ul>
             <% for(var y=0;y<currentTransaction.properties.length;y++){ %>
-              <li><span class="attribute"><b><%=currentTransaction.properties[y].name%></b></span></li>
+
+              <% if (!(currentTransaction.properties[y].name.toString() === 'transactionId') || !(currentTransaction.properties[y].name.toString() === 'timestamp')) { %>
+                <li><span class="attribute"><b><%=currentTransaction.properties[y].name%></b></span></li>
+              <%}%>
             <%}%>
           </ul>
         </div>
       </div>
+      <button type="button" class="btn btn-primary invokeTransactionBtn" data-toggle="modal">Invoke</button>
     </div>
   </div>
 </div>

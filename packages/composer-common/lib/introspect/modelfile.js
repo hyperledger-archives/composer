@@ -50,10 +50,12 @@ class ModelFile {
         this.modelManager = modelManager;
         this.external = false;
         this.declarations = [];
+        this.localTypes = new Map();
         this.imports = [];
+        this.importShortNames = new Map();
+        this.importWildcardNamespaces = [];
         this.importUriMap = {};
         this.fileName = 'UNKNOWN';
-
 
         if(!definitions || typeof definitions !== 'string') {
             throw new Error('ModelFile expects a Composer model as a string as input.');
@@ -87,7 +89,11 @@ class ModelFile {
         if(this.ast.imports) {
             this.ast.imports.forEach((imp) => {
                 this.imports.push(imp.namespace);
-
+                this.importShortNames.set(ModelUtil.getShortName(imp.namespace), imp.namespace);
+                if (ModelUtil.isWildcardName(imp.namespace)) {
+                    const wildcardNamespace = ModelUtil.getNamespace(imp.namespace);
+                    this.importWildcardNamespaces.push(wildcardNamespace);
+                }
                 if(imp.uri) {
                     this.importUriMap[imp.namespace] = imp.uri;
                 }
@@ -97,8 +103,10 @@ class ModelFile {
         // if we are not in the system namespace we add imports to all the system types
         if(!this.isSystemModelFile()) {
             const systemTypes = this.modelManager.getSystemTypes();
-            for(let n=0; n < systemTypes.length; n++) {
-                this.imports.unshift(systemTypes[n].getFullyQualifiedName());
+            for(let index in systemTypes) {
+                let fqn = systemTypes[index].getFullyQualifiedName();
+                this.imports.unshift(fqn);
+                this.importShortNames.set(ModelUtil.getShortName(fqn), fqn);
             }
         }
 
@@ -130,6 +138,13 @@ class ModelFile {
                     'type': thing.type,
                 }),this.modelFile);
             }
+        }
+
+        // Now build local types from Declarations
+        for(let index in this.declarations) {
+            let classDeclaration = this.declarations[index];
+            let localType = this.getNamespace() + '.' + classDeclaration.getName();
+            this.localTypes.set(localType, this.declarations[index]);
         }
     }
 
@@ -241,10 +256,15 @@ class ModelFile {
      * Check that the type is valid.
      * @param {string} context - error reporting context
      * @param {string} type - a short type name
+     * @param {Object} [fileLocation] - location details of the error within the model file.
+     * @param {String} fileLocation.start.line - start line of the error location.
+     * @param {String} fileLocation.start.column - start column of the error location.
+     * @param {String} fileLocation.end.line - end line of the error location.
+     * @param {String} fileLocation.end.column - end column of the error location.
      * @throws {IllegalModelException} - if the type is not defined
      * @private
      */
-    resolveType(context,type) {
+    resolveType(context,type,fileLocation) {
         // is the type a primitive?
         if(!ModelUtil.isPrimitiveType(type)) {
             // is it an imported type?
@@ -254,8 +274,8 @@ class ModelFile {
                     let formatter = Globalize('en').messageFormatter('modelfile-resolvetype-undecltype');
                     throw new IllegalModelException(formatter({
                         'type': type,
-                        'context': context
-                    }),this.modelFile);
+                        'context': context,
+                    }),this.modelFile,fileLocation);
                 }
             }
             else {
@@ -284,20 +304,18 @@ class ModelFile {
      * @private
      */
     isImportedType(type) {
-        //console.log('isImportedType ' + this.getNamespace() + ' ' + type );
-        for(let n=0; n < this.imports.length; n++) {
-            let importName = this.imports[n];
-            if( ModelUtil.getShortName(importName) === type ) {
-                return true;
-            } else if (ModelUtil.isWildcardName(importName)) {
-                const wildcardNamespace = ModelUtil.getNamespace(importName);
+        if (this.importShortNames.has(type)) {
+            return true;
+        } else {
+            for(let index in this.importWildcardNamespaces) {
+                let wildcardNamespace = this.importWildcardNamespaces[index];
                 const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
                 if (modelFile && modelFile.isLocalType(type)) {
                     return true;
                 }
             }
+            return false;
         }
-        return false;
     }
 
     /**
@@ -308,18 +326,18 @@ class ModelFile {
      * @private
      */
     resolveImport(type) {
-        for(let n=0; n < this.imports.length; n++) {
-            let importName = this.imports[n];
-            if( ModelUtil.getShortName(importName) === type ) {
-                return importName;
-            } else if (ModelUtil.isWildcardName(importName)) {
-                const wildcardNamespace = ModelUtil.getNamespace(importName);
+        if (this.importShortNames.has(type)) {
+            return this.importShortNames.get(type);
+        } else {
+            for(let index in this.importWildcardNamespaces) {
+                let wildcardNamespace = this.importWildcardNamespaces[index];
                 const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
                 if (modelFile && modelFile.isLocalType(type)) {
                     return wildcardNamespace + '.' + type;
                 }
             }
         }
+
         let formatter = Globalize('en').messageFormatter('modelfile-resolveimport-failfindimp');
 
         throw new IllegalModelException(formatter({
@@ -418,13 +436,11 @@ class ModelFile {
             type = this.getNamespace() + '.' + type;
         }
 
-        for(let n=0; n < this.declarations.length; n++) {
-            let classDeclaration = this.declarations[n];
-            if(type === this.getNamespace() + '.' + classDeclaration.getName() ) {
-                return classDeclaration;
-            }
+        if (this.localTypes.has(type)) {
+            return this.localTypes.get(type);
+        } else {
+            return null;
         }
-        return null;
     }
 
     /**

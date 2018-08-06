@@ -27,7 +27,6 @@ const Util = require('../util');
 /**
  * Converts the contents of a Resource to JSON. The parameters
  * object should contain the keys
- * 'writer' - the JSONWriter instance to use to accumulate the JSON text.
  * 'stack' - the TypedStack of objects being processed. It should
  * start with a Resource.
  * 'modelManager' - the ModelManager to use.
@@ -86,42 +85,36 @@ class JSONGenerator {
             throw new Error('Expected a Resource or a Concept, but found ' + obj);
         }
 
-        let writeFields = true;
+        let result = {};
         let id = null;
 
         if (obj instanceof Identifiable && this.deduplicateResources) {
             id = obj.toURI();
             if( parameters.dedupeResources.has(id)) {
-                writeFields = false;
-                parameters.writer.writeStringValue( id );
+                return id;
             }
             else {
                 parameters.dedupeResources.add(id);
             }
         }
 
-        if (writeFields) {
-            parameters.writer.openObject();
-            parameters.writer.writeKeyStringValue('$class', classDeclaration.getFullyQualifiedName());
-
-            if(this.deduplicateResources && id) {
-                parameters.writer.writeKeyStringValue('$id', id );
-            }
-
-            const properties = classDeclaration.getProperties();
-            for (let n = 0; n < properties.length; n++) {
-                const property = properties[n];
-                const value = obj[property.getName()];
-                if (!Util.isNull(value)) {
-                    parameters.stack.push(value);
-                    property.accept(this, parameters);
-                }
-            }
-
-            parameters.writer.closeObject();
+        result.$class = classDeclaration.getFullyQualifiedName();
+        if(this.deduplicateResources && id) {
+            result.$id = id;
         }
 
-        return null;
+        // Walk each property of the class declaration
+        const properties = classDeclaration.getProperties();
+        for (let index in properties) {
+            const property = properties[index];
+            const value = obj[property.getName()];
+            if (!Util.isNull(value)) {
+                parameters.stack.push(value);
+                result[property.getName()] = property.accept(this, parameters);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -133,55 +126,52 @@ class JSONGenerator {
      */
     visitField(field, parameters) {
         const obj = parameters.stack.pop();
-        parameters.writer.writeKey(field.getName());
+        let result;
         if (field.isArray()) {
-            parameters.writer.openArray();
-            for (let n = 0; n < obj.length; n++) {
-                const item = obj[n];
+            let array = [];
+            // Walk the object
+            for (let index in obj) {
+                const item = obj[index];
                 if (!field.isPrimitive() && !ModelUtil.isEnum(field)) {
-                    parameters.writer.writeComma();
                     parameters.stack.push(item, Typed);
-                    const classDecl = parameters.modelManager.getType(item.getFullyQualifiedType());
-                    classDecl.accept(this, parameters);
+                    const classDeclaration = parameters.modelManager.getType(item.getFullyQualifiedType());
+                    array.push(classDeclaration.accept(this, parameters));
                 } else {
-                    parameters.writer.writeArrayValue(this.convertToJSON(field, item));
+                    array.push(this.convertToJSON(field, item));
                 }
             }
-            parameters.writer.closeArray();
+            result = array;
         } else if (field.isPrimitive() || ModelUtil.isEnum(field)) {
-            parameters.writer.writeValue(this.convertToJSON(field, obj));
+            result = this.convertToJSON(field, obj);
         } else {
             parameters.stack.push(obj);
             const classDeclaration = parameters.modelManager.getType(obj.getFullyQualifiedType());
-            classDeclaration.accept(this, parameters);
+            result = classDeclaration.accept(this, parameters);
         }
 
-        return null;
+        return result;
     }
 
     /**
-     * Converts a primtive object to JSON text.
+     * Converts to JSON safe format.
      *
      * @param {Field} field - the field declaration of the object
      * @param {Object} obj - the object to convert to text
-     * @return {string} the text representation
+     * @return {Object} the text JSON safe representation
      */
     convertToJSON(field, obj) {
         switch (field.getType()) {
         case 'DateTime':
             {
-                return `"${obj.toISOString()}"`;
+                return obj.toISOString();
             }
         case 'Integer':
         case 'Long':
         case 'Double':
         case 'Boolean':
-            {
-                return `${obj.toString()}`;
-            }
         default:
             {
-                return JSON.stringify(obj.toString());
+                return obj;
             }
         }
     }
@@ -195,48 +185,48 @@ class JSONGenerator {
      */
     visitRelationshipDeclaration(relationshipDeclaration, parameters) {
         const obj = parameters.stack.pop();
-        parameters.writer.writeKey(relationshipDeclaration.getName());
+        let result;
 
         if (relationshipDeclaration.isArray()) {
-            parameters.writer.openArray();
-            for (let n = 0; n < obj.length; n++) {
-                const item = obj[n];
+            let array = [];
+            // walk the object
+            for (let index in obj) {
+                const item = obj[index];
                 if (this.permitResourcesForRelationships && item instanceof Resource) {
                     let fqi = item.getFullyQualifiedIdentifier();
                     if (parameters.seenResources.has(fqi)) {
                         let relationshipText = this.getRelationshipText(relationshipDeclaration, item);
-                        parameters.writer.writeStringValue(relationshipText);
+                        array.push(relationshipText);
                     } else {
                         parameters.seenResources.add(fqi);
-                        parameters.writer.writeComma();
                         parameters.stack.push(item, Resource);
                         const classDecl = parameters.modelManager.getType(relationshipDeclaration.getFullyQualifiedTypeName());
-                        classDecl.accept(this, parameters);
+                        array.push(classDecl.accept(this, parameters));
                         parameters.seenResources.delete(fqi);
                     }
                 } else {
                     let relationshipText = this.getRelationshipText(relationshipDeclaration, item);
-                    parameters.writer.writeArrayStringValue(relationshipText);
+                    array.push(relationshipText);
                 }
             }
-            parameters.writer.closeArray();
+            result = array;
         } else if (this.permitResourcesForRelationships && obj instanceof Resource) {
             let fqi = obj.getFullyQualifiedIdentifier();
             if (parameters.seenResources.has(fqi)) {
                 let relationshipText = this.getRelationshipText(relationshipDeclaration, obj);
-                parameters.writer.writeStringValue(relationshipText);
+                result = relationshipText;
             } else {
                 parameters.seenResources.add(fqi);
                 parameters.stack.push(obj, Resource);
                 const classDecl = parameters.modelManager.getType(relationshipDeclaration.getFullyQualifiedTypeName());
-                classDecl.accept(this, parameters);
+                result = classDecl.accept(this, parameters);
                 parameters.seenResources.delete(fqi);
             }
         } else {
             let relationshipText = this.getRelationshipText(relationshipDeclaration, obj);
-            parameters.writer.writeStringValue(relationshipText);
+            result = relationshipText;
         }
-        return null;
+        return result;
     }
 
     /**

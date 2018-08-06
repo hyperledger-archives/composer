@@ -3,7 +3,7 @@ layout: default
 title: Hyperledger Composer Network Upgrade CLI
 section: reference-command
 sidebar: sidebars/accordion-toc0.md
-excerpt: Composer Network Update CLI
+excerpt: Composer Network Upgrade CLI
 ---
 
 # {{site.data.conrefs.composer_full}} Network Upgrade
@@ -29,8 +29,22 @@ Options:
   --card, -c                 The cardname to use to upgrade the network  [string] [required]
   --networkName, -n          Name of the business network to upgrade  [required]
   --networkVersion, -V       Version of the business network to upgrade to  [required]
-  --option, -o               Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --option, -o               Options that are specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O          A file containing options that are specific to connection  [string]
 ```
 
 Please refer to [Connector specific information](../managing/connector-information.html) for more information about connecting to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.
+
+## Javascript API Example
+
+``` javascript
+const NetworkUpgrade = require('composer-cli').Network.Upgrade;
+
+let options = {
+  networkName: 'tutorial-network',
+  networkVersion: '0.0.1',
+  card: 'PeerAdmin@fabric-network'
+};
+
+NetworkUpgrade.handler(options);
+```

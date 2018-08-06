@@ -21,3 +21,5 @@ exports.desc = 'Command for creating a report of the current Composer environmen
 exports.handler = function (argv) {
     return argv.thePromise = Report.handler(argv);
 };
+
+module.exports.Report = require('./report/lib/report');

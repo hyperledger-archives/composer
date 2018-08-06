@@ -17,11 +17,10 @@
 const Wallet = require('composer-common').Wallet;
 const nodefs = require('fs');
 const path = require('path');
-const util = require('util');
 const composerUtil = require('composer-common').Util;
 const mkdirp = require('mkdirp');
 const IdCard = require('composer-common').IdCard;
-const rimraf = util.promisify(require('rimraf'));
+const rimraf = require('rimraf');
 /**
  * String based key-val store,  A 'client-data' directory is created under the storePath option (or ~/.composer)
  * @private
@@ -48,12 +47,19 @@ class FileSystemWallet extends Wallet{
      * @return {boolean} true if directory, false otherwise
      */
     _isDirectory(name){
-        return this._stat(this._path(name))
-        .then(status=>{
-            return status.isDirectory();
+
+        return new Promise((resolve,reject)=>{
+            this.fs.stat(this._path(name),(err,status)=>{
+                if (err){
+                    resolve(false);
+                }else {
+                    resolve(status.isDirectory());
+                }
+            });
         });
 
     }
+
     /**
      * @param {Object} options  Configuration options
      * @param {Object} options.storePath  The root directory where this wallet can put things
@@ -62,8 +68,10 @@ class FileSystemWallet extends Wallet{
      */
     constructor(options){
         super();
+
         let root = options.storePath || path.resolve(composerUtil.homeDirectory(),'.composer');
-        this.storePath = path.join(root,options.namePrefix);
+        let prefix = options.namePrefix || '';
+        this.storePath = path.join(root,prefix);
 
         this.fs = options.fs || nodefs;
         mkdirp.sync(this.storePath,{fs:this.fs});
@@ -80,36 +88,40 @@ class FileSystemWallet extends Wallet{
      * error.
      */
     listNames() {
-        this._readdir = util.promisify(this.fs.readdir);
-        return this._readdir(this.storePath)
-          .then((result)=>{
 
-              return result;
-          });
+        return new Promise((resolve,reject)=>{
+            try {
+                resolve(this.fs.readdirSync(this.storePath));
+            } catch (err){
+                reject(err);
+            }
+        });
 
     }
 
     /**
-     * Check to see if the named credentials are in
-     * the wallet.
+     * Check to see if the named keys is in the wallet.
+     *
      * @abstract
      * @param {string} name The name of the credentials.
      * @return {Promise} A promise that is resolved with
-     * a boolean; true if the named credentials are in the
+     * a boolean; true if the named key is in the
      * wallet, false otherwise.
      */
     contains(name) {
         if (!name) {
             return Promise.reject(new Error('Name must be specified'));
         }
-        this._stat = util.promisify(this.fs.stat);
-        return this._stat(this._path(name))
-         .then(()=>{
-             return true;
-         })
-         .catch((error)=>{
-             return false;
-         });
+
+        return new Promise((resolve,reject)=>{
+            this.fs.stat(this._path(name),(err)=>{
+                if (err){
+                    resolve(false);
+                }else {
+                    resolve(true);
+                }
+            });
+        });
 
     }
 
@@ -120,29 +132,23 @@ class FileSystemWallet extends Wallet{
      * @return {Promise} A promise that is resolved with
      * the named credentials, or rejected with an error.
      */
-    get(name) {
+    async get(name) {
         if (!name) {
             return Promise.reject(new Error('Name must be specified'));
         }
-        return this._isDirectory(this._path(name))
-        .then((dir)=>{
-            if(dir){
-                return IdCard.fromDirectory(this._path(name), this.fs)
-                .then((card)=>{
-                    return card.toArchive({ type: 'nodebuffer' });
-                });
-            } else {
-                this._readFile = util.promisify(this.fs.readFile);
-                return this._readFile(this._path(name),'utf8')
-                .then((result)=>{
-                    if (result.startsWith('BASE64')){
-                        return Buffer.from(result.replace('BASE64::',''),'base64');
-                    }
-                    return result;
-                });
-            }
 
-        });
+        let dir = await this._isDirectory(this._path(name));
+        if(dir){
+            let card = await IdCard.fromDirectory(this._path(name), this.fs);
+            return card.toArchive({ type: 'nodebuffer' });
+        } else {
+            let result = this.fs.readFileSync(this._path(name),'utf8');
+            if (result.startsWith('BASE64')){
+                return Buffer.from(result.replace('BASE64::',''),'base64');
+            }
+            return result;
+        }
+
     }
 
     /**
@@ -157,22 +163,36 @@ class FileSystemWallet extends Wallet{
         if (!name) {
             return Promise.reject(new Error('Name must be specified'));
         }
-        this._writeFile = util.promisify(this.fs.writeFile);
+
         if (arguments[2]){
             let card = arguments[2];
             return card.toDirectory(this._path(name));
 
         } else if (value instanceof Buffer){
-            // base 64 encode the buffer and write it as a string.
-            return this._writeFile(this._path(name),'BASE64::'+value.toString('base64'));
+            return new Promise((resolve,reject)=>{
+                this.fs.writeFile(this._path(name),'BASE64::'+value.toString('base64'),(err)=>{
+                    if (err){
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+
         } else if (value instanceof String  || typeof value === 'string'){
-            return this._writeFile(this._path(name),value);
+            return new Promise((resolve,reject)=>{
+                this.fs.writeFile(this._path(name),value,(err)=>{
+                    if (err){
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
         } else {
             return Promise.reject(new Error('Unkown type being stored'));
         }
     }
-
-
 
     /**
      * Remove existing credentials from the wallet.
@@ -181,29 +201,25 @@ class FileSystemWallet extends Wallet{
      * @return {Promise} A promise that is resolved when
      * complete, or rejected with an error.
      */
-    remove(name) {
+    async remove(name) {
         if (!name) {
             return Promise.reject(new Error('Name must be specified'));
         }
-        return this.contains(name).then(
-            (result)=>{
-                if (result){
-                    return this._isDirectory(name)
-                    .then((dir)=>{
-                        if(dir){
-                            return rimraf(this._path(name),this.rimrafOptions);
-                        }else {
-                            this._unlink = util.promisify(this.fs.unlink);
-                            return this._unlink(this._path(name));
-                        }
-                    }).then(()=>{return true;});
-                } else {
-                    return false;
-                }
+
+        let result = await this.contains(name);
+        if (result){
+            let dir = await this._isDirectory(name);
+
+            if(dir){
+                rimraf.sync(this._path(name),this.rimrafOptions);
+            }else {
+                this.fs.unlinkSync(this._path(name));
             }
-        );
+            return true;
 
-
+        } else {
+            return false;
+        }
     }
 
     /**

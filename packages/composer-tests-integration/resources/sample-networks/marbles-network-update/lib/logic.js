@@ -12,16 +12,31 @@
  * limitations under the License.
  */
 
- /**
-  * Trade a marble to a new player
-  * @param  {org.hyperledger_composer.marbles.TradeMarble} tradeMarble - the trade marble transaction
-  * @returns {*} promise
-  * @transaction
-  */
- function tradeMarble(tradeMarble) {
-   tradeMarble.marble.owner = tradeMarble.newOwner;
-   return getAssetRegistry('org.hyperledger_composer.marbles.Marble')
-     .then(function (assetRegistry) {
-       return assetRegistry.update(tradeMarble.marble);
-     });
- }
+/**
+ * Trade a marble to a new player
+ * @param  {org.hyperledger_composer.marbles.TradeMarble} tradeMarble - the trade marble transaction
+ * @transaction
+ */
+async function tradeMarble(tradeMarble) {
+    tradeMarble.marble.owner = tradeMarble.newOwner;
+    const assetRegistry = await getAssetRegistry('org.hyperledger_composer.marbles.NewMarble');
+    await assetRegistry.update(tradeMarble.marble);
+}
+
+/**
+ * Trade a marble to a new player and produce a receipt
+ * @param  {org.hyperledger_composer.marbles.TradeMarbleWithReceipt} tradeMarble - the trade marble transaction
+ * @returns {org.hyperledger_composer.marbles.TradeReceipt} receipt
+ * @transaction
+ */
+async function tradeMarbleWithReceipt(tradeMarble) {
+    const marble = tradeMarble.marble;
+    const oldOwner = marble.owner;
+    const newOwner = tradeMarble.newOwner;
+    marble.owner = newOwner;
+    const assetRegistry = await getAssetRegistry('org.hyperledger_composer.marbles.NewMarble');
+    await assetRegistry.update(marble);
+    const receipt = getFactory().newConcept('org.hyperledger_composer.marbles', 'TradeReceipt');
+    Object.assign(receipt, { marble, oldOwner, newOwner });
+    return receipt;
+}

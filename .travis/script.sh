@@ -50,6 +50,9 @@ if [ "${DOCS}" != "" ]; then
         elif [[ "${BUILD_FOCUS}" == "v0.16" ]]; then
             npm run full:v0.16-unstable
             npm run linkcheck:v0.16-unstable
+        elif [[ "${BUILD_FOCUS}" == 'v0.19' ]]; then
+            npm run full:v0.19-unstable
+            npm run linkcheck:v0.19-unstable
         else 
             _exit "Unknown build focus" 1 
         fi
@@ -65,6 +68,9 @@ if [ "${DOCS}" != "" ]; then
         elif [[ "${BUILD_FOCUS}" == "v0.16" ]]; then
             npm run full:v0.16
             npm run linkcheck:v0.16
+        elif [[ "${BUILD_FOCUS}" == 'v0.19' ]]; then
+            npm run full:v0.19
+            npm run linkcheck:v0.19
         else 
             _exit "Unknown build focus" 1 
         fi

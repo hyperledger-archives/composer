@@ -139,6 +139,20 @@ describe('composer-discovery boot script', () => {
             });
     });
 
+    it('should handle an error from registering the returning transactions', () => {
+        const originalCreateDataSource = app.loopback.createDataSource;
+        sandbox.stub(app.loopback, 'createDataSource', (name, settings) => {
+            let result = originalCreateDataSource.call(app.loopback, name, settings);
+            sandbox.stub(result.connector, 'discoverReturningTransactions').yields(new Error('such error'));
+            return result;
+        });
+        const cb = sinon.stub();
+        return composerDiscovery(app, cb)
+            .then(() => {
+                sinon.assert.calledOnce(cb);
+            });
+    });
+
     it('should handle an error from discovering the queries', () => {
         const originalCreateDataSource = app.loopback.createDataSource;
         sandbox.stub(app.loopback, 'createDataSource', (name, settings) => {

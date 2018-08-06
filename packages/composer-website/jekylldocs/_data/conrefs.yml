@@ -9,4 +9,10 @@ hlf_full:
   Hyperledger Fabric
 
 hlf_latest:
-  v1.1
+  v1.2
+
+composer_version:
+  "0.20"
+
+export_fabric_version_command:
+  export FABRIC_VERSION=hlfv12

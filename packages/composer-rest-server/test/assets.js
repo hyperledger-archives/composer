@@ -228,6 +228,10 @@ const clone = require('clone');
             });
         });
 
+        after(() => {
+            return adminConnection.undeploy();
+        });
+
         describe(`GET / namespaces[${namespaces}]`, () => {
 
             it('should return all of the assets', () => {

@@ -32,7 +32,7 @@ Identity Options
 Options:
   --help             Show help  [boolean]
   -v, --version      Show version number  [boolean]
-  --option, -o       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --option, -o       Options that are specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O  A file containing options that are specific to connection  [string]
 
 ```
@@ -61,3 +61,18 @@ Example: `resource:net.biz.tutorial-network.Person#DanSelman@biznet.org`
 Whether the new identity will be able to issue other new identities.
 
 Please refer to [Connector specific information](../managing/connector-information.html) for more information about connecting to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.
+
+## Javascript API Example
+
+``` javascript
+const IdentityIssue = require('composer-cli').Identity.Issue;
+
+let options = {
+  card: 'admin@tutorial-network',
+  file: 'DanSelman',
+  newUserId: 'Dan',
+  participantId: 'resource:net.biz.tutorial-network.Person#DanSelman@biznet.org'
+};
+
+IdentityIssue.handler(options);
+```

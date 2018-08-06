@@ -23,6 +23,7 @@ enum MarbleColor {
   o BLUE
   o PURPLE
   o ORANGE
+  o YELLOW
 }
 
 enum MarbleSize {
@@ -47,4 +48,21 @@ participant Player identified by email {
 transaction TradeMarble {
   --> Marble marble
   --> Player newOwner
+}
+
+concept TradeReceipt {
+    o Marble marble
+    o Player oldOwner
+    o Player newOwner
+}
+
+@returns(TradeReceipt)
+transaction TradeMarbleWithReceipt {
+  --> Marble marble
+  --> Player newOwner
+}
+
+@commit(false)
+@returns(Marble[])
+transaction GetAllMarbles {
 }

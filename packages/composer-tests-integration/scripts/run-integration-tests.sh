@@ -17,14 +17,14 @@
 set -ev
 set -o pipefail
 
-# Set ARCH
-ARCH=`uname -m`
-
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Switch into the integration tests directory.
 cd "${DIR}"
+
+# Set up environment variables for Fabric Docker image versions
+. "../../scripts/fabric-docker-env.sh"
 
 # Delete any existing configuration.
 rm -rf ./pm2
@@ -46,12 +46,16 @@ rm -rf ${HOME}/.composer/cards/charlie*
 rm -rf ${HOME}/.composer/client-data/charlie*
 rm -rf ${HOME}/.composer/cards/yaml*
 rm -rf ${HOME}/.composer/client-data/yaml*
+rm -rf ${HOME}/.composer/cards/lostmymarbles*
+rm -rf ${HOME}/.composer/client-data/lostmymarbles*
 rm -rf ./tmp/*           # temp folder for BNA files that are generated
 rm -rf ./my-empty-bus-net      # a business network created from generator
 rm -rf ./my-bus-net      # a business network created from generator
 rm -rf ./tutorial-network      # business network created from generator in dev tut
 rm -f ./networkadmin.card
 rm -f ./composer-report-*
+rm -rf ./my-angular-app
+rm -rf ./my-loopback-app
 
 # remove anything already there
 docker kill $(docker ps -q) && docker rm $(docker ps -qa) --force
@@ -59,7 +63,6 @@ docker kill $(docker ps -q) && docker rm $(docker ps -qa) --force
 
 rm -rf ${HOME}/.npmrc
 if [ "${DOCKER_FILE}" != "" ]; then
-    cd ../composer-runtime-hlfv1
     rm /tmp/npmrc
     cd "${DIR}"
 fi
@@ -90,11 +93,6 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
         fi
-        docker pull hyperledger/fabric-peer:$ARCH-1.1.0
-        docker pull hyperledger/fabric-ca:$ARCH-1.1.0
-        docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0
-        docker pull hyperledger/fabric-orderer:$ARCH-1.1.0
-        docker pull hyperledger/fabric-couchdb:$ARCH-0.4.6
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
         fi
@@ -110,10 +108,10 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     # Start any required Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
         echo Using docker file ${DOCKER_FILE}
-        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
-        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        docker-compose -f ${DOCKER_FILE} kill
+        docker-compose -f ${DOCKER_FILE} down
         docker rmi -f $(docker images -aq dev-*) || true
-        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
+        docker-compose -f ${DOCKER_FILE} up -d
         cd ${DIR}
         cd ../composer-runtime-hlfv1
         if [ `uname` = "Darwin" ]; then
@@ -167,6 +165,11 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
        docker run -p 6379:6379 --name composer-wallet-redis -d redis  && \
        docker exec composer-wallet-redis redis-cli -c flushall
 
+    (docker rm -f logspout || true) && \
+        docker run -d --name="logspout" \
+            --volume=/var/run/docker.sock:/var/run/docker.sock \
+            --publish=127.0.0.1:8000:80 \
+            gliderlabs/logspout
 
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
@@ -182,8 +185,8 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
 
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
-        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
-        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        docker-compose -f ${DOCKER_FILE} kill
+        docker-compose -f ${DOCKER_FILE} down
         docker rmi -f $(docker images -aq dev-*) || true
     fi
 
@@ -211,6 +214,8 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ${HOME}/.npmrc
     rm -f ./networkadmin.card
     rm -f ./composer-report-*
+    rm -rf ./my-angular-app
+    rm -rf ./my-loopback-app
     if [ "${DOCKER_FILE}" != "" ]; then
         cd ../composer-runtime-hlfv1
         rm /tmp/npmrc

@@ -28,7 +28,15 @@ An alternative stand-alone command is available for situations where the `compos
 This would normally be installed as a global module
 
 ```
-npm install -g composer-report
+npm install -g composer-report@{{site.data.conrefs.composer_version}}
 ```
 
 Once installed, running `composer-report` will create a report archive in the current directory in the same way as the full `composer report` command.
+
+## Javascript API Example
+
+``` javascript
+const Report = require('composer-cli').Report.Report;
+
+Report.handler();
+```

@@ -97,6 +97,43 @@ describe('ClassUndertest', function () {
     });
 
 
+    describe('test file processor ',()=>{
+        let tmpDir;
+        let processors={};
+        before(()=>{
+            require('../lib/processors/file.js')(processors);
+
+            // The parent directory for the new temporary directory
+            const ostemp = os.tmpdir();
+            tmpDir = fs.mkdtempSync(`${ostemp}${path.sep}`);
+        });
+
+        after('Remove the temporary directory',()=>{
+            return rimraf(tmpDir,rimrafOptions);
+        });
+
+        it('handle files without any errors', async function() {
+            let context={};
+            let meta={};
+            meta.inputdir=path.join(__dirname,'../testdata');
+            meta.outputdir=tmpDir;
+            meta.regexp='// File :(.*):';
+            meta.pattern='**/*.js';
+            await processors.split.post(context,meta);
+
+            // validate the correct files are created
+            let fileNames = fs.readdirSync(tmpDir);
+            let filesExpected = [
+                'org.example.commercialpaper_Account.js',
+                'org.example.commercialpaper_CommercialPaper.js',
+                'org.example.commercialpaper_Market.js',
+                'org.example.commercialpaper_PaperListing.js',
+                'org.example.commercialpaper_PaperOwnership.js',
+                'logic.js' ];
+            fileNames.should.have.deep.members(filesExpected);
+
+        });
+    });
 
 
 

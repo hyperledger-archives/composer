@@ -62,7 +62,7 @@ describe('ConnectionManager', () => {
     describe('#importIdentity', () => {
 
         it('should throw as abstract', async () => {
-            await connectionManager.importIdentity('profile', { connect: 'options' }, 'bob1', 'public key', 'private key')
+            await connectionManager.importIdentity('profile', { connect: 'options' }, 'bob1', 'certificate', 'private key')
                 .should.be.rejectedWith(/abstract function called/);
         });
 

@@ -15,3 +15,19 @@
 'use strict';
 
 module.exports.version = require('./package.json');
+
+/**
+ * The command line interface for Hyperledger Composer.
+ *
+ * Composer is a framework for creating blockchain backed digital networks and
+ * exchanging assets between participants via processing transactions.
+ * @module composer-cli
+ */
+module.exports.Archive = require('./lib/cmds/archive');
+module.exports.Card = require('./lib/cmds/card');
+module.exports.Generator = require('./lib/cmds/generator');
+module.exports.Identity = require('./lib/cmds/identity');
+module.exports.Network = require('./lib/cmds/network');
+module.exports.Participant = require('./lib/cmds/participant');
+module.exports.Report = require('./lib/cmds/report');
+module.exports.Transaction = require('./lib/cmds/transaction');

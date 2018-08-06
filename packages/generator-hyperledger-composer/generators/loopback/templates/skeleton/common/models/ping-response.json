@@ -1,0 +1,24 @@
+{
+  "name": "PingResponse",
+  "base": "Model",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "participant": {
+      "type": "string"
+    },
+    "identity": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

@@ -13,8 +13,8 @@
 # limitations under the License.
 #
 
-# Exit on first error, print all commands
-set -ev
+# Stop on any errors
+set -e
 
 # Environment vaiable directs Playground (connector server) to an npmrc to supply to network install
 export NPMRC_FILE='/tmp/npmrc'
@@ -26,20 +26,27 @@ packagesDir="$(cd "${scriptDir}/../.." && pwd)"
 if [ `uname` = "Darwin" ]; then
     gateway=docker.for.mac.localhost
 else
-    gateway="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
+    gateway="$(docker inspect composer_default | grep Gateway | cut -d \" -f4)"
 fi
 echo "registry=http://${gateway}:4873" > "${NPMRC_FILE}"
 
 # Start the npm proxy
-docker-compose --file "${scriptDir}/docker-compose.yaml" up --detach
+docker-compose -f "${scriptDir}/docker-compose.yaml" up -d
 
 # Publish development versions of packages required at runtime
 for package in composer-common composer-runtime composer-runtime-hlfv1; do
     npm publish --userconfig "${scriptDir}/publish.npmrc" "${packagesDir}/${package}"
 done
 
+Shutdown() {
+    # Stop the npm proxy
+    docker-compose -f "${scriptDir}/docker-compose.yaml" down
+    exit 0
+}
+
+echo ''
+echo '*** Ctrl-C to stop Playground API ***'
+trap Shutdown SIGINT
+
 # Start the Playground API
 npm start
-
-# Stop the npm proxy
-docker-compose --file "${scriptDir}/docker-compose.yaml" down

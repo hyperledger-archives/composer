@@ -39,7 +39,7 @@ class PouchDBDataService extends DataService {
      * Register the specified PouchDB plugin with PouchDB.
      * @param {*} plugin The PouchDB plugin to register.
      */
-    static registerPouchDBPlugin(plugin) {
+    static registerPouchDBPlugin (plugin) {
         // No logging here as this is called during static initialization
         // at startup, and we don't want to try and load the logger yet.
         PouchDB.plugin(plugin);
@@ -51,7 +51,7 @@ class PouchDBDataService extends DataService {
      * @param {Object} [options] Optional options for PouchDB.
      * @return {PouchDB} The new instance of PouchDB.
      */
-    static createPouchDB(name, options) {
+    static createPouchDB (name, options) {
         const method = 'createPouchDB';
         LOG.entry(method, name, options);
         let result = new PouchDB(name, options);
@@ -64,18 +64,17 @@ class PouchDBDataService extends DataService {
      * @param {string} [uuid] The UUID of the container.
      * @param {boolean} [autocommit] Should this data service auto commit?
      * @param {Object} [options] Optional options for PouchDB.
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      */
-    constructor(uuid, autocommit, options) {
+    constructor (uuid, autocommit, options, additionalConnectorOptions = {}) {
         super();
         const method = 'constructor';
-        LOG.entry(method, uuid, autocommit, options);
-        if (uuid) {
-            this.db = PouchDBDataService.createPouchDB(`Composer:${uuid}`, options);
-        } else {
-            this.db = PouchDBDataService.createPouchDB('Composer', options);
-        }
+        LOG.entry(method, uuid, autocommit, options, additionalConnectorOptions);
+        this.uuid = uuid;
+        this.db = PouchDBDataService.createPouchDB('Composer', options);
         this.autocommit = !!autocommit;
         this.pendingActions = [];
+        this.additionalConnectorOptions = additionalConnectorOptions;
         LOG.exit(method);
     }
 
@@ -84,7 +83,7 @@ class PouchDBDataService extends DataService {
      * @return {Promise} A promise that will be resolved when destroyed, or
      * rejected with an error.
      */
-    destroy() {
+    destroy () {
         const method = 'destroy';
         LOG.entry(method);
         return this.db.destroy()
@@ -100,10 +99,17 @@ class PouchDBDataService extends DataService {
      * @return {Promise} A promise that will be resolved with a {@link DataCollection}
      * when complete, or rejected with an error.
      */
-    createCollection(id, force) {
+    createCollection (id, force) {
         const method = 'createCollection';
         LOG.entry(method, id, force);
-        const key = pouchCollate.toIndexableString([collectionObjectType, id]);
+        let compositeKey = [collectionObjectType];
+        if (this.uuid) {
+            compositeKey.unshift(this.uuid);
+        }
+
+        compositeKey.push(id);
+
+        const key = pouchCollate.toIndexableString(compositeKey);
         return PouchDBUtils.getDocument(this.db, key)
             .then((doc) => {
                 if (doc && !force) {
@@ -114,7 +120,7 @@ class PouchDBDataService extends DataService {
                 });
             })
             .then(() => {
-                let result = new PouchDBDataCollection(this, this.db, id);
+                let result = new PouchDBDataCollection(this, this.db, id, this.uuid);
                 LOG.exit(method, result);
                 return result;
             });
@@ -126,10 +132,17 @@ class PouchDBDataService extends DataService {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    deleteCollection(id) {
+    deleteCollection (id) {
         const method = 'deleteCollection';
         LOG.entry(method, id);
-        const key = pouchCollate.toIndexableString([collectionObjectType, id]);
+        let compositeKey = [collectionObjectType];
+        if (this.uuid) {
+            compositeKey.unshift(this.uuid);
+        }
+
+        compositeKey.push(id);
+
+        const key = pouchCollate.toIndexableString(compositeKey);
         return PouchDBUtils.getDocument(this.db, key)
             .then((doc) => {
                 if (!doc) {
@@ -159,31 +172,78 @@ class PouchDBDataService extends DataService {
         LOG.entry(method, id);
 
         if (bypass) {
-            let result = new PouchDBDataCollection(this, this.db, id);
+            let result = new PouchDBDataCollection(this, this.db, id, this.uuid);
             LOG.exit(method, result);
             return result;
         } else {
-            const key = pouchCollate.toIndexableString([collectionObjectType, id]);
+            let compositeKey = [collectionObjectType];
+            if(this.uuid) {
+                compositeKey.unshift(this.uuid);
+            }
+
+            compositeKey.push(id);
+
+            const key = pouchCollate.toIndexableString(compositeKey);
             let doc = await PouchDBUtils.getDocument(this.db, key);
             if (!doc) {
                 throw new Error(`Collection with ID '${id}' does not exist`);
             }
-            let result = new PouchDBDataCollection(this, this.db, id);
+            let result = new PouchDBDataCollection(this, this.db, id, this.uuid);
             LOG.exit(method, result);
             return result;
         }
     }
 
-   /**
-    * Determine whether the collection with the specified ID exists.
-    * @param {string} id The ID of the collection.
-    * @return {Promise} A promise that will be resolved with a boolean
-    * indicating whether the collection exists.
-    */
-    existsCollection(id) {
+    /**
+     * Remove all the data
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    removeAllData () {
+        const method = 'removeAllData';
+        LOG.entry(method);
+        let compositeKey = [];
+        if (this.uuid) {
+            compositeKey.unshift(this.uuid);
+        }
+
+        const startKey = pouchCollate.toIndexableString(compositeKey);
+        const endCompositeKey = compositeKey;
+        endCompositeKey.push('\uffff');
+        const endKey = pouchCollate.toIndexableString(endCompositeKey);
+        return this.db.allDocs({include_docs : true, startkey : startKey, endkey : endKey, inclusive_end : false})
+            .then((response) => {
+                const docs = response.rows.map((row) => {
+                    return {
+                        _id : row.id,
+                        _rev : row.value.rev,
+                        _deleted : true
+                    };
+                });
+                return this.db.bulkDocs(docs);
+            })
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Determine whether the collection with the specified ID exists.
+     * @param {string} id The ID of the collection.
+     * @return {Promise} A promise that will be resolved with a boolean
+     * indicating whether the collection exists.
+     */
+    existsCollection (id) {
         const method = 'existsCollection';
         LOG.entry(method, id);
-        const key = pouchCollate.toIndexableString([collectionObjectType, id]);
+        let compositeKey = [collectionObjectType];
+        if (this.uuid) {
+            compositeKey.unshift(this.uuid);
+        }
+
+        compositeKey.push(id);
+
+        const key = pouchCollate.toIndexableString(compositeKey);
         return PouchDBUtils.getDocument(this.db, key)
             .then((doc) => {
                 LOG.exit(method, !!doc);
@@ -198,7 +258,7 @@ class PouchDBDataService extends DataService {
      * @return {Promise} A promise that will be resolved with an array of objects
      * when complete, or rejected with an error.
      */
-    executeQuery(queryString) {
+    executeQuery (queryString) {
         const method = 'executeQuery';
         LOG.entry(method, queryString);
         const query = JSON.parse(queryString);
@@ -210,6 +270,11 @@ class PouchDBDataService extends DataService {
                 delete query.selector[`\\${prop}`];
             }
         });
+
+        if (this.uuid) {
+            query.selector.$networkId = this.uuid;
+        }
+
         return this.db.find(query)
             .then((response) => {
                 const docs = response.docs.map((doc) => {
@@ -228,18 +293,27 @@ class PouchDBDataService extends DataService {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    clearCollection(id) {
+    clearCollection (id) {
         const method = 'clearCollection';
         LOG.entry(method, id);
-        const startKey = pouchCollate.toIndexableString([id]);
-        const endKey = pouchCollate.toIndexableString([id, '\uffff']);
-        return this.db.allDocs({ startkey: startKey, endkey: endKey, inclusive_end: false })
+
+        let compositeKey = [id];
+        if (this.uuid) {
+            compositeKey.unshift(this.uuid);
+        }
+
+        const startKey = pouchCollate.toIndexableString(compositeKey);
+
+        const endCompositeKey = compositeKey;
+        endCompositeKey.push('\uffff');
+        const endKey = pouchCollate.toIndexableString(endCompositeKey);
+        return this.db.allDocs({startkey : startKey, endkey : endKey, inclusive_end : false})
             .then((response) => {
                 const docs = response.rows.map((row) => {
                     return {
-                        _id: row.id,
-                        _rev: row.value.rev,
-                        _deleted: true
+                        _id : row.id,
+                        _rev : row.value.rev,
+                        _deleted : true
                     };
                 });
                 return this.db.bulkDocs(docs);
@@ -257,7 +331,7 @@ class PouchDBDataService extends DataService {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    handleAction(actionFunction) {
+    handleAction (actionFunction) {
         const method = 'handleAction';
         LOG.entry(method, actionFunction);
         return Promise.resolve()
@@ -277,38 +351,31 @@ class PouchDBDataService extends DataService {
     /**
      * Called at the start of a transaction.
      * @param {boolean} readOnly Is the transaction read-only?
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
-    transactionStart(readOnly) {
+    async transactionStart (readOnly) {
         const method = 'transactionStart';
         LOG.entry(method, readOnly);
-        return super.transactionStart(readOnly)
-            .then(() => {
-                this.pendingActions = [];
-                LOG.exit(method);
-            });
+        await super.transactionStart(readOnly);
+        this.pendingActions = [];
+        LOG.exit(method);
     }
 
     /**
      * Called when a transaction is preparing to commit.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
-    transactionPrepare() {
+    async transactionPrepare () {
         const method = 'transactionPrepare';
         LOG.entry(method);
-        return super.transactionPrepare()
-            .then(() => {
-                return this.pendingActions.reduce((promise, pendingAction) => {
-                    return promise.then(() => {
-                        return pendingAction();
-                    });
-                }, Promise.resolve());
-            })
-            .then(() => {
-                LOG.exit(method);
-            });
+        await super.transactionPrepare();
+        if (this.additionalConnectorOptions.commit === false) {
+            LOG.debug('commit specified as false');
+            LOG.exit(method);
+            return;
+        }
+        for (const pendingAction of this.pendingActions) {
+            await pendingAction();
+        }
+        LOG.exit(method);
     }
 
 }

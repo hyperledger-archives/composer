@@ -18,6 +18,7 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const Logger = require('composer-common').Logger;
 const realSerializerr = require('serializerr');
 const uuid = require('uuid');
+const version = require('../package.json').version;
 
 const LOG = Logger.getLog('ConnectorServer');
 
@@ -78,6 +79,14 @@ class ConnectorServer {
         this.connections = {};
         this.securityContexts = {};
         LOG.exit(method);
+    }
+
+    /**
+     * Test the connection to the connector server.
+     * @param {function} callback The callback to call when complete.
+     */
+    async ping(callback) {
+        callback(null, { version });
     }
 
     /**
@@ -577,8 +586,8 @@ class ConnectorServer {
         }
         return connection.queryChainCode(securityContext, functionName, args)
             .then((result) => {
-                callback(null, result.toString());
-                LOG.exit(method, result.toString());
+                callback(null, result ? result.toString() : null);
+                LOG.exit(method, result ? result.toString() : null);
             })
             .catch((error) => {
                 LOG.error(method, error);
@@ -618,14 +627,14 @@ class ConnectorServer {
             return Promise.resolve();
         }
         return connection.invokeChainCode(securityContext, functionName, args, options)
-            .then(() => {
-                callback(null);
-                LOG.exit(method);
+            .then((result) => {
+                callback(null, result ? result.toString() : null);
+                LOG.exit(method, result ? result.toString() : null);
             })
             .catch((error) => {
                 LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
-                LOG.exit(method);
+                LOG.exit(method, null);
             });
     }
 

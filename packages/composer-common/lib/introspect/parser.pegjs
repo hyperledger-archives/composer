@@ -1334,7 +1334,7 @@ VCHAR
 WSP
   = SP
   / HTAB
-  
+
 /* http://tools.ietf.org/html/rfc3986#section-2.1 Percent-Encoding */
 pct_encoded
   = $("%" HEXDIG HEXDIG)
@@ -1645,10 +1645,20 @@ DecoratorBoolean =
       }
   }
 
+DecoratorIdentifier =
+  value:Identifier __ array:"[]"? {
+      return {
+          type: "Identifier",
+          value: Object.assign({ array: !!array }, value),
+          location: location()
+      }
+  }
+
 DecoratorLiteral =
   DecoratorString
   / DecoratorBoolean
   / DecoratorNumber
+  / DecoratorIdentifier
 
 DecoratorArguments
   = "(" __ first:(d:DecoratorLiteral __ "," __ {return d;})* last:DecoratorLiteral? __ ")" {
@@ -1968,14 +1978,14 @@ Namespace
   = NamespaceToken __ namespace: QualifiedName __ {
   	return namespace;
   }
-  
+
 ImportInternal
     = ImportToken __ ns:$(QualifiedName '.*'?) __ {
     	return {
         	namespace: ns
         }
   }
-  
+
  ImportFrom
     = ImportToken __ ns:$(QualifiedName '.*'?) __ FromToken __ u:$URI __ {
     	return {

@@ -24,6 +24,11 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.19.11 {765772c9b73656c289a15398bccc76fd} 2018-06-29
+- Add decorator factories
+- Add returns decorator factory
+- Add commit decorator factory
+
 Version 0.19.1 {f6814276d318be3b4ed0f6212bc77c6f} 2018-04-06
 - Enable simple JSON.stringify serialization of resources
 

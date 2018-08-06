@@ -12,42 +12,106 @@
  * limitations under the License.
  */
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Configuration } from '../configuration';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import * as sinon from 'sinon';
 import { DataService } from '../data.service';
-import { <%= participantName %>Component } from './<%= participantName %>.component';
-import {<%= participantName %>Service} from './<%= participantName %>.service';
-describe('<%= participantName %>Component', () => {
-  let component: <%= participantName %>Component;
-  let fixture: ComponentFixture<<%= participantName %>Component>;
+import { <%= currentParticipant.name %>Component } from './<%= currentParticipant.name %>.component';
+import { <%= currentParticipant.name %>Service } from './<%= currentParticipant.name %>.service';
+import { Observable } from 'rxjs';
+
+describe('<%= currentParticipant.name %>Component', () => {
+  let component: <%= currentParticipant.name %>Component;
+  let fixture: ComponentFixture<<%= currentParticipant.name %>Component>;
+
+  let mock<%= currentParticipant.name %>Service;
+  let mockDataService
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ <%= participantName %>Component ],
-imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpModule
-  ],
-providers: [<%= participantName %>Service,DataService,Configuration]
-    })
-    .compileComponents();
-  }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(<%= participantName %>Component);
+    mock<%= currentParticipant.name %>Service = sinon.createStubInstance(<%= currentParticipant.name %>Service);
+    mock<%= currentParticipant.name %>Service.getAll.returns([]);
+    mockDataService = sinon.createStubInstance(DataService);
+
+    TestBed.configureTestingModule({
+      declarations: [ <%= currentParticipant.name %>Component ],
+      imports: [
+        BrowserModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpModule
+      ],
+      providers: [
+        {provide: <%= currentParticipant.name %>Service, useValue: mock<%= currentParticipant.name %>Service },
+        {provide: DataService, useValue: mockDataService },
+      ]
+    });
+
+    fixture = TestBed.createComponent(<%= currentParticipant.name %>Component);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should update the table when a <%= currentParticipant.name %> is added', fakeAsync(() => {
+    let loadAllSpy = sinon.stub(component, 'loadAll');
+    sinon.stub(component.service<%= currentParticipant.name %>, 'addParticipant').returns(new Observable(observer => {
+      observer.next('');
+      observer.complete();
+    }));
+
+    component.addParticipant({});
+
+    tick();
+
+    expect(loadAllSpy.callCount).toBe(1);
+
+    loadAllSpy.restore();
+  }));
+
+  it('should update the table when a <%= currentParticipant.name %> is updated', fakeAsync(() => {
+    let loadAllSpy = sinon.stub(component, 'loadAll');
+    sinon.stub(component.service<%= currentParticipant.name %>, 'updateParticipant').returns(new Observable(observer => {
+      observer.next('');
+      observer.complete();
+    }));
+
+    // mock form to be passed to the update function
+    let mockForm = new FormGroup({
+      <%= currentParticipant.identifier %>: new FormControl('id')
+    });
+    
+    component.updateParticipant(mockForm);
+
+    tick();
+
+    expect(loadAllSpy.callCount).toBe(1);
+
+    loadAllSpy.restore();
+  }));
+  
+  it('should update the table when a <%= currentParticipant.name %> is deleted', fakeAsync(() => {
+    let loadAllSpy = sinon.stub(component, 'loadAll');
+    sinon.stub(component.service<%= currentParticipant.name %>, 'deleteParticipant').returns(new Observable(observer => {
+      observer.next('');
+      observer.complete();
+    }));
+
+    component.deleteParticipant();
+
+    tick();
+
+    expect(loadAllSpy.callCount).toBe(1);
+
+    loadAllSpy.restore();
+  }));
+
 });

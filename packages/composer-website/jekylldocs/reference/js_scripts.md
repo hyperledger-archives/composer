@@ -175,7 +175,7 @@ async function sampleTransaction(tx) {
 
 In this example, not only can the specific asset referenced by the relationship in the transaction be referenced using `tx.asset`, the specific participant referenced by the `owner` relationship can be referenced using `tx.asset.owner`. In this case, `tx.asset.owner` would resolve to reference a specific participant.
 
-## Promise returns in transaction processor functions
+## Handling asynchronous code and promises in transaction processor functions
 
 Similarly to relationships, transaction processor functions will wait for promises to be resolved before committing the transaction. If a promise is rejected, the transaction will fail.
 
@@ -285,7 +285,7 @@ async function sampleTransaction(tx) {
 }
 ```
 
-### Calling {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} APIs in transaction processor functions
+### Calling {{site.data.conrefs.hlf_full}} APIs in transaction processor functions
 
 To call the {{site.data.conrefs.hlf_full}} API in a transaction processor function, the function `getNativeAPI` must be called, followed by a function from the {{site.data.conrefs.hlf_full}} API. Using the {{site.data.conrefs.hlf_full}} API gives you access to functionality which is not available in the {{site.data.conrefs.composer_full}} API.
 
@@ -296,7 +296,7 @@ In the example below, the {{site.data.conrefs.hlf_full}} API function `getHistor
 For more information on the {{site.data.conrefs.hlf_full}} APIs you can call in a transaction processor function, see the [{{site.data.conrefs.hlf_full}} API documentation](https://fabric-shim.github.io/ChaincodeStub.html).
 
 ```javascript
-async function simpleNativeHistoryTransaction (transaction) {    
+async function simpleNativeHistoryTransaction (transaction) {
     const id = transaction.assetId;
     const nativeSupport = transaction.nativeSupport;
 
@@ -323,6 +323,306 @@ async function simpleNativeHistoryTransaction (transaction) {
     }
 }
 ```
+
+## Returning data from transaction processor functions
+
+Transaction processor functions can optionally return data to client applications. This can be useful for returning a receipt to the submitter of the transaction, or returning an asset modified by the transaction to avoid a separate lookup of the asset after the transaction has been committed.
+
+The return data for a transaction processor function must be a valid type, either a primitive type (String, Integer, Long, etc.), or a type modelled using the Composer modelling language - a concept, asset, participant, transaction, event or enumeration.
+
+The type of the return data must also be specified on the model for the transaction using the `@returns(Type)` decorator, and the return data must be the last thing returned by the transaction processor function. If you have multiple transaction processor functions for a single transaction, only one of those transaction processor functions can return data. If the return data is missing, or is of the wrong type, then the transaction will fail and will be rejected.
+
+### Returning a primitive type from a transaction processor function
+
+Here is an example of a transaction processor function that returns a String to a client application.
+
+Model file:
+
+    namespace org.sample
+
+    @returns(String)
+    transaction MyTransaction {
+
+    }
+
+Transaction processor function:
+
+    /**
+     * Handle a transaction that returns a string.
+     * @param {org.sample.MyTransaction} transaction The transaction.
+     * @returns {string} The string.
+     * @transaction
+     */
+    async function myTransaction(transaction) {
+        return 'hello world!';
+    }
+
+Client application:
+
+    const bnc = new BusinessNetworkConnection();
+    await bnc.connect('admin@sample-network');
+    const factory = bnc.getBusinessNetwork().getFactory();
+    const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+    const string = await bnc.submitTransaction(transaction);
+    console.log(`transaction returned ${string}`);
+
+Here is an example of a transaction processor function that returns an array of integers to a client application.
+
+Model file:
+
+    namespace org.sample
+
+    @returns(Integer[])
+    transaction MyTransaction {
+
+    }
+
+Transaction processor function:
+
+    /**
+     * Handle a transaction that returns an array of integers.
+     * @param {org.sample.MyTransaction} transaction The transaction.
+     * @returns {number[]} The array of integers.
+     * @transaction
+     */
+    async function myTransaction(transaction) {
+        return [1, 2, 3];
+    }
+
+Client application:
+
+    const bnc = new BusinessNetworkConnection();
+    await bnc.connect('admin@sample-network');
+    const factory = bnc.getBusinessNetwork().getFactory();
+    const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+    const integers = await bnc.submitTransaction(transaction);
+    for (const integer of integers) {
+        console.log(`transaction returned ${integer}`);
+    }
+
+### Returning a complex type from a transaction processor function
+
+Here is an example of a transaction processor function that returns a concept to a client application. The same code can be modified to return an asset, participant, transaction or event as well.
+
+Model file:
+
+    namespace org.sample
+
+    concept MyConcept {
+        o String value
+    }
+
+    @returns(MyConcept)
+    transaction MyTransaction {
+
+    }
+
+Transaction processor function:
+
+    /**
+     * Handle a transaction that returns a concept.
+     * @param {org.sample.MyTransaction} transaction The transaction.
+     * @returns {org.sample.MyConcept} The concept.
+     * @transaction
+     */
+    async function myTransaction(transaction) {
+        const factory = getFactory();
+        const concept = factory.newConcept('org.sample', 'MyConcept');
+        concept.value = 'hello world!';
+        return concept;
+    }
+
+Client application:
+
+    const bnc = new BusinessNetworkConnection();
+    await bnc.connect('admin@sample-network');
+    const factory = bnc.getBusinessNetwork().getFactory();
+    const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+    const concept = await bnc.submitTransaction(transaction);
+    console.log(`transaction returned ${concept.value}`);
+
+Here is an example of a transaction processor function that returns an array of concepts to a client application.
+
+Model file:
+
+    namespace org.sample
+
+    concept MyConcept {
+        o String value
+    }
+
+    @returns(MyConcept[])
+    transaction MyTransaction {
+
+    }
+
+Transaction processor function:
+
+    /**
+     * Handle a transaction that returns an array of concepts.
+     * @param {org.sample.MyTransaction} transaction The transaction.
+     * @returns {org.sample.MyConcept[]} The array of concepts.
+     * @transaction
+     */
+    async function myTransaction(transaction) {
+        const factory = getFactory();
+        const concept1 = factory.newConcept('org.sample', 'MyConcept');
+        concept1.value = 'hello alice!';
+        const concept2 = factory.newConcept('org.sample', 'MyConcept');
+        concept2.value = 'hello bob!';
+        const concept3 = factory.newConcept('org.sample', 'MyConcept');
+        concept3.value = 'hello charlie!';
+        return [ concept1, concept2, concept3 ];
+    }
+
+Client application:
+
+    const bnc = new BusinessNetworkConnection();
+    await bnc.connect('admin@sample-network');
+    const factory = bnc.getBusinessNetwork().getFactory();
+    const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+    const concepts = await bnc.submitTransaction(transaction);
+    for (const concept of concepts) {
+        console.log(`transaction returned ${concept.value}`);
+    }
+
+### Returning an enumeration from a transaction processor function
+
+Here is an example of a transaction processor function that returns an enumeration to a client application.
+
+Model file:
+
+    namespace org.sample
+
+    enum MyEnum {
+        o HELLO
+        o WORLD
+    }
+
+    @returns(MyEnum)
+    transaction MyTransaction {
+
+    }
+
+Transaction processor function:
+
+    /**
+     * Handle a transaction that returns an enumeration.
+     * @param {org.sample.MyTransaction} transaction The transaction.
+     * @returns {org.sample.MyEnum} The enumeration.
+     * @transaction
+     */
+    async function myTransaction(transaction) {
+        return 'HELLO';
+    }
+
+Client application:
+
+    const bnc = new BusinessNetworkConnection();
+    await bnc.connect('admin@sample-network');
+    const factory = bnc.getBusinessNetwork().getFactory();
+    const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+    const enum = await bnc.submitTransaction(transaction);
+    console.log(`transaction returned ${enum}`);
+
+Here is an example of a transaction processor function that returns an array of enumerations to a client application.
+
+Model file:
+
+    namespace org.sample
+
+    enum MyEnum {
+        o HELLO
+        o WORLD
+    }
+
+    @returns(MyEnum[])
+    transaction MyTransaction {
+
+    }
+
+Transaction processor function:
+
+    /**
+     * Handle a transaction that returns an array of enumerations.
+     * @param {org.sample.MyTransaction} transaction The transaction.
+     * @returns {org.sample.MyEnum[]} The array of enumerations.
+     * @transaction
+     */
+    async function myTransaction(transaction) {
+        return [ 'HELLO', 'WORLD' ];
+    }
+
+Client application:
+
+    const bnc = new BusinessNetworkConnection();
+    await bnc.connect('admin@sample-network');
+    const factory = bnc.getBusinessNetwork().getFactory();
+    const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+    const enums = await bnc.submitTransaction(transaction);
+    for (const enum of enums) {
+        console.log(`transaction returned ${enum}`);
+    }
+
+## Read-only transaction processor functions (query processor functions)
+
+Transactions can be modelled as being read-only by specifying the `@commit(false)` decorator. When a transaction is modelled as read-only, the transaction is submitted as normal, and any transaction processor functions for that transaction are executed as normal. However, the transaction is not committed - it will not be endorsed by multiple peers on the blockchain network, nor will it be sent to the ordering service, nor will it publish any events.
+
+This feature can be useful when the APIs that client applications can use to read data from the business network are too limited for your use case. These APIs include `get(id)` (get by ID), `getAll()` (get all), `exists(id)` (test existence), and `query(q, params)` (execute a complex query). For example, a client application may wish to get all of the assets across multiple business networks deployed to multiple channels in a single call to the blockchain network. Another example is reducing the result set of a query on the "server" (chaincode) side, before returning the result set to the client application, to reduce network traffic and the load on the client application.
+
+Here is an example of a read-only transaction processor function that retrieves a set of assets from the current business network, as well as other business networks, and returns all of the assets to the client application:
+
+Model file:
+
+    namespace org.sample
+
+    asset MyAsset identified by assetId {
+        o String assetId
+        o String value
+    }
+
+    @commit(false)
+    @returns(MyAsset[])
+    transaction MyTransaction {
+
+    }
+
+Transaction processor function:
+
+    /**
+     * Handle a transaction that returns an array of assets.
+     * @param {org.sample.MyTransaction} transaction The transaction.
+     * @returns {org.sample.MyAsset[]} All the assets.
+     * @transaction
+     */
+    async function myTransaction(transaction) {
+        const allAssets = [];
+        const assetRegistry = await getAssetRegistry('org.sample.MyAsset');
+        const localAssets = await assetRegistry.getAll();
+        for (const asset of localAssets) {
+            localAssets.push(asset);
+        }
+        const businessNetworkNames = ['other-network-1', 'other-network-2'];
+        for (const businessNetworkName of businessNetworkNames) {
+            const response = await getNativeAPI().invokeChaincode(businessNetworkName, ['getAllResourcesInRegistry', 'Asset', 'org.sample.MyAsset'], 'composerchannel');
+            const json = JSON.parse(response.payload.toString('utf8'));
+            for (const item of json) {
+                allAssets.push(getSerializer().fromJSON(item));
+            }
+        }
+        return allAssets;
+    }
+
+Client application:
+
+    const bnc = new BusinessNetworkConnection();
+    await bnc.connect('admin@sample-network');
+    const factory = bnc.getBusinessNetwork().getFactory();
+    const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+    const assets = await bnc.submitTransaction(transaction);
+    for (const asset of assets) {
+        console.log(`transaction returned ${asset.value}`);
+    }
 
 ## What next?
 

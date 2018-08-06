@@ -20,8 +20,12 @@ set -o pipefail
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+cd "${DIR}"
+# Set up environment variables for Fabric Docker image versions
+. "../../scripts/fabric-docker-env.sh"
+
 DOCKER_FILE=${DIR}/fabric/hlfv1/docker-compose.yml
 
-ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
-ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+docker-compose -f ${DOCKER_FILE} kill
+docker-compose -f ${DOCKER_FILE} down
 docker rmi -f $(docker images -aq dev-*) || true

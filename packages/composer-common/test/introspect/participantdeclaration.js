@@ -14,13 +14,11 @@
 
 'use strict';
 
-const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
 const fs = require('fs');
 
 require('chai').should();
-const sinon = require('sinon');
 
 describe('ParticipantDeclaration', () => {
 
@@ -38,23 +36,6 @@ describe('ParticipantDeclaration', () => {
 
         return assets[0];
     };
-
-    describe('#constructor', () => {
-
-        it('should throw if modelFile not specified', () => {
-            (() => {
-                new ParticipantDeclaration(null, {});
-            }).should.throw(/required/);
-        });
-
-        it('should throw if ast not specified', () => {
-            let mockModelFile = sinon.createStubInstance(ModelFile);
-            (() => {
-                new ParticipantDeclaration(mockModelFile, null);
-            }).should.throw(/required/);
-        });
-
-    });
 
     describe('#isRelationshipTarget', () => {
         it('should return true', () => {

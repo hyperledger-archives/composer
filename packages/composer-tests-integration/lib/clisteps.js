@@ -32,12 +32,17 @@ module.exports = function () {
         return this.composer.checkExistsStrict(folder, table);
     });
 
+    this.Given(/^I start watching the chain code logs/, function () {
+        return this.composer.startWatchingLogs();
+    });
+
+
     this.Given(/^I have saved the secret in file to (.+?)$/, function(alias, cardFile) {
         return this.composer.extractSecret(alias, cardFile);
     });
 
-    this.Given(/^I have deployed the business network (.+?)$/, {timeout: 360 * 1000}, async function (name) {
-        await this.composer.deployBusinessNetworkFromDirectory(name);
+    this.Given(/^I have deployed the business network (.+?)(?: as (.+?))?$/, {timeout: 360 * 1000}, async function (name, networkName) {
+        await this.composer.deployBusinessNetworkFromDirectory(name, networkName);
     });
 
     this.Given(/^I have a deployed the bna (.+?)$/, {timeout: 360 * 1000}, async function (name) {
@@ -45,7 +50,7 @@ module.exports = function () {
     });
 
     this.When(/^I run the following expected (.*?) CLI command/, {timeout: 240 * 1000}, function (condition, table) {
-        let pass = condition === 'pass' ? true : false;
+        const pass = (condition === 'pass');
         return this.composer.runCLI(pass, table);
     });
 
@@ -59,6 +64,10 @@ module.exports = function () {
 
     this.When(/^I kill task named (.+?)$/, {timeout: 240 * 1000}, function (label) {
         return this.composer.killBackground(label);
+    });
+
+    this.When(/^I kill process on port (.+?)$/, {timeout: 240 * 1000}, function (port) {
+        return this.composer.killPortProcess(port);
     });
 
     this.When(/^I save group (.+?) from the console output matching pattern (.+?) as alias (.*?)$/, function (group, regex, alias) {
@@ -91,5 +100,13 @@ module.exports = function () {
 
     this.Then(/^A new file matching this regex should be created \/(.+?)\/$/, function (match) {
         return this.composer.checkFileWasCreated(match);
+    });
+
+    this.Then(/^I stop watching the chain code logs$/, function () {
+        return this.composer.stopWatchingLogs();
+    });
+
+    this.Then(/^Then the maximum log level should be (.+?)$/, function (level) {
+        return this.composer.checkMaximumLogLevel(level);
     });
 };

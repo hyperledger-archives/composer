@@ -44,7 +44,7 @@ let process = async function(context,options){
 
     // run standard Composer Introspector
     let visitor = new InfoVisitor();
-    context.types = { asset: [], transaction: [], concept: [], enum: [], participant: [], event: [] };
+    context.types = { asset: {}, transaction: {}, concept: {}, enum: {}, participant: {}, event: {} };
     context._bnd.accept(visitor, { data: context.types, ctx: context, system: options.systemns });
 
     // run specific generators now to add extra information and structure

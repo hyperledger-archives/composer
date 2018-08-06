@@ -506,11 +506,16 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {Resource} transaction - The transaction to submit. Use
      * {@link module:composer-common.Factory#newTransaction newTransaction} to
      * create this object.
+     * @param {Object} [additionalConnectorOptions] Additional connector specific options for this transaction.
      * @returns {Promise} A promise that will be fulfilled when the transaction
      * has been processed.
      */
-    submitTransaction(transaction) {
+    async submitTransaction(transaction, additionalConnectorOptions = {}) {
+        const method = 'submitTransaction';
+        LOG.entry(method, transaction);
         Util.securityCheck(this.securityContext);
+
+        // Ensure a transaction was specified, and that it is a transaction.
         if (!transaction) {
             throw new Error('transaction not specified');
         }
@@ -518,9 +523,301 @@ class BusinessNetworkConnection extends EventEmitter {
         if (!(classDeclaration instanceof TransactionDeclaration)) {
             throw new Error(classDeclaration.getFullyQualifiedName() + ' is not a transaction');
         }
+
+        // Set the current timestamp.
         transaction.timestamp = new Date();
 
-        return Util.submitTransaction(this.securityContext,transaction,this.getBusinessNetwork().getSerializer());
+        // Determine whether or not we want to commit this transaction.
+        const transactionDeclaration = transaction.getClassDeclaration();
+        const commitDecorator = transactionDeclaration.getDecorator('commit');
+        const commit = commitDecorator ? commitDecorator.getValue() : true;
+
+        // Submit the transaction.
+        const data = await Util.submitTransaction(this.securityContext, transaction, this.getBusinessNetwork().getSerializer(), Object.assign({ commit }, additionalConnectorOptions));
+
+        // Process the return data.
+        const result = this._processReturnData(transaction, data);
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Process the return data for the specified transaction.
+     * @private
+     * @param {Resource} transaction The transaction.
+     * @param {Buffer} data The return data.
+     * @return {*} The processed return data.
+     */
+    _processReturnData(transaction, data) {
+        const method = '_processReturnData';
+        LOG.entry(method, transaction, data);
+
+        // Determine whether or not a result was expected.
+        const transactionDeclaration = transaction.getClassDeclaration();
+        const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        if (!returnsDecorator) {
+            LOG.exit(method, undefined);
+            return undefined;
+        }
+
+        // Ensure some data was returned.
+        const returnValueType = returnsDecorator.getType();
+        const isArray = returnsDecorator.isArray();
+        const formattedExpectedType = `${returnValueType}${isArray ? '[]' : ''}`;
+        if (!data) {
+            const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but nothing was returned by any functions`);
+            LOG.error(method, error);
+            throw error;
+        }
+
+        // Handle enum return values.
+        if (returnsDecorator.isTypeEnum()) {
+            const result = this._processEnumReturnData(transaction, data);
+            LOG.exit(method, result);
+            return result;
+        }
+
+        // Handle non-primitive return values.
+        if (!returnsDecorator.isPrimitive()) {
+            const result = this._processComplexReturnData(transaction, data);
+            LOG.exit(method, result);
+            return result;
+        }
+
+        // Handle primitive return values.
+        const result = this._processPrimitiveReturnData(transaction, data);
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Process the complex return data for the specified transaction.
+     * @private
+     * @param {Resource} transaction The transaction.
+     * @param {Buffer} data The return data.
+     * @return {*} The processed return data.
+     */
+    _processComplexReturnData(transaction, data) {
+        const method = '_processComplexReturnData';
+        LOG.entry(method, transaction, data);
+
+        // Get the type and resolved type.
+        const transactionDeclaration = transaction.getClassDeclaration();
+        const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        const returnValueType = returnsDecorator.getType();
+        const isArray = returnsDecorator.isArray();
+        const formattedExpectedType = `${returnValueType}${isArray ? '[]' : ''}`;
+
+        // Parse the data, it should be a JSON object or array.
+        let json;
+        try {
+            json = JSON.parse(data.toString());
+        } catch (ignored) {
+            const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but the data returned was not valid JSON`);
+            LOG.error(method, error);
+            throw error;
+        }
+        const serializer = this.getBusinessNetwork().getSerializer();
+
+        // Process the return value.
+        const processComplexReturnDataInner = (item) => {
+            let typed;
+            try {
+                typed = serializer.fromJSON(item);
+            } catch (ignored) {
+                const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a non-typed value was returned`);
+                LOG.error(method, error);
+                throw error;
+            }
+            if (!typed.instanceOf(returnsDecorator.getResolvedType().getFullyQualifiedName())) {
+                const actualReturnValueType = typed.getType();
+                const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                LOG.error(method, error);
+                throw error;
+            }
+            return typed;
+        };
+
+        // Handle the non-array case - a single return value.
+        if (!returnsDecorator.isArray()) {
+            const result = processComplexReturnDataInner(json);
+            LOG.exit(method, result);
+            return result;
+        }
+
+        // This is the array case - ensure the return value is an array.
+        if (!Array.isArray(json)) {
+            const actualReturnValueType = typeof actualReturnValue;
+            const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+            LOG.error(method, error);
+            throw error;
+        }
+        const result = json.map(item => processComplexReturnDataInner(item));
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Process the enum return data for the specified transaction.
+     * @private
+     * @param {Resource} transaction The transaction.
+     * @param {Buffer} data The return data.
+     * @return {*} The processed return data.
+     */
+    _processEnumReturnData(transaction, data) {
+        const method = '_processEnumReturnData';
+        LOG.entry(method, transaction, data);
+
+        // Get the type and resolved type.
+        const transactionDeclaration = transaction.getClassDeclaration();
+        const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        const returnValueType = returnsDecorator.getType();
+        const returnValueResolvedType = returnsDecorator.getResolvedType();
+        const validEnumValues = returnValueResolvedType.getProperties().map(enumValueProperty => enumValueProperty.getName());
+        const isArray = returnsDecorator.isArray();
+        const formattedExpectedType = `${returnValueType}${isArray ? '[]' : ''}`;
+
+        // Parse the data, it should be a JSON string.
+        let json;
+        try {
+            json = JSON.parse(data.toString());
+        } catch (ignored) {
+            const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but the data returned was not valid JSON`);
+            LOG.error(method, error);
+            throw error;
+        }
+
+        // Process the return value.
+        const processPrimitiveReturnDataInner = (item) => {
+            if (typeof item !== 'string') {
+                const actualReturnValueType = typeof item;
+                const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                LOG.error(method, error);
+                throw error;
+            } else if (validEnumValues.indexOf(item) === -1) {
+                const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but an invalid enum value ${item} was returned`);
+                LOG.error(method, error);
+                throw error;
+            }
+            return item;
+        };
+
+        // Handle the non-array case - a single return value.
+        if (!returnsDecorator.isArray()) {
+            const result = processPrimitiveReturnDataInner(json);
+            LOG.exit(method, result);
+            return result;
+        }
+
+        // This is the array case - ensure the return value is an array.
+        if (!Array.isArray(json)) {
+            const actualReturnValueType = typeof actualReturnValue;
+            const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+            LOG.error(method, error);
+            throw error;
+        }
+
+        // Now handle all the elements of the array.
+        const result = json.map(item => processPrimitiveReturnDataInner(item));
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Process the primitive return data for the specified transaction.
+     * @private
+     * @param {Resource} transaction The transaction.
+     * @param {Buffer} data The return data.
+     * @return {*} The processed return data.
+     */
+    _processPrimitiveReturnData(transaction, data) {
+        const method = '_processPrimitiveReturnData';
+        LOG.entry(method, transaction, data);
+
+        // Get the type and resolved type.
+        const transactionDeclaration = transaction.getClassDeclaration();
+        const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        const returnValueType = returnsDecorator.getType();
+        const isArray = returnsDecorator.isArray();
+        const formattedExpectedType = `${returnValueType}${isArray ? '[]' : ''}`;
+
+        // Parse the data, it should be a JSON value.
+        let json;
+        try {
+            json = JSON.parse(data.toString());
+        } catch (ignored) {
+            const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but the data returned was not valid JSON`);
+            LOG.error(method, error);
+            throw error;
+        }
+
+        // Process the return value.
+        const processPrimitiveReturnDataInner = (item) => {
+            switch (returnsDecorator.getType()) {
+            case 'DateTime': {
+                if (typeof item !== 'string') {
+                    const actualReturnValueType = typeof item;
+                    const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                    LOG.error(method, error);
+                    throw error;
+                }
+                const millis = new Date(item);
+                if (isNaN(millis)) {
+                    const actualReturnValueType = typeof item;
+                    const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                    LOG.error(method, error);
+                    throw error;
+                }
+                return millis;
+            }
+            case 'Integer':
+            case 'Long':
+            case 'Double':
+                if (typeof item !== 'number') {
+                    const actualReturnValueType = typeof item;
+                    const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                    LOG.error(method, error);
+                    throw error;
+                }
+                return item;
+            case 'Boolean':
+                if (typeof item !== 'boolean') {
+                    const actualReturnValueType = typeof item;
+                    const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                    LOG.error(method, error);
+                    throw error;
+                }
+                return item;
+            default:
+                if (item === undefined || item === null || typeof item !== 'string') {
+                    const actualReturnValueType = typeof item;
+                    const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+                    LOG.error(method, error);
+                    throw error;
+                }
+                return item;
+            }
+        };
+
+        // Handle the non-array case - a single return value.
+        if (!returnsDecorator.isArray()) {
+            const result = processPrimitiveReturnDataInner(json);
+            LOG.exit(method, result);
+            return result;
+        }
+
+        // This is the array case - ensure the return value is an array.
+        if (!Array.isArray(json)) {
+            const actualReturnValueType = typeof actualReturnValue;
+            const error = new Error(`A return value of type ${formattedExpectedType} was expected for transaction ${transaction.getFullyQualifiedIdentifier()}, but a value of type ${actualReturnValueType} was returned`);
+            LOG.error(method, error);
+            throw error;
+        }
+
+        // Now handle all the elements of the array.
+        const result = json.map(item => processPrimitiveReturnDataInner(item));
+        LOG.exit(method, result);
+        return result;
     }
 
     /**

@@ -26,10 +26,6 @@ Network access control affects the following CLI commands:
 
 #### Composer Network
 
-**composer network deploy**
-
-Network access is required to use the CREATE operation for registries and networks.
-
 **composer network download**
 
 Network access is required to use the READ operation for registries and networks.
@@ -45,10 +41,6 @@ Network access is required to use the UPDATE operation for networks.
 **composer network ping**
 
 Network access is required to use the READ operation on registries and networks.
-
-**composer network update**
-
-Network access is required to use the UPDATE or CREATE operation on registries, or the UPDATE operation on networks.
 
 
 #### Composer Identity
@@ -106,7 +98,7 @@ ACL rules are defined in a file called `permissions.acl` in the root of the busi
 
 ## Access Control Rule Grammar
 
-There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace, asset or property of an asset by a participant type or participant instance.
+There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace or asset by a participant type or participant instance.
 
 For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampleAsset`.
 

@@ -12,8 +12,8 @@
     limitations under the License.
 #}
 # Events Detail
-
-{% for evt in types.event %}
+{% for id,evts in types.event %}
+{% for evt in evts %}
 ### {{evt.name}}
 The fully qualified name is **{{evt.fqn}}**
 
@@ -30,4 +30,5 @@ The fully qualified name is **{{evt.fqn}}**
 {% for id,info in evt.properties %}| {{id}} | {{info.type}} | {{info.description}} |
 {% endfor %}
 
+{% endfor %}
 {% endfor %}

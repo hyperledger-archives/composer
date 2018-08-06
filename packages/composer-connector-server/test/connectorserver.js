@@ -24,6 +24,7 @@ const ConnectorServer = require('..');
 const SecurityContext = require('composer-common').SecurityContext;
 const Logger= require('composer-common').Logger;
 const uuid = require('uuid');
+const version = require('../package.json').version;
 
 const should = require('chai').should();
 const sinon = require('sinon');
@@ -152,7 +153,8 @@ describe('ConnectorServer', () => {
                 '/api/connectionUpgrade',
                 '/api/connectionManagerExportIdentity',
                 '/api/connectionManagerRemoveIdentity',
-                '/api/connectionCreateTransactionId'
+                '/api/connectionCreateTransactionId',
+                '/api/ping'
             ].sort());
             mockSocket.on.args.forEach((args) => {
                 isFunction(args[1]).should.be.true;
@@ -169,6 +171,17 @@ describe('ConnectorServer', () => {
             } finally {
                 delete ConnectorServer.prototype.foo;
             }
+        });
+
+    });
+
+    describe('#ping', () => {
+
+        it('should ping', async () => {
+            const cb = sinon.stub();
+            await connectorServer.ping(cb);
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, null, { version });
         });
 
     });
@@ -327,10 +340,10 @@ describe('ConnectorServer', () => {
             mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.importIdentity.resolves();
             const cb = sinon.stub();
-            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionManager.importIdentity);
-                    sinon.assert.calledWith(mockConnectionManager.importIdentity, connectionProfile, connectionOptions, 'bob1', 'public key', 'private key');
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity, connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key');
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -340,7 +353,7 @@ describe('ConnectorServer', () => {
             mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.importIdentity.rejects(new Error('import error'));
             const cb = sinon.stub();
-            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -356,10 +369,10 @@ describe('ConnectorServer', () => {
             const cb = sinon.stub();
             mockBusinessNetworkCardStore.getWallet.returns('CORRECT');
             connectionOptions.wallet='WRONG';
-            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', cb)
                 .then(() => {
                     sinon.assert.calledWith(mockBusinessNetworkCardStore.getWallet,connectionOptions.cardName);
-                    sinon.assert.calledWith(mockConnectionManager.importIdentity,connectionProfile, sinon.match({wallet:'CORRECT'}), 'bob1', 'public key', 'private key');
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity,connectionProfile, sinon.match({wallet:'CORRECT'}), 'bob1', 'certificate', 'private key');
                 });
         });
 
@@ -890,7 +903,19 @@ describe('ConnectorServer', () => {
             connectorServer.securityContexts[securityContextID] = mockSecurityContext;
         });
 
-        it('should query chain code', () => {
+        it('should query chain code that does not return data', () => {
+            mockConnection.queryChainCode.withArgs(mockSecurityContext, functionName, args).resolves();
+            const cb = sinon.stub();
+            return connectorServer.connectionQueryChainCode(connectionID, securityContextID, functionName, args, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.queryChainCode);
+                    sinon.assert.calledWith(mockConnection.queryChainCode, mockSecurityContext, functionName, args);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null, null);
+                });
+        });
+
+        it('should query chain code that does return data', () => {
             mockConnection.queryChainCode.withArgs(mockSecurityContext, functionName, args).resolves(Buffer.from('hello world'));
             const cb = sinon.stub();
             return connectorServer.connectionQueryChainCode(connectionID, securityContextID, functionName, args, cb)
@@ -951,7 +976,7 @@ describe('ConnectorServer', () => {
             connectorServer.securityContexts[securityContextID] = mockSecurityContext;
         });
 
-        it('should invoke chain code with no options', () => {
+        it('should invoke chain code with no options that does not return data', () => {
             mockConnection.invokeChainCode.withArgs(mockSecurityContext, functionName, args, sinon.match.any).resolves();
             const cb = sinon.stub();
             return connectorServer.connectionInvokeChainCode(connectionID, securityContextID, functionName, args, null, cb)
@@ -960,6 +985,18 @@ describe('ConnectorServer', () => {
                     sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, functionName, args);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
+                });
+        });
+
+        it('should invoke chain code with no options that does return data', () => {
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, functionName, args, sinon.match.any).resolves(Buffer.from('hello world'));
+            const cb = sinon.stub();
+            return connectorServer.connectionInvokeChainCode(connectionID, securityContextID, functionName, args, null, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, functionName, args);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null, 'hello world');
                 });
         });
 
