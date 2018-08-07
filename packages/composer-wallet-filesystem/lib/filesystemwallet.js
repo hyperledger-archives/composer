@@ -18,7 +18,6 @@ const Wallet = require('composer-common').Wallet;
 const nodefs = require('fs');
 const path = require('path');
 const composerUtil = require('composer-common').Util;
-const mkdirp = require('mkdirp');
 const IdCard = require('composer-common').IdCard;
 const rimraf = require('rimraf');
 /**
@@ -74,7 +73,6 @@ class FileSystemWallet extends Wallet{
         this.storePath = path.join(root,prefix);
 
         this.fs = options.fs || nodefs;
-        mkdirp.sync(this.storePath,{fs:this.fs});
 
         this.rimrafOptions = Object.assign({}, this.fs);
         this.rimrafOptions.disableGlob = true;

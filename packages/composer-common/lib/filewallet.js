@@ -70,9 +70,6 @@ class FileWallet extends Wallet {
 
         // Promisify all of the APIs that we want to use.
         this.fs = thenifyAll(theFS, {});
-        this.mkdirp = thenify((dir, cb) => {
-            return mkdirp(dir, { fs: theFS }, cb);
-        });
 
         LOG.exit(method);
     }
