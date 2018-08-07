@@ -39,6 +39,8 @@ const yargs = require('yargs')
     .option('t', { alias: 'tls', describe: 'Enable TLS security for the REST API', type: 'boolean', default: process.env.COMPOSER_TLS || false })
     .option('e', { alias: 'tlscert', describe: 'File containing the TLS certificate', type: 'string', default: process.env.COMPOSER_TLS_CERTIFICATE || defaultTlsCertificate })
     .option('k', { alias: 'tlskey', describe: 'File containing the TLS private key', type: 'string', default: process.env.COMPOSER_TLS_KEY || defaultTlsKey })
+    .option('u', { alias: 'explorer', describe: 'Enable the test explorer web interface', type: 'boolean', default: process.env.COMPOSER_USEEXPLORER || true })
+    .option('d', { alias: 'loggingkey', describe: 'Specify the key to enable dynamic logging for the rest server (just pressing enter will not enable this feature)', type: 'string', default: process.env.COMPOSER_LOGGINGKEY || undefined })
     .alias('v', 'version')
     .version(version)
     .help('h')
@@ -65,6 +67,8 @@ if (interactive) {
                 apikey: answers.apikey,
                 authentication: answers.authentication,
                 multiuser: answers.multiuser,
+                explorer: answers.explorer,
+                loggingkey: answers.loggingkey,
                 websockets: answers.websockets,
                 tls: answers.tls,
                 tlscert: answers.tlscert,
@@ -79,6 +83,8 @@ if (interactive) {
                 '-y': 'apikey',
                 '-a': 'authentication',
                 '-m': 'multiuser',
+                '-u': 'explorer',
+                '-d': 'loggingkey',
                 '-w': 'websockets',
                 '-t': 'tls',
                 '-e': 'tlscert',
@@ -113,6 +119,8 @@ if (interactive) {
             apikey: yargs.y,
             authentication: yargs.a,
             multiuser: yargs.m,
+            explorer: yargs.u,
+            loggingkey: yargs.d,
             websockets: yargs.w,
             tls: yargs.t,
             tlscert: yargs.e,
@@ -135,15 +143,23 @@ module.exports = promise.then((composer) => {
     return server.listen(app.get('port'), () => {
         app.emit('started');
         let baseUrl = app.get('url').replace(/\/$/, '');
+        // eslint-disable-next-line no-console
         console.log('Web server listening at: %s', baseUrl);
         if (app.get('loopback-component-explorer')) {
             let explorerPath = app.get('loopback-component-explorer').mountPath;
+            // eslint-disable-next-line no-console
             console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
+        }
+        const composerConfig = app.get('composer');
+        if (composerConfig && composerConfig.loggingkey) {
+            // eslint-disable-next-line no-console
+            console.log('Rest Server dynamic logging is enabled');
         }
     });
 
 })
 .catch((error) => {
+    // eslint-disable-next-line no-console
     console.error(error);
     process.exit(1);
 });
