@@ -483,6 +483,68 @@ function registerGetHistorianRecordsByIDMethod(app, dataSource, System, connecto
 }
 
 /**
+ * Register the 'setLogLevel' Composer system method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ */
+function registerSetLogLevelMethod(app, dataSource) {
+    const Admin = app.models.Admin;
+    const connector = dataSource.connector;
+
+    // Define and register the method.
+    Admin.setLogLevel = (key, newlevel, outputToConsole, outputToFile, callback) => {
+        if (app.get('composer').loggingkey === key) {
+            connector.setLogLevel(newlevel, outputToConsole, outputToFile, callback);
+        } else {
+            throw new Error('Unauthorized');
+        }
+    };
+    Admin.remoteMethod(
+        'setLogLevel', {
+            description: 'set logging level on rest server',
+            accepts: [{
+                arg: 'loggingkey',
+                type: 'string',
+                required: true,
+                http: {
+                    source: 'path'
+                }
+            }, {
+                arg: 'newlevel',
+                type: 'string',
+                required: true,
+                http: {
+                    source: 'path'
+                }
+            }, {
+                arg: 'outputToConsole',
+                type: 'boolean',
+                required: true,
+                http: {
+                    source: 'path'
+                }
+            }, {
+                arg: 'outputToFile',
+                type: 'boolean',
+                required: true,
+                http: {
+                    source: 'path'
+                }
+            }],
+            returns: {
+                type: [ 'object' ],
+                root: true
+            },
+            http: {
+                verb: 'post',
+                path: '/loglevel/:loggingkey/:newlevel/:outputToConsole/:outputToFile'
+            }
+        }
+    );
+
+}
+
+/**
  * Discover all of the model definitions in the specified LoopBack data source.
  * @param {Object} dataSource The LoopBack data source.
  * @returns {Promise} A promise that will be resolved with an array of discovered
@@ -643,6 +705,33 @@ function createSystemModel(app, dataSource) {
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
  */
+function createAdminModel(app, dataSource) {
+
+    // Create the system model schema.
+    let modelSchema = {
+        name: 'Admin',
+        description: 'Rest server methods',
+        plural: '/admin',
+        base: 'Model'
+    };
+    modelSchema = updateModelSchema(modelSchema);
+
+    // Create the system model which is an anchor for all system methods.
+    const Admin = app.loopback.createModel(modelSchema);
+
+    // Register the system model.
+    app.model(Admin, {
+        dataSource: dataSource,
+        public: true
+    });
+
+}
+
+/**
+ * Create all of the Composer system models.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ */
 function createQueryModel(app, dataSource) {
 
     // Create the query model schema.
@@ -687,6 +776,7 @@ function registerSystemMethods(app, dataSource) {
         registerGetAllHistorianRecordsMethod,
         registerGetHistorianRecordsByIDMethod
     ];
+
     registerMethods.forEach((registerMethod) => {
         registerMethod(app, dataSource, System, connector);
     });
@@ -838,6 +928,13 @@ module.exports = function (app, callback) {
 
         // Register the system methods.
         registerSystemMethods(app, dataSource);
+
+        createAdminModel(app, dataSource);
+        // enable dynamic logging support if requested
+        if (app.settings.composer.loggingkey) {
+            registerSetLogLevelMethod(app, dataSource);
+        }
+
 
         // Create the query model
         createQueryModel(app, dataSource);

@@ -25,7 +25,7 @@ const server = require('../../server/server');
 const WebSocket = require('ws');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
@@ -241,6 +241,28 @@ describe('server', () => {
                     });
             });
     });
+
+    it('should have explorer by default', () => {
+        composerConfig.authentication = true;
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                result.app.settings['loopback-component-explorer'].should.exist;
+            });
+    });
+
+    it('should disable explorer if requested', () => {
+        composerConfig.authentication = true;
+        composerConfig.explorer = false;
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                should.not.exist(result.app.settings['loopback-component-explorer']);
+            });
+    });
+
 
     it('should enable authentication if specified with providers loaded from the environment', () => {
         process.env.COMPOSER_PROVIDERS = JSON.stringify({

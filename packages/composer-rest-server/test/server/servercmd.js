@@ -55,11 +55,7 @@ describe('servercmd', () => {
         get.withArgs('url').returns('http://localhost:3000');
         get.withArgs('loopback-component-explorer').returns(true);
         process.argv = [
-            process.argv0, 'cli.js',
-            '-p', 'defaultProfile',
-            '-n', 'org-acme-biznet',
-            '-i', 'admin',
-            '-s', 'adminpw'
+            process.argv0, 'cli.js'
         ];
         delete require.cache[require.resolve('yargs')];
         const server = sinon.stub();
@@ -78,6 +74,7 @@ describe('servercmd', () => {
                 sinon.assert.calledWith(emit, 'started');
                 sinon.assert.calledWith(console.log, sinon.match(/Web server listening at/));
                 sinon.assert.calledWith(console.log, sinon.match(/Browse your REST API at/));
+                sinon.assert.neverCalledWith(console.log, sinon.match(/dynamic logging/));
             });
     });
 
@@ -87,11 +84,7 @@ describe('servercmd', () => {
         let get = sinon.stub();
         get.withArgs('url').returns('http://localhost:3000');
         process.argv = [
-            process.argv0, 'cli.js',
-            '-p', 'defaultProfile',
-            '-n', 'org-acme-biznet',
-            '-i', 'admin',
-            '-s', 'adminpw'
+            process.argv0, 'cli.js'
         ];
         delete require.cache[require.resolve('yargs')];
         const server = sinon.stub();
@@ -110,7 +103,39 @@ describe('servercmd', () => {
                 sinon.assert.calledWith(emit, 'started');
                 sinon.assert.calledWith(console.log, sinon.match(/Web server listening at/));
                 sinon.assert.neverCalledWith(console.log, sinon.match(/Browse your REST API at/));
+                sinon.assert.neverCalledWith(console.log, sinon.match(/dynamic logging/));
             });
     });
+
+    it('should start and log information when dynamic debug enabled', () => {
+        let listen = sinon.stub();
+        let emit = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('url').returns('http://localhost:3000');
+        get.withArgs('composer').returns({loggingkey: '1234'});
+        process.argv = [
+            process.argv0, 'cli.js'
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub();
+        server.resolves({
+            listen: listen,
+            emit: emit,
+            get: get
+        });
+        return proxyquire('../../server/servercmd', {
+            './server': server
+        }).startRestServer(composerConfig)
+            .then(() => {
+                sinon.assert.calledOnce(listen);
+                listen.args[0][0]();
+                sinon.assert.calledOnce(emit);
+                sinon.assert.calledWith(emit, 'started');
+                sinon.assert.calledWith(console.log, sinon.match(/Web server listening at/));
+                sinon.assert.calledWith(console.log, sinon.match(/dynamic logging/));
+                sinon.assert.neverCalledWith(console.log, sinon.match(/Browse your REST API at/));
+            });
+    });
+
 
 });
