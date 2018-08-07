@@ -27,6 +27,7 @@ chai.use(require('chai-http'));
 describe('Root REST API unit tests', () => {
 
     let app;
+    let app2;
     let idCard;
     let adminConnection;
 
@@ -67,6 +68,17 @@ describe('Root REST API unit tests', () => {
         })
         .then((result) => {
             app = result.app;
+        })
+        .then(() => {
+            return server({
+                card: 'admin@bond-network',
+                explorer: false,
+                cardStore,
+                namespaces: 'never'
+            });
+        })
+        .then((result) => {
+            app2 = result.app;
         });
     });
 
@@ -76,7 +88,7 @@ describe('Root REST API unit tests', () => {
 
     describe('GET /', () => {
 
-        it('should redirect to the REST API explorer', () => {
+        it('should redirect to the REST API explorer if explorer enabled', () => {
             return chai.request(app)
                 .get('/')
                 .then((res) => {
@@ -84,6 +96,16 @@ describe('Root REST API unit tests', () => {
                     res.redirects[0].should.match(/\/explorer\/$/);
                 });
         });
+
+        it('should redirect to the REST API status if explorer disabled', () => {
+            return chai.request(app2)
+                .get('/')
+                .then((res) => {
+                    res.redirects.should.have.lengthOf(1);
+                    res.redirects[0].should.match(/\/status\/$/);
+                });
+        });
+
 
     });
 

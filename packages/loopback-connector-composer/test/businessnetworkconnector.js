@@ -37,6 +37,7 @@ const Serializer = require('composer-common').Serializer;
 const TransactionRegistry = require('composer-client/lib/transactionregistry');
 const Historian = require('composer-client/lib/historian');
 const TypeNotFoundException = require('composer-common/lib/typenotfoundexception');
+const Logger = require('composer-common').Logger;
 
 const chai = require('chai');
 const should = chai.should();
@@ -60,7 +61,7 @@ describe('BusinessNetworkConnector', () => {
         o Long theLong optional
         --> Member theMember optional
     }
-    
+
     enum BaseEnum {
         o WOW
         o SUCH
@@ -2779,6 +2780,92 @@ describe('BusinessNetworkConnector', () => {
                     const error = cb.args[0][0]; // First call, first argument (error)
                     error.should.match(/such error/);
                 });
+        });
+
+    });
+
+    describe('#setLogLevel', () => {
+
+
+        beforeEach(() => {
+        });
+
+        it('should change logging settings 1', () => {
+            sandbox.stub(Logger, 'getLoggerCfg').returns({
+                debug: 'composer[error]:*',
+                console: {
+                    maxLevel: 'none'
+                },
+                file: {
+                    maxLevel: 'silly'
+                }
+            });
+            const expectedNewLogger = {
+                debug: 'debugstr',
+                console: {
+                    maxLevel: 'silly'
+                },
+                file: {
+                    maxLevel: 'none'
+                }
+            };
+            const expectedResult = {
+                oldLevel: 'composer[error]:*',
+                newLevel: 'debugstr',
+                oldConsoleLevel: 'none',
+                newConsoleLevel: 'silly',
+                oldFileLevel: 'silly',
+                newFileLevel: 'none'
+            };
+
+            sandbox.stub(Logger, 'setLoggerCfg');
+            const cb = sinon.stub();
+
+            testConnector.setLogLevel('debugstr', true, false, cb);
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, null, expectedResult);
+            sinon.assert.calledOnce(Logger.getLoggerCfg);
+            sinon.assert.calledOnce(Logger.setLoggerCfg);
+            sinon.assert.calledWith(Logger.setLoggerCfg, expectedNewLogger, true);
+        });
+
+        it('should change logging settings 2', () => {
+            sandbox.stub(Logger, 'getLoggerCfg').returns({
+                debug: 'composer[error]:*',
+                console: {
+                    maxLevel: 'silly'
+                },
+                file: {
+                    maxLevel: 'none'
+                }
+            });
+            const expectedNewLogger = {
+                debug: 'debugstr',
+                console: {
+                    maxLevel: 'none'
+                },
+                file: {
+                    maxLevel: 'silly'
+                }
+            };
+            const expectedResult = {
+                oldLevel: 'composer[error]:*',
+                newLevel: 'debugstr',
+                oldConsoleLevel: 'silly',
+                newConsoleLevel: 'none',
+                oldFileLevel: 'none',
+                newFileLevel: 'silly'
+            };
+
+            sandbox.stub(Logger, 'setLoggerCfg');
+            const cb = sinon.stub();
+
+            testConnector.setLogLevel('debugstr', false, true, cb);
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, null, expectedResult);
+            sinon.assert.calledOnce(Logger.getLoggerCfg);
+            sinon.assert.calledOnce(Logger.setLoggerCfg);
+            sinon.assert.calledWith(Logger.setLoggerCfg, expectedNewLogger, true);
         });
 
     });

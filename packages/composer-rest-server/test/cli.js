@@ -86,6 +86,8 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.calledOnce(Util.getConnectionSettings);
             const settings = {
                 card: 'admin@org-acme-biznet',
+                explorer: undefined,
+                logging: undefined,
                 namespaces: 'always',
                 apikey: undefined,
                 authentication: false,
@@ -155,6 +157,8 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
                 card: 'admin@org-acme-biznet',
+                explorer: true,
+                logging: true,
                 namespaces: 'always',
                 apikey: undefined,
                 port: undefined,
@@ -201,6 +205,8 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
                 card: 'admin@org-acme-biznet',
+                explorer: true,
+                logging: true,
                 namespaces: 'always',
                 apikey: APIKEY,
                 port: undefined,
@@ -246,6 +252,8 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
                 card: 'admin@org-acme-biznet',
+                explorer: true,
+                logging: true,
                 namespaces: 'always',
                 apikey: undefined,
                 port: undefined,
@@ -291,6 +299,8 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
                 card: 'admin@org-acme-biznet',
+                explorer: true,
+                logging: true,
                 namespaces: 'always',
                 port: undefined,
                 apikey: undefined,
@@ -345,6 +355,101 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.calledWith(console.log, sinon.match(/Browse your REST API at/));
         });
     });
+
+    it('should check the explorer flag and set it as requested', () => {
+        let listen = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('port').returns(3000);
+        process.argv = [
+            process.argv0, 'cli.js',
+            '-c', 'admin@org-acme-biznet',
+            '-u', 'false'
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub().resolves({
+            app: {
+                get
+            },
+            server: {
+                listen
+            }
+        });
+        return proxyquire('../cli', {
+            clear: () => { },
+            chalk: {
+                yellow: () => { return ''; }
+            },
+            './server/server': server
+        }).then(() => {
+            sinon.assert.notCalled(Util.getConnectionSettings);
+            const settings = {
+                card: 'admin@org-acme-biznet',
+                explorer: false,
+                logging: true,
+                namespaces: 'always',
+                apikey: undefined,
+                port: undefined,
+                authentication: false,
+                multiuser: false,
+                websockets: true,
+                tls: false,
+                tlscert: defaultTlsCertificate,
+                tlskey: defaultTlsKey
+            };
+            sinon.assert.calledWith(server, settings);
+            sinon.assert.calledOnce(listen);
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1].should.be.a('function');
+        });
+    });
+
+    it('should check the logging flag and set it as requested', () => {
+        let listen = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('port').returns(3000);
+        process.argv = [
+            process.argv0, 'cli.js',
+            '-c', 'admin@org-acme-biznet',
+            '-d', 'false'
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub().resolves({
+            app: {
+                get
+            },
+            server: {
+                listen
+            }
+        });
+        return proxyquire('../cli', {
+            clear: () => { },
+            chalk: {
+                yellow: () => { return ''; }
+            },
+            './server/server': server
+        }).then(() => {
+            sinon.assert.notCalled(Util.getConnectionSettings);
+            const settings = {
+                card: 'admin@org-acme-biznet',
+                explorer: true,
+                logging: false,
+                namespaces: 'always',
+                apikey: undefined,
+                port: undefined,
+                authentication: false,
+                multiuser: false,
+                websockets: true,
+                tls: false,
+                tlscert: defaultTlsCertificate,
+                tlskey: defaultTlsKey
+            };
+            sinon.assert.calledWith(server, settings);
+            sinon.assert.calledOnce(listen);
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1].should.be.a('function');
+        });
+    });
+
 
     it('should start and log information when running without explorer', () => {
         let listen = sinon.stub();

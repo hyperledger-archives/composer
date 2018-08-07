@@ -135,6 +135,7 @@ describe('System REST API unit tests', () => {
             return server({
                 card: 'admin@bond-network',
                 cardStore,
+                logging: true,
                 namespaces: 'never'
             });
         })
@@ -358,6 +359,38 @@ describe('System REST API unit tests', () => {
                 .catch((err) => {
                     err.response.should.have.status(500);
                 });
+        });
+
+    });
+
+    describe('POST /loglevel', () => {
+
+        it('should allow changing of log levels', async () => {
+            let res = await chai.request(app)
+                .post('/api/system/loglevel/composer%5Bdebug%5D%3A*/true/false');
+            res.should.be.json;
+            let output = res.body;
+            output.should.deep.equal({
+                oldLevel: 'composer[error]:*',
+                newLevel: 'composer[debug]:*',
+                oldConsoleLevel: 'none',
+                newConsoleLevel: 'silly',
+                oldFileLevel: 'silly',
+                newFileLevel: 'none'
+            });
+
+            res = await chai.request(app)
+                .post('/api/system/loglevel/composer%5Berror%5D%3A*/false/true');
+            res.should.be.json;
+            output = res.body;
+            output.should.deep.equal({
+                oldLevel: 'composer[debug]:*',
+                newLevel: 'composer[error]:*',
+                oldConsoleLevel: 'silly',
+                newConsoleLevel: 'none',
+                oldFileLevel: 'none',
+                newFileLevel: 'silly'
+            });
         });
 
     });
