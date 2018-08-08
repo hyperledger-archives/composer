@@ -29,6 +29,7 @@ const TransactionDeclaration = require('composer-common').TransactionDeclaration
 const QueryAnalyzer = require('composer-common').QueryAnalyzer;
 const util = require('util');
 const FilterParser = require('./filterparser');
+const Logger = require('composer-common').Logger;
 
 /**
  * A Loopback connector for exposing the Blockchain Solution Framework to Loopback enabled applications.
@@ -1033,6 +1034,36 @@ class BusinessNetworkConnector extends Connector {
                 debug('getAllHistorianRecords', 'error thrown doing getAllHistorianRecords', error);
                 callback(error);
             });
+    }
+
+    /**
+     * provide dynamic debug capabilities for loopback applications
+     * @param {string} newlevel the new logging level
+     * @param {boolean} outputToConsole true to ensure all output to the console
+     * @param {boolean} outputToFile true to ensure all output to the configured log file
+     * @param {function} callback The callback to call when complete.
+     */
+    setLogLevel(newlevel, outputToConsole, outputToFile, callback) {
+        debug('setLogLevel',newlevel, outputToConsole);
+        const currentLogCfg = Logger.getLoggerCfg();
+        const currentLogSetting = currentLogCfg.debug;
+        const currentLogConsole = currentLogCfg.console.maxLevel;
+        const currentLogFile = currentLogCfg.file.maxLevel;
+        currentLogCfg.debug = newlevel;
+
+        currentLogCfg.console.maxLevel = outputToConsole ? 'silly' : 'none';
+        currentLogCfg.file.maxLevel = outputToFile ? 'silly' : 'none';
+
+        Logger.setLoggerCfg(currentLogCfg, true);
+        const result = {
+            oldLevel: currentLogSetting,
+            newLevel: newlevel,
+            oldConsoleLevel: currentLogConsole,
+            newConsoleLevel: currentLogCfg.console.maxLevel,
+            oldFileLevel: currentLogFile,
+            newFileLevel: currentLogCfg.file.maxLevel
+        };
+        callback(null, result);
     }
 
     /**

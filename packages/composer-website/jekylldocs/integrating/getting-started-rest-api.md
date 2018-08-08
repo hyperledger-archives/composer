@@ -69,6 +69,8 @@ Options:
   -t, --tls             Enable TLS security for the REST API  [boolean] [default: false]
   -e, --tlscert         File containing the TLS certificate  [string] [default: "/usr/local/lib/node_modules/composer-rest-server/cert.pem"]
   -k, --tlskey          File containing the TLS private key  [string] [default: "/usr/local/lib/node_modules/composer-rest-server/key.pem"]
+  -u, --explorer        Enable the test explorer web interface  [boolean] [default: true]
+  -d, --logging         Enable the dynamic logging capability  [boolean] [default: true]  
   -h, --help            Show help  [boolean]
   -v, --version         Show version number  [boolean]
 ```
