@@ -483,6 +483,57 @@ function registerGetHistorianRecordsByIDMethod(app, dataSource, System, connecto
 }
 
 /**
+ * Register the 'setLogLevel' Composer system method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} System The System model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerSetLogLevelMethod(app, dataSource, System, connector) {
+
+    // Define and register the method.
+    System.setLogLevel = (newlevel, outputToConsole, outputToFile, callback) => {
+        connector.setLogLevel(newlevel, outputToConsole, outputToFile, callback);
+    };
+    System.remoteMethod(
+        'setLogLevel', {
+            description: 'set Debug level on rest server',
+            accepts: [{
+                arg: 'newlevel',
+                type: 'string',
+                required: true,
+                http: {
+                    source: 'path'
+                }
+            }, {
+                arg: 'outputToConsole',
+                type: 'boolean',
+                required: true,
+                http: {
+                    source: 'path'
+                }
+            }, {
+                arg: 'outputToFile',
+                type: 'boolean',
+                required: true,
+                http: {
+                    source: 'path'
+                }
+            }],
+            returns: {
+                type: [ 'object' ],
+                root: true
+            },
+            http: {
+                verb: 'post',
+                path: '/loglevel/:newlevel/:outputToConsole/:outputToFile'
+            }
+        }
+    );
+
+}
+
+/**
  * Discover all of the model definitions in the specified LoopBack data source.
  * @param {Object} dataSource The LoopBack data source.
  * @returns {Promise} A promise that will be resolved with an array of discovered
@@ -687,6 +738,12 @@ function registerSystemMethods(app, dataSource) {
         registerGetAllHistorianRecordsMethod,
         registerGetHistorianRecordsByIDMethod
     ];
+
+    // enable dynamic logging support if requested
+    if (app.settings.composer.logging) {
+        registerMethods.push(registerSetLogLevelMethod);
+    }
+
     registerMethods.forEach((registerMethod) => {
         registerMethod(app, dataSource, System, connector);
     });

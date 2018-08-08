@@ -63,7 +63,7 @@ describe('Util', () => {
         it('should interactively ask for the connection settings', async () => {
             const questions = await getAllQuestions();
             const names = questions.map((question) => question.name);
-            names.should.include.members(['card', 'namespaces', 'apikey', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey']);
+            names.should.include.members(['card', 'namespaces', 'apikey', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey', 'explorer', 'logging']);
         });
 
         it('should validate the length of the business network card', async () => {

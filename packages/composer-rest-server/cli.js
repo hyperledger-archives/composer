@@ -39,6 +39,8 @@ const yargs = require('yargs')
     .option('t', { alias: 'tls', describe: 'Enable TLS security for the REST API', type: 'boolean', default: process.env.COMPOSER_TLS || false })
     .option('e', { alias: 'tlscert', describe: 'File containing the TLS certificate', type: 'string', default: process.env.COMPOSER_TLS_CERTIFICATE || defaultTlsCertificate })
     .option('k', { alias: 'tlskey', describe: 'File containing the TLS private key', type: 'string', default: process.env.COMPOSER_TLS_KEY || defaultTlsKey })
+    .option('u', { alias: 'explorer', describe: 'Enable the test explorer web interface', type: 'boolean', default: process.env.COMPOSER_USEEXPLORER || true })
+    .option('d', { alias: 'logging', describe: 'Enable the dynamic logging capability', type: 'boolean', default: process.env.COMPOSER_LOGGING || true })
     .alias('v', 'version')
     .version(version)
     .help('h')
@@ -65,6 +67,8 @@ if (interactive) {
                 apikey: answers.apikey,
                 authentication: answers.authentication,
                 multiuser: answers.multiuser,
+                explorer: answers.explorer,
+                logging: answers.logging,
                 websockets: answers.websockets,
                 tls: answers.tls,
                 tlscert: answers.tlscert,
@@ -79,6 +83,8 @@ if (interactive) {
                 '-y': 'apikey',
                 '-a': 'authentication',
                 '-m': 'multiuser',
+                '-u': 'explorer',
+                '-d': 'logging',
                 '-w': 'websockets',
                 '-t': 'tls',
                 '-e': 'tlscert',
@@ -113,6 +119,8 @@ if (interactive) {
             apikey: yargs.y,
             authentication: yargs.a,
             multiuser: yargs.m,
+            explorer: yargs.u,
+            logging: yargs.d,
             websockets: yargs.w,
             tls: yargs.t,
             tlscert: yargs.e,

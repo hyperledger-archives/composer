@@ -87,6 +87,18 @@ class Util {
                 }
             },
             {
+                name: 'explorer',
+                type: 'confirm',
+                message: 'Specify if you want to enable the explorer test interface:',
+                default: true
+            },
+            {
+                name: 'logging',
+                type: 'confirm',
+                message: 'Specify if you want to enable the dynamic logging enablement:',
+                default: true
+            },
+            {
                 name: 'websockets',
                 type: 'confirm',
                 message: 'Specify if you want to enable event publication over WebSockets:',
