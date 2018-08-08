@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -16,24 +16,14 @@
 set -v
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+if [ $# != 1 ]; then
+    echo 'Arguments: <build-label>'
+    echo 1
+fi
+
 cd ${DIR}/jekylldocs
 
-if [ "$1" == "v0.16" ]; then
-    jekyll serve --config _config.yml,_v0.16.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "v0.16-unstable" ]; then
-    jekyll serve --config _config.yml,_v0.16-unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "latest" ]; then
-    jekyll serve --config _config.yml,_latest.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "unstable" ]; then
-    jekyll serve --config _config.yml,_unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 & 
-elif [ "$1" == "next" ]; then
-    jekyll serve --config _config.yml,_next.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "next-unstable" ]; then
-    jekyll serve --config _config.yml,_next-unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 & 
-else
-   echo "Script error"
-   exit 1
-fi
+"${DIR}/scripts/run-jekyll.sh" serve . "$1" --skip-initial-build > "${DIR}/jekyll.log" 2>&1 &
 
 JOBN="$(jobs | awk '/jekyll serve/ { match($0,/\[([0-9]+)\]/,arr); print arr[1];  }')"
 echo ${JOBN}
@@ -46,10 +36,10 @@ URL="$( cat ${DIR}/jekyll.log | awk '/Server address:/ { print $3 }')"
 RC=0
 
 echo Starting linkchecking... ${URL}
-linkchecker --ignore-url=jsdoc ${URL} -F text/UTF8/${DIR}/linkresults.txt 
+linkchecker --ignore-url=jsdoc ${URL} -F text/UTF8/${DIR}/linkresults.txt
 if [ "$?" != "0" ]; then
-	asciify '!!Broken Links!!' -f standard    
-    cat ${DIR}/linkresults.txt    
+	asciify '!!Broken Links!!' -f standard
+    cat ${DIR}/linkresults.txt
     # return 1 to indicate the the build has failed
     RC=1
 

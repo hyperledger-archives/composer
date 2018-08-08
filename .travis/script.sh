@@ -39,39 +39,24 @@ if [ "${DOCS}" != "" ]; then
     # Build the documentation.
     npm run doc
 
-    if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
-
-        if [[ "${BUILD_FOCUS}" == "latest" ]]; then
-            npm run full:unstable
-            npm run linkcheck:unstable
-        elif [[ "${BUILD_FOCUS}" == "next" ]]; then
-            npm run full:next-unstable
-            npm run linkcheck:next-unstable
-        elif [[ "${BUILD_FOCUS}" == "v0.16" ]]; then
-            npm run full:v0.16-unstable
-            npm run linkcheck:v0.16-unstable
-        else 
-            _exit "Unknown build focus" 1 
-        fi
-
-    elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
-
-        if [[ "${BUILD_FOCUS}" == "latest" ]]; then
-            npm run full:latest
-            npm run linkcheck:latest
-        elif [[ "${BUILD_FOCUS}" == "next" ]]; then
-            npm run full:next
-            npm run linkcheck:next
-        elif [[ "${BUILD_FOCUS}" == "v0.16" ]]; then
-            npm run full:v0.16
-            npm run linkcheck:v0.16
-        else 
-            _exit "Unknown build focus" 1 
-        fi
-
-    else
-       _exit "Unkown build release or focus ${BUILD_RELEASE} ${BUILD_FOCUS}" 1
+    if [ -z "${BUILD_FOCUS}" ]; then
+        _exit 'No build focus' 1
     fi
+
+    if [ "${BUILD_RELEASE}" = 'unstable' ]; then
+        if [ "${BUILD_FOCUS}" = 'latest' ]; then
+            BUILD_LABEL='unstable'
+        else
+            BUILD_LABEL="${BUILD_FOCUS}-unstable"
+        fi
+    elif [ "${BUILD_RELEASE}" = 'stable' ]; then
+        BUILD_LABEL="${BUILD_FOCUS}"
+    else
+       _exit "Unknown build release: ${BUILD_RELEASE}" 1
+    fi
+
+    npm run full -- "${BUILD_LABEL}"
+    npm run linkcheck -- "${BUILD_LABEL}"
 
 # Are we running functional verification tests?
 elif [ "${FVTEST}" != "" ]; then
