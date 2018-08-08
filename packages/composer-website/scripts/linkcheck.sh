@@ -16,28 +16,14 @@
 set -v
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+if [ $# != 1 ]; then
+    echo 'Arguments: <build-label>'
+    echo 1
+fi
+
 cd ${DIR}/jekylldocs
 
-if [ "$1" == "v0.16" ]; then
-    jekyll serve --config _config.yml,_v0.16.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "v0.16-unstable" ]; then
-    jekyll serve --config _config.yml,_v0.16-unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" = 'v0.19' ]; then
-    jekyll serve --config _config.yml,_v0.19.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" = 'v0.19-unstable' ]; then
-    jekyll serve --config _config.yml,_v0.19-unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "latest" ]; then
-    jekyll serve --config _config.yml,_latest.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "unstable" ]; then
-    jekyll serve --config _config.yml,_unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "next" ]; then
-    jekyll serve --config _config.yml,_next.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "next-unstable" ]; then
-    jekyll serve --config _config.yml,_next-unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-else
-   echo "Script error"
-   exit 1
-fi
+"${DIR}/scripts/run-jekyll.sh" serve . "$1" --skip-initial-build > "${DIR}/jekyll.log" 2>&1 &
 
 JOBN="$(jobs | awk '/jekyll serve/ { match($0,/\[([0-9]+)\]/,arr); print arr[1];  }')"
 echo ${JOBN}

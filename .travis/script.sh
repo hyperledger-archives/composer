@@ -52,7 +52,7 @@ if [ "${DOCS}" != "" ]; then
     elif [ "${BUILD_RELEASE}" = 'stable' ]; then
         BUILD_LABEL="${BUILD_FOCUS}"
     else
-       _exit "Unkown build release: ${BUILD_RELEASE}" 1
+       _exit "Unknown build release: ${BUILD_RELEASE}" 1
     fi
 
     npm run full -- "${BUILD_LABEL}"

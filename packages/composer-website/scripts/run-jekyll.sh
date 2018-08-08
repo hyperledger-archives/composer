@@ -13,8 +13,8 @@
 # limitations under the License.
 #
 
-if [ $# != 3 ]; then
-    echo 'Arguments: <jekyll-command> <docs-dir> <build-label>'
+if [ $# < 3 ]; then
+    echo 'Arguments: <jekyll-command> <docs-dir> <build-label> [<jekyll-arg> ...]'
     exit 1
 fi
 
@@ -33,7 +33,7 @@ echo "status: ${BUILD_LABEL}" >> "${JEKYLL_CONFIG}"
 
 # Run Jekyll command
 cd "${DOCS_DIR}"
-jekyll ${JEKYLL_COMMAND} --config "_config.yml,${JEKYLL_CONFIG}"
+jekyll ${JEKYLL_COMMAND} --config "_config.yml,${JEKYLL_CONFIG}" ${@:4}
 
 # Clean up custom configuration
 rm -f "${JEKYLL_CONFIG}"
