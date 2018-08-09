@@ -27,13 +27,13 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 "${SCRIPT_DIR}/setup-jekyll.sh"
 
 # Write custom configuration for this build
-JEKYLL_CONFIG="$(mktemp -t jekyll-config.yml)"
+JEKYLL_CONFIG="$(mktemp)"
 echo "basedir: /composer/${BUILD_LABEL}" >> "${JEKYLL_CONFIG}"
 echo "status: ${BUILD_LABEL}" >> "${JEKYLL_CONFIG}"
 
 # Run Jekyll command
-cd "${DOCS_DIR}"
-jekyll ${JEKYLL_COMMAND} --config "_config.yml,${JEKYLL_CONFIG}" ${@:4}
+cd "${DOCS_DIR}" || exit 2
+jekyll "${JEKYLL_COMMAND}" --config "_config.yml,${JEKYLL_CONFIG}" "${@:4}"
 
 # Clean up custom configuration
 rm -f "${JEKYLL_CONFIG}"
