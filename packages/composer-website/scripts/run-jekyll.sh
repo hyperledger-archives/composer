@@ -13,7 +13,7 @@
 # limitations under the License.
 #
 
-if [ $# < 3 ]; then
+if [ $# -lt 3 ]; then
     echo 'Arguments: <jekyll-command> <docs-dir> <build-label> [<jekyll-arg> ...]'
     exit 1
 fi
