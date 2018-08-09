@@ -89,11 +89,13 @@ if [ "${BUILD_RELEASE}" = 'unstable' ]; then
     npm run pkgstamp
 fi
 
-# Which (if any) tag to use for npm and docker publish
+# Which tag to use for npm and docker publish
 if [ "${BUILD_FOCUS}" = 'latest' ]; then
-    [ "${BUILD_RELEASE}" = 'stable' ] && TAG='latest' || TAG='unstable'
+    [ "${BUILD_RELEASE}" = 'stable' ] && NPM_TAG='latest' || NPM_TAG='unstable'
+    DOCKER_TAG="${NPM_TAG}"
 else
-    TAG=''
+    [ "${BUILD_RELEASE}" = 'stable' ] && NPM_TAG='legacy' || NPM_TAG='legacy-unstable'
+    DOCKER_TAG=''
 fi
 
 # Hold onto the version number
@@ -113,13 +115,8 @@ done
 
 # Only enter here if ignore array is not same length as the publish array
 if [ "${#ALL_NPM_MODULES[@]}" -ne "${#IGNORE_NPM_MODULES[@]}" ]; then
-    if [ -z "${TAG}" ]; then
-        echo 'Publishing to npm without tag'
-        lerna exec --ignore '@('${IGNORE}')' -- npm publish 2>&1
-    else
-        echo "Publishing to npm with tag ${TAG}"
-        lerna exec --ignore '@('${IGNORE}')' -- npm publish --tag="${TAG}" 2>&1
-    fi
+    echo "Publishing to npm with tag ${NPM_TAG}"
+    lerna exec --ignore '@('${IGNORE}')' -- npm publish --tag="${NPM_TAG}" 2>&1
 else
     echo "All npm modules with tag ${VERSION} exist, skipping publish phase"
 fi
@@ -155,14 +152,14 @@ for i in ${PUBLISH_DOCKER_IMAGES[@]}; do
 
     # Build the image, and tag if required
     docker build --build-arg VERSION=${VERSION} -t hyperledger/${i}:${VERSION} ${DIR}/packages/${i}/docker
-    if [ ! -z "${TAG}" ]; then
-        docker tag hyperledger/${i}:${VERSION} hyperledger/${i}:"${TAG}"
+    if [ ! -z "${DOCKER_TAG}" ]; then
+        docker tag "hyperledger/${i}:${VERSION}" "hyperledger/${i}:${DOCKER_TAG}"
     fi
 
     # Push the image, and tagged version if required
     docker push hyperledger/${i}:${VERSION}
-    if [ ! -z "${TAG}" ]; then
-        docker push hyperledger/${i}:${TAG}
+    if [ ! -z "${DOCKER_TAG}" ]; then
+        docker push "hyperledger/${i}:${DOCKER_TAG}"
     fi
 done
 
