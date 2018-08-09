@@ -27,8 +27,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 "${SCRIPT_DIR}/setup-jekyll.sh"
 
 # Write custom configuration for this build
-JEKYLL_CONFIG="$(mktemp)"
-echo "basedir: /composer/${BUILD_LABEL}" >> "${JEKYLL_CONFIG}"
+JEKYLL_CONFIG="$(mktemp)".yaml
+echo "baseurl: /composer/${BUILD_LABEL}" >> "${JEKYLL_CONFIG}"
 echo "status: ${BUILD_LABEL}" >> "${JEKYLL_CONFIG}"
 
 # Run Jekyll command
