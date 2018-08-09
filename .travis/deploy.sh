@@ -84,35 +84,18 @@ git ls-remote
 # Log in to Docker Hub.
 docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
 
-# Determine the details of the suffixes for playground and NPM/docker tags
-if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
-
+if [ "${BUILD_RELEASE}" = 'unstable' ]; then
     # Set the prerelease version.
     npm run pkgstamp
-   
-    if [[ "${BUILD_FOCUS}" == "latest" ]]; then
-        PLAYGROUND_SUFFIX="-unstable"      
-        WEB_CFG="{\"webonly\":true}"
-        TAG="unstable"
-    elif [[ "${BUILD_FOCUS}" == "next" ]]; then
-        PLAYGROUND_SUFFIX="-next-unstable"
-        WEB_CFG="{\"webonly\":true}"      
-        TAG="next-unstable"
-    else 
-        _exit "Unknown build focus" 1 
-    fi
-elif  [[ "${BUILD_RELEASE}" == "stable" ]]; then
-    if [[ "${BUILD_FOCUS}" == "latest" ]]; then
-        PLAYGROUND_SUFFIX=""      
-        WEB_CFG="{\"webonly\":true}"
-        TAG="latest"
-    elif [[ "${BUILD_FOCUS}" == "next" ]]; then
-        PLAYGROUND_SUFFIX="-next"
-        WEB_CFG="{\"webonly\":true}"
-        TAG="next"
-    else 
-        _exit "Unknown build focus" 1 
-    fi
+fi
+
+# Which tag to use for npm and docker publish
+if [ "${BUILD_FOCUS}" = 'latest' ]; then
+    [ "${BUILD_RELEASE}" = 'stable' ] && NPM_TAG='latest' || NPM_TAG='unstable'
+    DOCKER_TAG="${NPM_TAG}"
+else
+    [ "${BUILD_RELEASE}" = 'stable' ] && NPM_TAG='legacy' || NPM_TAG='legacy-unstable'
+    DOCKER_TAG=''
 fi
 
 # Hold onto the version number
@@ -132,9 +115,8 @@ done
 
 # Only enter here if ignore array is not same length as the publish array
 if [ "${#ALL_NPM_MODULES[@]}" -ne "${#IGNORE_NPM_MODULES[@]}" ]; then
-    # Publish with tag
-    echo "Pushing with tag ${TAG}"
-    lerna exec --ignore '@('${IGNORE}')' -- npm publish --tag="${TAG}" 2>&1
+    echo "Publishing to npm with tag ${NPM_TAG}"
+    lerna exec --ignore '@('${IGNORE}')' -- npm publish --tag="${NPM_TAG}" 2>&1
 else
     echo "All npm modules with tag ${VERSION} exist, skipping publish phase"
 fi
@@ -168,17 +150,24 @@ set -e
 # Conditionally build, tag, and publish Docker images based on the resulting array
 for i in ${PUBLISH_DOCKER_IMAGES[@]}; do
 
-    # Build the image and tag it with the version and unstable.
+    # Build the image, and tag if required
     docker build --build-arg VERSION=${VERSION} -t hyperledger/${i}:${VERSION} ${DIR}/packages/${i}/docker
-    docker tag hyperledger/${i}:${VERSION} hyperledger/${i}:"${TAG}"
+    if [ ! -z "${DOCKER_TAG}" ]; then
+        docker tag "hyperledger/${i}:${VERSION}" "hyperledger/${i}:${DOCKER_TAG}"
+    fi
 
-    # Push both the version and unstable.
+    # Push the image, and tagged version if required
     docker push hyperledger/${i}:${VERSION}
-    docker push hyperledger/${i}:${TAG}
+    if [ ! -z "${DOCKER_TAG}" ]; then
+        docker push "hyperledger/${i}:${DOCKER_TAG}"
+    fi
 done
 
-# Push to public Bluemix for stable and unstable, latest and next release builds
-if [[ "${BUILD_FOCUS}" == 'latest' ]]; then
+# Push latest stable and unstable versions to public Bluemix
+if [ "${BUILD_FOCUS}" = 'latest' ]; then
+    [ "${BUILD_RELEASE}" = 'stable' ] && PLAYGROUND_SUFFIX='' || PLAYGROUND_SUFFIX='-unstable'
+    WEB_CFG="{\"webonly\":true}"
+
     pushd ${DIR}/packages/composer-playground
     rm -rf ${DIR}/packages/composer-playground/node_modules
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
@@ -189,7 +178,7 @@ if [[ "${BUILD_FOCUS}" == 'latest' ]]; then
 fi
 
 
-## Stable releases only; both latest and next then clean up git, and bump version number
+## Stable releases only: clean up git, and bump version number
 if [[ "${BUILD_RELEASE}" = "stable" ]]; then
 
     # Configure the Git repository and clean any untracked and unignored build files.
@@ -209,6 +198,5 @@ if [[ "${BUILD_RELEASE}" = "stable" ]]; then
     git push origin master
 
 fi
-
 
 _exit "All complete" 0
