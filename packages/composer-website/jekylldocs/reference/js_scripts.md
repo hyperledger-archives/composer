@@ -326,7 +326,7 @@ async function simpleNativeHistoryTransaction (transaction) {
 
 ## Returning data from transaction processor functions
 
-Transaction processor functions can optionally return data to client applications. This can be useful for returning a receipt to the submitter of the transaction, or returning an asset modified by the transaction to avoid a separate lookup of the asset after the transaction has been committed.
+Transaction processor functions can optionally return data to client applications. This can be useful for returning a receipt to the submitter of the transaction, or returning an asset modified by the transaction to avoid a separate lookup of the asset after the transaction has been committed. Data can also be returned to the client application via a transaction REST API for the business network, eg a POST method to return data (as described below) to the client application.
 
 The return data for a transaction processor function must be a valid type, either a primitive type (String, Integer, Long, etc.), or a type modelled using the Composer modelling language - a concept, asset, participant, transaction, event or enumeration.
 
@@ -600,7 +600,7 @@ Transaction processor function:
         const assetRegistry = await getAssetRegistry('org.sample.MyAsset');
         const localAssets = await assetRegistry.getAll();
         for (const asset of localAssets) {
-            localAssets.push(asset);
+            allAssets.push(asset);
         }
         const businessNetworkNames = ['other-network-1', 'other-network-2'];
         for (const businessNetworkName of businessNetworkNames) {
