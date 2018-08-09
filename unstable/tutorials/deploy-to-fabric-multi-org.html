@@ -384,8 +384,8 @@ export FABRIC_VERSION=hlfv12
 ./stopFabric.sh
 ./teardownFabric.sh
 </code></pre></div>
-<p>Next, clone the following GitHub Fabric Samples repository using the command line (do not use the samples from the <a href="http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html">Fabric site:</a> as it is missing some changes that are required for this tutorial)</p>
-<div class="highlight"><pre><code class="language-" data-lang="">git clone -b issue-6978 https://github.com/sstone1/fabric-samples.git
+<p>Next, clone the following GitHub Fabric Samples repository using the command line (IMPORTANT: DO NOT USE the samples from the <a href="http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html">Fabric site:</a> as it is missing some changes that are required for this tutorial)</p>
+<div class="highlight"><pre><code class="language-" data-lang="">git clone https://github.com/mahoney1/fabric-samples.git
 </code></pre></div>
 <p>We are using the  <a href="http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html">Building Your First Network</a> Fabric sample network for this multi-org tutorial. We will refer to this Hyperledger Fabric network as the &#39;BYFN&#39; (Building Your First Network) network henceforth. If you choose to split your organisations across separate physical machines or separate virtual machines running on different IP networks, it is outside the scope of this particular tutorial.</p>
 
@@ -402,7 +402,10 @@ export FABRIC_VERSION=hlfv12
 </code></pre></div>
 <p>Verify the list of docker images downloaded without issues.</p>
 
-<p>(Please note that you can ignore the initial &quot;error: pathspec v1.1.0 did not match&quot; message in the output for now)</p></li>
+<p>(Please note that you can ignore the initial &quot;error: pathspec v1.x.x did not match&quot; message in the output - you may not even see this message)</p></li>
+<li><p>We need to use the &#39;multi-org&#39; branch from the Git repo we cloned earlier (to work with current Fabric level):</p>
+<div class="highlight"><pre><code class="language-" data-lang="">git checkout multi-org
+</code></pre></div></li>
 <li><p>change directory into <code>first-network</code> sample</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd first-network
 </code></pre></div></li>

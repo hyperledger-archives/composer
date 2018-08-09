@@ -620,7 +620,7 @@ transaction SampleTransaction {
 </code></pre></div>
 <h2 id="returning-data-from-transaction-processor-functions">Returning data from transaction processor functions</h2>
 
-<p>Transaction processor functions can optionally return data to client applications. This can be useful for returning a receipt to the submitter of the transaction, or returning an asset modified by the transaction to avoid a separate lookup of the asset after the transaction has been committed.</p>
+<p>Transaction processor functions can optionally return data to client applications. This can be useful for returning a receipt to the submitter of the transaction, or returning an asset modified by the transaction to avoid a separate lookup of the asset after the transaction has been committed. Data can also be returned to the client application via a transaction REST API for the business network, eg a POST method to return data (as described below) to the client application.</p>
 
 <p>The return data for a transaction processor function must be a valid type, either a primitive type (String, Integer, Long, etc.), or a type modelled using the Composer modelling language - a concept, asset, participant, transaction, event or enumeration.</p>
 
@@ -874,7 +874,7 @@ transaction MyTransaction {
     <span class="k">const</span> <span class="no">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.sample.MyAsset'</span><span class="p">);</span>
     <span class="k">const</span> <span class="no">localAssets</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">getAll</span><span class="p">();</span>
     <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="no">asset</span> <span class="nx">of</span> <span class="nx">localAssets</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">localAssets</span><span class="o">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
+        <span class="nx">allAssets</span><span class="o">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
     <span class="p">}</span>
     <span class="k">const</span> <span class="no">businessNetworkNames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'other-network-1'</span><span class="p">,</span> <span class="s1">'other-network-2'</span><span class="p">];</span>
     <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="no">businessNetworkName</span> <span class="nx">of</span> <span class="nx">businessNetworkNames</span><span class="p">)</span> <span class="p">{</span>
