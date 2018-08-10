@@ -1,0 +1,1 @@
+Sitemap: https://hyperledger.github.io/composer/v0.19/sitemap.xml

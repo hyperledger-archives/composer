@@ -1,0 +1,104 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// imports from main scss
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600');
+
+$font-stack: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$display-font: 'Open Sans';
+$primary-text: #19273C;
+$secondary-text: #8C9696;
+$first-highlight: #3F55AF;
+$second-highlight: #5068C2;
+$third-highlight: #F9F9F9;
+$fourth-highlight: #F1F3F7;
+$fifth-highlight: #B8C1C1;
+$sixth-highlight: #2D3D7D;
+$error-colour-1: #FF5C49;
+$error-colour-2: #F7E6E6;
+$success-colour: #40d5bb;
+$keyline-highlight: #E3ECEC;
+$white: #FDFDFD;
+$black: #000000;
+$callout: #FFD640;
+
+
+html {
+    font-family: $font-stack;
+    font-size: 16px;
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+	  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: $font-stack;
+    padding-bottom: 0;
+}
+
+h1 {
+  font-family: $display-font;
+  font-weight: 300;
+  font-size: 2.50rem;
+  color: $first-highlight;
+  margin-bottom: 0rem;
+}
+
+h2 {
+  font-family: $font-stack;
+  font-weight: 300;
+  font-size: 1.35rem;
+  line-height: 130%;
+  color: $first-highlight;
+}
+
+p {
+  font-family: $font-stack;
+  color: $primary-text;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+// 404 styles
+
+.content-chunk {
+  height: 94vh;
+  background-color: rgba( $fourth-highlight, .5 );
+  border-radius: 5px;
+  margin: 2rem;
+  .pageproblem-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    .pageproblem-info {
+      display: inline-block;
+      vertical-align: top;
+      text-align: left;
+      a {
+        text-decoration: none;
+        border-bottom: 1px solid $primary-text;
+        color: $primary-text;
+        transition: all 0.2s ease-in-out;
+        &:hover {
+          border-bottom: 1px solid $primary-text;
+          padding-bottom: 3px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,971 @@
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!doctype html>
+<html lang="en">
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+  
+  
+  
+
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<head>
+  <meta charset="utf-8">
+  
+    <title>Transaction Processor Functions | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/v0.19/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+
+  
+    <link href="/composer/v0.19/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/v0.19/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/v0.19/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/v0.19/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+          <select id="version" name="version" onchange="location = this.options[this.selectedIndex].value;">
+              <option>Select version</option>
+              <option value="/composer/latest/introduction/introduction.html" title="The most stable version of Composer">Latest</option>
+              <option value="/composer/unstable/introduction/introduction.html" title="The version that will replace Latest">Latest-unstable</option>
+          </select>
+
+            <div class="search-form">
+              <form action="/composer/v0.19/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/v0.19/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>Transaction Processor Functions</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="/composer/v0.19/introduction/introduction"><b>Introduction</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/introduction/key-concepts">Key Concepts</a></li>
+<li><a href="/composer/v0.19/introduction/solution-architecture">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="/composer/v0.19/installing/installing-index"><b>Installing</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/installing/installing-prereqs">Installing pre-requisites</a></li>
+<li><a href="/composer/v0.19/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/v0.19/installing/update-dev-env">Updating the development environment</a></li>
+<li><a href="/composer/v0.19/installing/uninstall-dev-env">Uninstalling the development environment</a></li>
+</ul></li>
+<li><p><a href="/composer/v0.19/tutorials/tutorials"><b>Tutorials</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/tutorials/playground-tutorial">Playground Tutorial</a></li>
+<li><a href="/composer/v0.19/tutorials/developer-tutorial">Developer Tutorial</a></li>
+<li><a href="/composer/v0.19/tutorials/queries">Queries Tutorial</a></li>
+<li><a href="/composer/v0.19/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="/composer/v0.19/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+<li><a href="/composer/v0.19/tutorials/invoke-composer-network">Interacting with other business networks</a></li>
+<li><a href="/composer/v0.19/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/v0.19/tutorials/google_oauth2_rest">Using Google OAUTH2.0 with a Composer REST server</a></li>
+</ul></li>
+<li><p><a href="/composer/v0.19/playground/playground-index"><b>Using Playground</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/playground/id-cards-playground">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="/composer/v0.19/business-network/business-network-index"><b>Developing Business Networks</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/business-network/businessnetworkdefinition">Business Network Definitions</a></li>
+<li><a href="/composer/v0.19/business-network/bnd-create">Create a Business Network Definition</a></li>
+<li><a href="/composer/v0.19/business-network/bnd-deploy">Deploying Business Networks</a></li>
+<li><a href="/composer/v0.19/business-network/publishing-events">Emitting Events</a></li>
+<li><a href="/composer/v0.19/business-network/testing">Testing Business Networks</a></li>
+<li><a href="/composer/v0.19/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/v0.19/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
+<li><a href="/composer/v0.19/business-network/query">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="/composer/v0.19/business-network/programmatic-access-control">Programmatic access control</a></li>
+<li><a href="/composer/v0.19/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/v0.19/business-network/cloud-wallets">Customising card stores</a></li>
+</ul></li>
+<li><p><a href="/composer/v0.19/applications/applications-index"><b>Developing Applications</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/applications/node">Writing a Node.js application</a></li>
+<li><a href="/composer/v0.19/applications/web">Writing Web applications</a></li>
+<li><a href="/composer/v0.19/applications/subscribing-to-events">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="/composer/v0.19/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/integrating/getting-started-rest-api">Generating a REST API</a></li>
+<li><a href="/composer/v0.19/integrating/publishing-events">Publishing events from the REST server</a></li>
+<li><a href="/composer/v0.19/integrating/enabling-rest-authentication">Enabling authentication for the REST server</a></li>
+<li><a href="/composer/v0.19/integrating/enabling-multiuser">Enabling multiple user mode for the REST server</a></li>
+<li><a href="/composer/v0.19/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="/composer/v0.19/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
+<li><a href="/composer/v0.19/integrating/customizing-the-rest-server">Customizing the REST server for a business network</a></li>
+<li><a href="/composer/v0.19/integrating/node-red">Integrating with Node-RED</a></li>
+<li><a href="/composer/v0.19/integrating/call-out">Calling external HTTP or REST services</a></li>
+</ul></li>
+<li><p><a href="/composer/v0.19/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/managing/participantsandidentities">Participants and identities</a></li>
+<li><a href="/composer/v0.19/managing/participant-add">Adding participants</a></li>
+<li><a href="/composer/v0.19/managing/id-cards-playground">Creating, Exporting, and Importing Business Network Cards</a></li>
+<li><a href="/composer/v0.19/managing/identity-issue">Issuing a new identity to a participant</a></li>
+<li><a href="/composer/v0.19/managing/identity-bind">Binding an existing identity to a participant</a></li>
+<li><a href="/composer/v0.19/managing/identity-list">Listing all identities in a business network</a></li>
+<li><a href="/composer/v0.19/managing/identity-revoke">Revoking an identity from a participant</a></li>
+<li><a href="/composer/v0.19/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="/composer/v0.19/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/v0.19/reference/reference-index"><b>Reference</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/reference/MeetTheModules">Hyperledger Composer npm Modules</a></li>
+<li><a href="/composer/v0.19/reference/cto_language">Modeling Language</a></li>
+<li><a href="/composer/v0.19/reference/acl_language">Access Control Language</a></li>
+<li><a href="/composer/v0.19/reference/query-language">Query Language</a></li>
+<li><a href="/composer/v0.19/reference/model-compatibility">Model Compatibility</a></li>
+<li><a href="/composer/v0.19/reference/connectionprofile">Connection Profiles</a></li>
+<li><a href="/composer/v0.19/reference/js_scripts">Transaction Processor Functions</a></li>
+<li><a href="/composer/v0.19/reference/commands">Hyperledger Composer CLI Commands</a></li>
+<li><a href="/composer/v0.19/reference/rest-server">Hyperledger Composer REST Server</a></li>
+<li><a href="/composer/v0.19/reference/glossary">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="/composer/v0.19/support/support-index"><b>Support</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/v0.19/api/api-doc-index"><b>API Reference</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/api/allData">API Class Index</a></li>
+<li><a href="/composer/v0.19/api/admin-adminconnection">AdminConnection (Admin API)</a></li>
+<li><a href="/composer/v0.19/api/client-assetregistry">AssetRegistry (Client API)</a></li>
+<li><a href="/composer/v0.19/api/client-businessnetworkconnection">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="/composer/v0.19/api/client-historian">Historian (Client API)</a></li>
+<li><a href="/composer/v0.19/api/client-identityregistry">IdentityRegistry (Client API)</a></li>
+<li><a href="/composer/v0.19/api/client-participantregistry">ParticipantRegistry (Client API)</a></li>
+<li><a href="/composer/v0.19/api/client-query">Query (Client API)</a></li>
+<li><a href="/composer/v0.19/api/client-registry">Registry (Client API)</a></li>
+<li><a href="/composer/v0.19/api/client-transactionregistry">TransactionRegistry (Client API)</a></li>
+<li><a href="/composer/v0.19/api/common-assetdeclaration">AssetDeclaration (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-businessnetworkcardstore">BusinessNetworkCardStore (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-decoratorfactory">DecoratorFactory (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-decorator">Decorator (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-factory">Factory (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-idcard">IdCard (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-identifiable">Identifiable (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-introspector">Introspector (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-modelfile">ModelFile (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-modelmanager">ModelManager (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-property">Property (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-relationship">Relationship (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-resource">Resource (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-serializer">Serializer (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-typed">Typed (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-validatedconcept">ValidatedConcept (Common API)</a></li>
+<li><a href="/composer/v0.19/api/common-validatedresource">ValidatedResource (Common API)</a></li>
+<li><a href="/composer/v0.19/api/runtime-api">Api (Runtime API)</a></li>
+<li><a href="/composer/v0.19/api/runtime-assetregistry">AssetRegistry (Runtime API)</a></li>
+<li><a href="/composer/v0.19/api/runtime-factory">Factory (Runtime API)</a></li>
+<li><a href="/composer/v0.19/api/runtime-participantregistry">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="/composer/v0.19/api/runtime-query">Query (Runtime API)</a></li>
+<li><a href="/composer/v0.19/api/runtime-serializer">Serializer (Runtime API)</a></li>
+</ul></li>
+<li><p><a href="/composer/v0.19/systemns/systemns-index"><b>System Namespace Reference</b><img src="/composer/v0.19/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/v0.19/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/v0.19/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/v0.19/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/v0.19/systemns/04_transactions">Transactions</a></li>
+<li><a href="/composer/v0.19/systemns/05_events">Events</a></li>
+<li><a href="/composer/v0.19/systemns/06_enums">Enums</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/hyperledger-composer">Stack Overflow</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="transaction-processor-functions">Transaction Processor Functions</h1>
+
+<hr>
+
+<p>A Hyperledger Composer Business Network Definition is composed of a set of model files and a set of scripts. The scripts may contain transaction processor functions that implement the transactions defined in the Business Network Definition&#39;s model files.</p>
+
+<p>Transaction processor functions are automatically invoked by the runtime when transactions are submitted using the BusinessNetworkConnection API.</p>
+
+<p>Decorators within documentation comments are used to annotate the functions with metadata required for runtime processing.</p>
+
+<p>Each transaction type has an associated registry storing the transactions.</p>
+
+<h2 id="transaction-processor-structure">Transaction processor structure</h2>
+
+<p>The structure of transaction processor functions includes decorators and metadata followed by a JavaScript function, both parts are required for a transaction processor function to work.</p>
+
+<p>The first line of comments above a transaction processor function contains a human readable description of what the transaction processor function does. The second line must include the <code>@param</code> tag to indicate the parameter definition. The <code>@param</code> tag is followed by the resource name of the transaction which triggers the transaction processor function, this takes the format of the namespace of the business network, followed by the transaction name. After the resource name, is the parameter name which will reference the resource, this parameter must be supplied to the JavaScript function as an argument. The third line must contain the <code>@transaction</code> tag, this tag identifies the code as a transaction processor function and is required.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+* A transaction processor function description
+* @param {org.example.basic.SampleTransaction} parameter-name A human description of the parameter
+* @transaction
+*/
+</code></pre></div>
+<p>After the comments is the JavaScript function which powers the transaction. The function can have any name, but must include the parameter name defined in the comment as an argument.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">function transactionProcessor(parameter-name) {
+  //Do some things.
+}
+</code></pre></div>
+<p>A complete transaction processor function as detailed above would take the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+* A transaction processor function description
+* @param {org.example.basic.SampleTransaction} parameter-name A human description of the parameter
+* @transaction
+*/
+function transactionProcessor(parameter-name) {
+  //Do some things.
+}
+</code></pre></div>
+<h2 id="writing-a-transaction-processor-function">Writing a transaction processor function</h2>
+
+<p>A transaction processor function is the logical operation of a transaction defined in a model file. For example, a transaction processor function of a <code>Trade</code> transaction, might use JavaScript to change the <code>owner</code> property of an asset from one participant to another.</p>
+
+<p>Here&#39;s an example from the <code>basic-sample-network</code>, the following <code>SampleAsset</code> definition includes a property called <code>value</code>, which is defined as a string. The <code>SampleTransaction</code> transaction requires a relationship to an asset, the asset to be changed, the new value of the <code>value</code> property must be supplied as part of the transaction as a property called <code>newValue</code>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset SampleAsset identified by assetId {
+  o String assetId
+  --&gt; SampleParticipant owner
+  o String value
+}
+
+transaction SampleTransaction {
+  --&gt; SampleAsset asset
+  o String newValue
+}
+</code></pre></div>
+<p>The transaction processor function relating to the <code>SampleTransaction</code> transaction is what makes the change both to the asset and to the registry where the asset is stored.</p>
+
+<p>The transaction processor function defines the <code>SampleTransaction</code> type as the associated transaction, and defines it as the parameter <code>tx</code>. It then saves the original value of the asset to be changed by the transaction, replaces it with the value passed in during the submission of the transaction (the <code>newValue</code> property in the transaction definition), updates the asset in the registry, and then emits an event.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Sample transaction processor function.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// Save the old value of the asset.</span>
+    <span class="kd">let</span> <span class="nx">oldValue</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+
+    <span class="c1">// Update the asset with the new value.</span>
+    <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
+
+    <span class="c1">// Get the asset registry for the asset.</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.basic.SampleAsset'</span><span class="p">);</span>
+
+    <span class="c1">// Update the asset in the asset registry.</span>
+    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">);</span>
+
+    <span class="c1">// Emit an event for the modified asset.</span>
+    <span class="kd">let</span> <span class="nx">event</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">().</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.example.basic'</span><span class="p">,</span> <span class="s1">'SampleEvent'</span><span class="p">);</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">oldValue</span> <span class="o">=</span> <span class="nx">oldValue</span><span class="p">;</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">newValue</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
+    <span class="nx">emit</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="error-handling-in-transaction-processor-functions">Error handling in transaction processor functions</h2>
+
+<p>Transaction processor functions will fail and roll back any changes already made an error is thrown. The whole transaction fails, not just the transaction processing, and anything changed by the transaction processor function before the error occurred will be rolled back.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Sample transaction processor function.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Do something.</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'example error'</span><span class="p">);</span>
+    <span class="c1">// Execution stops at this point; the transaction fails and rolls back.</span>
+    <span class="c1">// Any updates made by the transaction processor function are discarded.</span>
+    <span class="c1">// Transaction processor functions are atomic; all changes are committed,</span>
+    <span class="c1">// or no changes are committed.</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Changes made by transactions are atomic, either the transaction is successful and all changes are applied, or the transaction fails and no changes are applied.</p>
+
+<h2 id="resolving-relationships-in-transactions">Resolving relationships in transactions</h2>
+
+<p>When assets, transactions, or participants involved in a transaction have a property which includes a relationship, the relationships are resolved automatically. All relationships, including nested relationships, are resolved before the transaction processor functions runs.</p>
+
+<p>The following example includes nested relationships, the transaction has a relationship with an asset, which has a relationship with a participant, because all relationships are resolved, the <code>owner</code> property of the asset is resolved to the specific participant.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.example.basic
+
+participant SampleParticipant identified by participantId {
+  o String participantId
+}
+
+asset SampleAsset identified by assetId {
+  o String assetId
+  --&gt; SampleParticipant owner
+}
+
+transaction SampleTransaction {
+  --&gt; SampleAsset asset
+}
+</code></pre></div>
+<p>Script file:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Sample transaction processor function.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// The relationships in the transaction are automatically resolved.</span>
+    <span class="c1">// This means that the asset can be accessed in the transaction instance.</span>
+    <span class="kd">let</span> <span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
+    <span class="c1">// The relationships are fully or recursively resolved, so you can also</span>
+    <span class="c1">// access nested relationships. This means that you can also access the</span>
+    <span class="c1">// owner of the asset.</span>
+    <span class="kd">let</span> <span class="nx">owner</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">owner</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>In this example, not only can the specific asset referenced by the relationship in the transaction be referenced using <code>tx.asset</code>, the specific participant referenced by the <code>owner</code> relationship can be referenced using <code>tx.asset.owner</code>. In this case, <code>tx.asset.owner</code> would resolve to reference a specific participant.</p>
+
+<h2 id="handling-asynchronous-code-and-promises-in-transaction-processor-functions">Handling asynchronous code and promises in transaction processor functions</h2>
+
+<p>Similarly to relationships, transaction processor functions will wait for promises to be resolved before committing the transaction. If a promise is rejected, the transaction will fail.</p>
+
+<p>In the example code below there are several promises, the transaction will not be completed until each promise has returned.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.example.basic
+
+transaction SampleTransaction {
+
+}
+</code></pre></div>
+<p>Node 8 syntax is now supported which means that you can now use <code>async/await</code> syntax instead which is far
+more concise than using promise chains. This is the recommended style.</p>
+
+<p>Script file:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Sample transaction processor function.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(...);</span>
+    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(...);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>however if you so wish you can still use old style promise chains</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Sample transaction processor function.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */</span>
+<span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Transaction processor functions can return promises; Composer will wait</span>
+    <span class="c1">// for the promise to be resolved before committing the transaction.</span>
+    <span class="c1">// Do something that returns a promise.</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="c1">// Do something else that returns a promise.</span>
+            <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+        <span class="p">})</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="c1">// Do something else that returns a promise.</span>
+            <span class="c1">// This transaction is complete only when this</span>
+            <span class="c1">// promise is resolved.</span>
+            <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+        <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="using-apis-in-transaction-processor-functions">Using APIs in transaction processor functions</h2>
+
+<p>The Hyperledger Composer and Hyperledger Fabric APIs can be called within transaction processor functions.</p>
+
+<h3 id="calling-the-hyperledger-composer-apis-in-transaction-processor-functions">Calling the Hyperledger Composer APIs in transaction processor functions</h3>
+
+<p>The Hyperledger Composer API can be called simply by calling API functions with the appropriate arguments in the transaction processor function.</p>
+
+<p>In the code example below, the <code>getAssetRegistry</code> call returns a promise which is resolved before the transaction is complete.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.example.basic
+
+asset SampleAsset identified by assetId {
+  o String assetId
+  o String value
+}
+
+transaction SampleTransaction {
+  --&gt; SampleAsset asset
+  o String newValue
+}
+</code></pre></div>
+<p>Script file:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Sample transaction processor function.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Update the value in the asset.</span>
+    <span class="kd">let</span> <span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
+    <span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
+    <span class="c1">// Get the asset registry that stores the assets. Note that</span>
+    <span class="c1">// getAssetRegistry() returns a promise, so we have to await for it.</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.basic.SampleAsset'</span><span class="p">);</span>
+
+    <span class="c1">// Update the asset in the asset registry. Again, note</span>
+    <span class="c1">// that update() returns a promise, so so we have to return</span>
+    <span class="c1">// the promise so that Composer waits for it to be resolved.</span>
+    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="calling-hyperledger-fabric-apis-in-transaction-processor-functions">Calling Hyperledger Fabric APIs in transaction processor functions</h3>
+
+<p>To call the Hyperledger Fabric API in a transaction processor function, the function <code>getNativeAPI</code> must be called, followed by a function from the Hyperledger Fabric API. Using the Hyperledger Fabric API gives you access to functionality which is not available in the Hyperledger Composer API.</p>
+
+<p><strong>IMPORTANT: Using the Hyperledger Fabric API such as <code>getState</code>, <code>putState</code>, <code>deleteState</code>, <code>getStateByPartialCompositeKey</code>, <code>getQueryResult</code> functions will bypass the Hyperledger Composer access control rules (ACLs).</strong></p>
+
+<p>In the example below, the Hyperledger Fabric API function <code>getHistoryForKey</code> is called, which returns the history of a specified asset as an iterator. The transaction processor function then stores the returned data in an array.</p>
+
+<p>For more information on the Hyperledger Fabric APIs you can call in a transaction processor function, see the <a href="https://fabric-shim.github.io/ChaincodeStub.html">Hyperledger Fabric API documentation</a>.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">async</span> <span class="kd">function</span> <span class="nx">simpleNativeHistoryTransaction</span> <span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">assetId</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">nativeSupport</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">nativeSupport</span><span class="p">;</span>
+
+    <span class="kd">const</span> <span class="nx">nativeKey</span> <span class="o">=</span> <span class="nx">getNativeAPI</span><span class="p">().</span><span class="nx">createCompositeKey</span><span class="p">(</span><span class="s1">'Asset:systest.transactions.SimpleStringAsset'</span><span class="p">,</span> <span class="p">[</span><span class="nx">id</span><span class="p">]);</span>
+    <span class="kd">const</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getNativeAPI</span><span class="p">().</span><span class="nx">getHistoryForKey</span><span class="p">(</span><span class="nx">nativeKey</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="kd">let</span> <span class="nx">res</span> <span class="o">=</span> <span class="p">{</span><span class="na">done</span> <span class="p">:</span> <span class="kc">false</span><span class="p">};</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">iterator</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">res</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="s1">'utf8'</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">val</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">val</span><span class="p">));</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">res</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="nx">iterator</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="returning-data-from-transaction-processor-functions">Returning data from transaction processor functions</h2>
+
+<p>Transaction processor functions can optionally return data to client applications. This can be useful for returning a receipt to the submitter of the transaction, or returning an asset modified by the transaction to avoid a separate lookup of the asset after the transaction has been committed.</p>
+
+<p>The return data for a transaction processor function must be a valid type, either a primitive type (String, Integer, Long, etc.), or a type modelled using the Composer modelling language - a concept, asset, participant, transaction, event or enumeration.</p>
+
+<p>The type of the return data must also be specified on the model for the transaction using the <code>@returns(Type)</code> decorator, and the return data must be the last thing returned by the transaction processor function. If you have multiple transaction processor functions for a single transaction, only one of those transaction processor functions can return data. If the return data is missing, or is of the wrong type, then the transaction will fail and will be rejected.</p>
+
+<h3 id="returning-a-primitive-type-from-a-transaction-processor-function">Returning a primitive type from a transaction processor function</h3>
+
+<p>Here is an example of a transaction processor function that returns a String to a client application.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+@returns(String)
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns a string.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string) The string.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'hello world!'</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const string = await bnc.submitTransaction(transaction);
+console.log(`transaction returned $[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string)`);
+</code></pre></div>
+<p>Here is an example of a transaction processor function that returns an array of integers to a client application.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+@returns(Integer[])
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns an array of integers.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {number[]} The array of integers.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const integers = await bnc.submitTransaction(transaction);
+for (const integer of integers) {
+    console.log(`transaction returned ${integer}`);
+}
+</code></pre></div>
+<h3 id="returning-a-complex-type-from-a-transaction-processor-function">Returning a complex type from a transaction processor function</h3>
+
+<p>Here is an example of a transaction processor function that returns a concept to a client application. The same code can be modified to return an asset, participant, transaction or event as well.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+concept MyConcept {
+    o String value
+}
+
+@returns(MyConcept)
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns a concept.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {org.sample.MyConcept} The concept.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="no">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
+    <span class="k">const</span> <span class="no">concept</span> <span class="o">=</span> <span class="nx">factory</span><span class="o">.</span><span class="nx">newConcept</span><span class="p">(</span><span class="s1">'org.sample'</span><span class="p">,</span> <span class="s1">'MyConcept'</span><span class="p">);</span>
+    <span class="nx">concept</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'hello world!'</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">concept</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const concept = await bnc.submitTransaction(transaction);
+console.log(`transaction returned ${concept.value}`);
+</code></pre></div>
+<p>Here is an example of a transaction processor function that returns an array of concepts to a client application.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+concept MyConcept {
+    o String value
+}
+
+@returns(MyConcept[])
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns an array of concepts.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {org.sample.MyConcept[]} The array of concepts.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="no">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
+    <span class="k">const</span> <span class="no">concept1</span> <span class="o">=</span> <span class="nx">factory</span><span class="o">.</span><span class="nx">newConcept</span><span class="p">(</span><span class="s1">'org.sample'</span><span class="p">,</span> <span class="s1">'MyConcept'</span><span class="p">);</span>
+    <span class="nx">concept1</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'hello alice!'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">concept2</span> <span class="o">=</span> <span class="nx">factory</span><span class="o">.</span><span class="nx">newConcept</span><span class="p">(</span><span class="s1">'org.sample'</span><span class="p">,</span> <span class="s1">'MyConcept'</span><span class="p">);</span>
+    <span class="nx">concept2</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'hello bob!'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">concept3</span> <span class="o">=</span> <span class="nx">factory</span><span class="o">.</span><span class="nx">newConcept</span><span class="p">(</span><span class="s1">'org.sample'</span><span class="p">,</span> <span class="s1">'MyConcept'</span><span class="p">);</span>
+    <span class="nx">concept3</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'hello charlie!'</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">[</span> <span class="nx">concept1</span><span class="p">,</span> <span class="nx">concept2</span><span class="p">,</span> <span class="nx">concept3</span> <span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const concepts = await bnc.submitTransaction(transaction);
+for (const concept of concepts) {
+    console.log(`transaction returned ${concept.value}`);
+}
+</code></pre></div>
+<h3 id="returning-an-enumeration-from-a-transaction-processor-function">Returning an enumeration from a transaction processor function</h3>
+
+<p>Here is an example of a transaction processor function that returns an enumeration to a client application.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+enum MyEnum {
+    o HELLO
+    o WORLD
+}
+
+@returns(MyEnum)
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns an enumeration.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {org.sample.MyEnum} The enumeration.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'HELLO'</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const enum = await bnc.submitTransaction(transaction);
+console.log(`transaction returned ${enum}`);
+</code></pre></div>
+<p>Here is an example of a transaction processor function that returns an array of enumerations to a client application.</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+enum MyEnum {
+    o HELLO
+    o WORLD
+}
+
+@returns(MyEnum[])
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns an array of enumerations.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {org.sample.MyEnum[]} The array of enumerations.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">[</span> <span class="s1">'HELLO'</span><span class="p">,</span> <span class="s1">'WORLD'</span> <span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const enums = await bnc.submitTransaction(transaction);
+for (const enum of enums) {
+    console.log(`transaction returned ${enum}`);
+}
+</code></pre></div>
+<h2 id="read-only-transaction-processor-functions-query-processor-functions">Read-only transaction processor functions (query processor functions)</h2>
+
+<p>Transactions can be modelled as being read-only by specifying the <code>@commit(false)</code> decorator. When a transaction is modelled as read-only, the transaction is submitted as normal, and any transaction processor functions for that transaction are executed as normal. However, the transaction is not committed - it will not be endorsed by multiple peers on the blockchain network, nor will it be sent to the ordering service, nor will it publish any events.</p>
+
+<p>This feature can be useful when the APIs that client applications can use to read data from the business network are too limited for your use case. These APIs include <code>get(id)</code> (get by ID), <code>getAll()</code> (get all), <code>exists(id)</code> (test existence), and <code>query(q, params)</code> (execute a complex query). For example, a client application may wish to get all of the assets across multiple business networks deployed to multiple channels in a single call to the blockchain network. Another example is reducing the result set of a query on the &quot;server&quot; (chaincode) side, before returning the result set to the client application, to reduce network traffic and the load on the client application.</p>
+
+<p>Here is an example of a read-only transaction processor function that retrieves a set of assets from the current business network, as well as other business networks, and returns all of the assets to the client application:</p>
+
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.sample
+
+asset MyAsset identified by assetId {
+    o String assetId
+    o String value
+}
+
+@commit(false)
+@returns(MyAsset[])
+transaction MyTransaction {
+
+}
+</code></pre></div>
+<p>Transaction processor function:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+ * Handle a transaction that returns an array of assets.
+ * @param {org.sample.MyTransaction} transaction The transaction.
+ * @returns {org.sample.MyAsset[]} All the assets.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">myTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="no">allAssets</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">const</span> <span class="no">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.sample.MyAsset'</span><span class="p">);</span>
+    <span class="k">const</span> <span class="no">localAssets</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">getAll</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="no">asset</span> <span class="nx">of</span> <span class="nx">localAssets</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">localAssets</span><span class="o">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">const</span> <span class="no">businessNetworkNames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'other-network-1'</span><span class="p">,</span> <span class="s1">'other-network-2'</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="no">businessNetworkName</span> <span class="nx">of</span> <span class="nx">businessNetworkNames</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">const</span> <span class="no">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getNativeAPI</span><span class="p">()</span><span class="o">.</span><span class="nx">invokeChaincode</span><span class="p">(</span><span class="nx">businessNetworkName</span><span class="p">,</span> <span class="p">[</span><span class="s1">'getAllResourcesInRegistry'</span><span class="p">,</span> <span class="s1">'Asset'</span><span class="p">,</span> <span class="s1">'org.sample.MyAsset'</span><span class="p">],</span> <span class="s1">'composerchannel'</span><span class="p">);</span>
+        <span class="k">const</span> <span class="no">json</span> <span class="o">=</span> <span class="nx">JSON</span><span class="o">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">response</span><span class="o">.</span><span class="nx">payload</span><span class="o">.</span><span class="nx">toString</span><span class="p">(</span><span class="s1">'utf8'</span><span class="p">));</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="no">item</span> <span class="nx">of</span> <span class="nx">json</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">allAssets</span><span class="o">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">getSerializer</span><span class="p">()</span><span class="o">.</span><span class="nx">fromJSON</span><span class="p">(</span><span class="nx">item</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">allAssets</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Client application:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">const bnc = new BusinessNetworkConnection();
+await bnc.connect('admin@sample-network');
+const factory = bnc.getBusinessNetwork().getFactory();
+const transaction = factory.newTransaction('org.sample', 'MyTransaction');
+const assets = await bnc.submitTransaction(transaction);
+for (const asset of assets) {
+    console.log(`transaction returned ${asset.value}`);
+}
+</code></pre></div>
+<h2 id="what-next">What next?</h2>
+
+<p>Transaction processor functions can also be used to:</p>
+
+<ul>
+<li><a href="../business-network/query.html"><strong>Define queries</strong></a> for retrieving information about the blockchain world-state from a couchDB database.</li>
+<li><a href="../business-network/publishing-events.html"><strong>Define events</strong></a> for sending event data to applications.</li>
+</ul>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/v0.19/assets/js/nav.js"></script>
+<script src="/composer/v0.19/assets/js/search_bar.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>
