@@ -180,11 +180,13 @@ fi
 
 ## Stable releases only: clean up git, and bump version number
 if [[ "${BUILD_RELEASE}" = "stable" ]]; then
+    [ "${BUILD_FOCUS}" = 'latest' ] && GIT_BRANCH='master' || GIT_BRANCH="${BUILD_FOCUS}.x"
+    echo "Running version bump on Git branch: ${GIT_BRANCH}"
 
     # Configure the Git repository and clean any untracked and unignored build files.
     git config user.name "${GH_USER_NAME}"
     git config user.email "${GH_USER_EMAIL}"
-    git checkout -b master
+    git checkout -b "${GIT_BRANCH}"
     git reset --hard
     git clean -d -f
 
@@ -195,7 +197,7 @@ if [[ "${BUILD_RELEASE}" = "stable" ]]; then
     # Add the version number changes and push them to Git.
     git add .
     git commit -m "Automatic version bump to ${NEW_VERSION}"
-    git push origin master
+    git push origin "${GIT_BRANCH}"
 
 fi
 
