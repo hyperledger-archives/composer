@@ -17,14 +17,14 @@
 set -ev
 set -o pipefail
 
-# Set ARCH
-ARCH=`uname -m`
-
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Switch into the system tests directory.
 cd "${DIR}"
+
+# Set up environment variables for Fabric Docker image versions
+. "../../scripts/fabric-docker-env.sh"
 
 # Barf if we don't recognize this test suite.
 if [ "${FVTEST}" = "" ]; then
@@ -54,11 +54,6 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
         fi
-        docker pull hyperledger/fabric-peer:$ARCH-1.1.0
-        docker pull hyperledger/fabric-ca:$ARCH-1.1.0
-        docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0
-        docker pull hyperledger/fabric-orderer:$ARCH-1.1.0
-        docker pull hyperledger/fabric-couchdb:$ARCH-0.4.6
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
         fi
@@ -74,10 +69,10 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
     # Start any required Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
         echo Using docker file ${DOCKER_FILE}
-        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
-        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        docker-compose -f ${DOCKER_FILE} kill
+        docker-compose -f ${DOCKER_FILE} down
         docker rmi -f $(docker images -aq dev-*) || true
-        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
+        docker-compose -f ${DOCKER_FILE} up -d
 
         cd "${DIR}"
         cd ../composer-runtime
@@ -149,8 +144,8 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
 
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
-        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
-        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        docker-compose -f ${DOCKER_FILE} kill
+        docker-compose -f ${DOCKER_FILE} down
         docker rmi -f $(docker images -aq dev-*) || true
     fi
 
