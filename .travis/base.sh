@@ -19,6 +19,8 @@ ME=`basename "$0"`
 echo "-->-- Starting ${ME}"
 echo "--I-- ${TRAVIS_TAG} ${TRAVIS_BRANCH}"
 
+LATEST_RELEASE_VERSION='v0.20'
+
 function _exit(){
     printf "%s Exiting %s because %s exit code:%s\n" "--<--" "${ME}" "$1" "$2"   
     exit $2
@@ -36,25 +38,23 @@ if [ ! -f ${DIR}/build.cfg ]; then
 
     echo "ABORT_BUILD=false" > ${DIR}/build.cfg
     echo "ABORT_CODE=0" >> ${DIR}/build.cfg
-    ## regexp to match the various versions required
-    V16_REGEXP=v0\.16\.\([0-9]{1,2}\|x\)
 
-    ## determine the build type here
-    if [ -z "${TRAVIS_TAG}" ]; then
-        BUILD_RELEASE="unstable"
-        if [[ "${TRAVIS_BRANCH}" =~ ${V16_REGEXP} ]]; then
-            BUILD_FOCUS="v0.16"
-        else
-            BUILD_FOCUS="latest"
-        fi
+    VALID_BRANCH_REGEXP='^v([0-9]+\.){2}([0-9]+|x)'
+    if [[ "${TRAVIS_BRANCH}" =~ ${VALID_BRANCH_REGEXP} ]]; then
+        # Use first two digits of branch, e.g. v0.20
+        BUILD_FOCUS="$(echo "${TRAVIS_BRANCH}" | cut -d . -f -2)"
+        [[ "${BUILD_FOCUS}" == "${LATEST_RELEASE_VERSION}" ]] && BUILD_FOCUS='latest'
     else
-        BUILD_RELEASE="stable"
-        if [[ "${TRAVIS_BRANCH}" =~ ${V16_REGEXP} ]]; then
-            BUILD_FOCUS="v0.16"
-        else
-            BUILD_FOCUS="latest"
-        fi
+        # Default to 'latest' to maintain previous bahaviour
+        BUILD_FOCUS='latest'
     fi
+
+    if [ -z "${TRAVIS_TAG}" ]; then
+        BUILD_RELEASE='unstable'
+    else
+        BUILD_RELEASE='stable'
+    fi
+
 
     echo "BUILD_FOCUS=${BUILD_FOCUS}" >> ${DIR}/build.cfg
     echo "BUILD_RELEASE=${BUILD_RELEASE}" >> ${DIR}/build.cfg

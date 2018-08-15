@@ -1,9 +1,8 @@
-#!/bin/bash
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -13,19 +12,14 @@
 # limitations under the License.
 #
 
-# Exit on first error, print all commands.
-set -ev
-set -o pipefail
+# Source this script to set up environment variables for Fabric Docker image versions.
+# These environment variables are used in docker-compose.yaml configurations.
 
-# Grab the parent (root) directory.
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+# Fabric base images (peer, orderer, ccenv, tools)
+export FABRIC_BASE_VERSION=1.2.0
 
-cd "${DIR}"
-# Set up environment variables for Fabric Docker image versions
-. "../../scripts/fabric-docker-env.sh"
+# Fabric CA
+export FABRIC_CA_VERSION=1.2.0
 
-DOCKER_FILE=${DIR}/fabric/hlfv1/docker-compose.yml
-
-docker-compose -f ${DOCKER_FILE} kill
-docker-compose -f ${DOCKER_FILE} down
-docker rmi -f $(docker images -aq dev-*) || true
+# Third-party images (couchdb, kafka, zookeeper)
+export FABRIC_THIRDPARTY_VERSION=0.4.10

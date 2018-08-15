@@ -481,12 +481,9 @@ class HLFConnection extends Connection {
             chaincodeVersion: businessNetworkDefinition.getVersion(),
             chaincodeId: businessNetworkDefinition.getName(),
             txId: txId,
-            targets: this.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE, FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE])
+            channelNames: this.channel.getName()
         };
         LOG.debug(method, 'Install chaincode request', request);
-        // the following should have been used for request but the node sdk is broken
-        // channelNames: this.channel.getName() // this will drive getting all the Peers to install on
-
 
         try {
             const results = await this.client.installChaincode(request);
@@ -712,11 +709,7 @@ class HLFConnection extends Connection {
         try {
             await eventHandler.waitForEvents();
         } catch (error) {
-            // Investigate proposal response results and log if they differ and rethrow
-            if (!this.channel.compareProposalResponseResults(validResponses)) {
-                const warning = 'Peers do not agree, Read Write sets differ';
-                LOG.warn(method, warning);
-            }
+            LOG.error(method, error);
             throw error;
         }
 
@@ -935,6 +928,7 @@ class HLFConnection extends Connection {
         let txId = this._validateTxId(options);
 
         let eventHandler;
+        let validResponses;
 
         try {
 
@@ -957,7 +951,7 @@ class HLFConnection extends Connection {
             // Validate the endorsement results.
             LOG.debug(method, `Received ${results.length} result(s) from invoking the composer runtime chaincode`, results);
             const proposalResponses = results[0];
-            let {validResponses} = this._validatePeerResponses(proposalResponses, true);
+            validResponses = this._validatePeerResponses(proposalResponses, true).validResponses;
 
             // Extract the response data, if any.
             const firstValidResponse = validResponses[0];
@@ -996,8 +990,16 @@ class HLFConnection extends Connection {
             return result;
 
         } catch (error) {
+            // Log first in case anything below fails and masks the original error
+            LOG.error(method, error);
+
+            // Investigate proposal response results and log if they differ and rethrow
+            if (validResponses && validResponses.length >= 2 && !this.channel.compareProposalResponseResults(validResponses)) {
+                const warning = 'Peers do not agree, Read Write sets differ';
+                LOG.warn(method, warning);
+            }
+
             const newError = new Error('Error trying invoke business network. ' + error);
-            LOG.error(method, newError);
             throw newError;
         }
     }
@@ -1193,14 +1195,14 @@ class HLFConnection extends Connection {
     /**
      * return the Channel peers that are in the organisation which matches the requested roles
      * @param {Array} peerRoles the peer roles that the returned list of peers need to satisfy
-     * @returns {Array} the list of any peers that satisfy all the criteria.
+     * @returns {Array} the list of any ChannelPeer objects that satisfy all the criteria.
      */
     getChannelPeersInOrg(peerRoles) {
-        let peers = this.client.getPeersForOrgOnChannel(this.channel.getName());
-        return peers.filter((cPeer) => {
-            return peerRoles.every((peerRole) => {
-                return cPeer.isInRole(peerRole);
-            });
+        const organizationId = this.client.getMspid();
+        const channelPeers = this.channel.getChannelPeers();
+        return channelPeers.filter((channelPeer) => {
+            return channelPeer.isInOrg(organizationId) &&
+                peerRoles.every((role) => channelPeer.isInRole(role));
         });
     }
 
