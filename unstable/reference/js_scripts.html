@@ -417,7 +417,7 @@ transaction SampleTransaction {
     <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
 
     <span class="c1">// Get the asset registry for the asset.</span>
-    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.basic.SampleAsset'</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.basic.SampleAsset'</span><span class="p">);</span>
 
     <span class="c1">// Update the asset in the asset registry.</span>
     <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">);</span>
