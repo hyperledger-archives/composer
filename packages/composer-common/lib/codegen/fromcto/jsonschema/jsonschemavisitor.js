@@ -343,7 +343,7 @@ class JSONSchemaVisitor {
         } else {
 
             // Look up the type of the property.
-            let type = parameters.modelFile.getType(field.getType());
+            let type = field.getParent().getModelFile().getType(field.getType());
 
             // Render the type as JSON Schema.
             jsonSchema = type.accept(this, parameters);

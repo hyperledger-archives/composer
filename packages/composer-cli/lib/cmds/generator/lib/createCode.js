@@ -24,6 +24,7 @@ const JavaVisitor = CodeGen.JavaVisitor;
 const JSONSchemaVisitor = CodeGen.JSONSchemaVisitor;
 const PlantUMLVisitor = CodeGen.PlantUMLVisitor;
 const TypescriptVisitor = CodeGen.TypescriptVisitor;
+const XmlSchemaVisitor = CodeGen.XmlSchemaVisitor;
 const cmdUtil = require('../../utils/cmdutils');
 /**
  * Composer Create Archive command
@@ -35,7 +36,7 @@ const cmdUtil = require('../../utils/cmdutils');
 class Create {
 
     /**
-    * Command process for deploy command
+    * Command process for generate command
     * @param {string} argv argument list from composer command
 
     * @return {Promise} promise when command complete
@@ -68,13 +69,22 @@ class Create {
             case 'JSONSchema':
                 visitor = new JSONSchemaVisitor();
                 break;
+            case 'XmlSchema':
+                visitor = new XmlSchemaVisitor();
+                break;
             default:
                 throw new Error ('Unrecognized code generator: ' + argv.format );
             }
 
             let parameters = {};
             parameters.fileWriter = new FileWriter(argv.outputDir);
-            businessNetwork.accept(visitor, parameters);
+
+            try {
+                businessNetwork.accept(visitor, parameters);
+            }
+            catch(err) {
+                console.log(err);
+            }
 
             return;
 
