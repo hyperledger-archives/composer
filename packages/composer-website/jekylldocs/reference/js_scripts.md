@@ -93,7 +93,7 @@ async function sampleTransaction(tx) {
     tx.asset.value = tx.newValue;
 
     // Get the asset registry for the asset.
-    let assetRegistry = getAssetRegistry('org.example.basic.SampleAsset');
+    let assetRegistry = await getAssetRegistry('org.example.basic.SampleAsset');
 
     // Update the asset in the asset registry.
     await assetRegistry.update(tx.asset);
