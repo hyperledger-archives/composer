@@ -194,7 +194,7 @@ node composer-cli/cli.js network install --card PeerAdmin@hlfv1 --archiveFile te
 ```
 - instantiate the chaincode.
 ```
-node composer-cli/cli.js network start --card PeerAdmin@hlfv1 -networkAdmin admin -networkAdminEnrollSecret adminpw
+node composer-cli/cli.js network start --card PeerAdmin@hlfv1 --networkName test-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw
 ```
 
 # Next step
