@@ -78,13 +78,7 @@ class Create {
 
             let parameters = {};
             parameters.fileWriter = new FileWriter(argv.outputDir);
-
-            try {
-                businessNetwork.accept(visitor, parameters);
-            }
-            catch(err) {
-                console.log(err);
-            }
+            businessNetwork.accept(visitor, parameters);
 
             return;
 
