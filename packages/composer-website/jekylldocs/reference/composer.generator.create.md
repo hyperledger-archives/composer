@@ -38,6 +38,7 @@ The format of the artifacts that will be created.
    * **Typescript** Generates class definitions in the Typescript language for the assets and participants
    * **JSONSchema** Generates the equivalent to the model in JSONSchema
    * **PlantUML** Generates a description of the model suitable for use with PlantUML to generate diagrams
+   * **XmlSchema** Generates a set of XML Schema (XSD) files
 
 * `--help`  
 Shows the help text

@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -16,11 +16,6 @@
 # Exit on first error, print all commands.
 
 set -ev
-
-# Grab the Composer-Docs directory.
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-
-
 
 echo "Attempting to install jekyll"
 gem install sass:3.4.25 jekyll

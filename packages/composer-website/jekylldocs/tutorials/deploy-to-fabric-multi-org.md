@@ -46,9 +46,9 @@ If you have previously installed the Composer development environment, you will 
     ./stopFabric.sh
     ./teardownFabric.sh
 
-Next, clone the following GitHub Fabric Samples repository using the command line (do not use the samples from the [Fabric site:](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html) as it is missing some changes that are required for this tutorial)
+Next, clone the following GitHub Fabric Samples repository using the command line (IMPORTANT: DO NOT USE the samples from the [Fabric site:](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html) as it is missing some changes that are required for this tutorial)
 
-    git clone -b issue-6978 https://github.com/sstone1/fabric-samples.git
+    git clone https://github.com/mahoney1/fabric-samples.git
 
 We are using the  [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html) Fabric sample network for this multi-org tutorial. We will refer to this {{site.data.conrefs.hlf_full}} network as the 'BYFN' (Building Your First Network) network henceforth. If you choose to split your organisations across separate physical machines or separate virtual machines running on different IP networks, it is outside the scope of this particular tutorial.
 
@@ -66,15 +66,19 @@ In order to follow this tutorial, you must start up a fresh {{site.data.conrefs.
 
     Verify the list of docker images downloaded without issues.
     
-    (Please note that you can ignore the initial "error: pathspec v1.1.0 did not match" message in the output for now)
+    (Please note that you can ignore the initial "error: pathspec v1.x.x did not match" message in the output - you may not even see this message)
 
-3. change directory into `first-network` sample
+3. We need to use the 'multi-org' branch from the Git repo we cloned earlier (to work with current Fabric level):
+
+        git checkout multi-org
+        
+4. change directory into `first-network` sample
 
         cd first-network
 
-4. Next, start the BYFN network - additional flags (to the `byfn.sh` script below) must be specified, as we're using CouchDB as the world state database (different to that specified on the Fabric BYFN page) - we also want to start a Certificate Authority (CA) for **each** organization.
+5. Next, start the BYFN network - additional flags (to the `byfn.sh` script below) must be specified, as we're using CouchDB as the world state database (different to that specified on the Fabric BYFN page) - we also want to start a Certificate Authority (CA) for **each** organization.
 
-5. Execute the following commands in sequence from the `first-network` directory:
+6. Execute the following commands in sequence from the `first-network` directory:
 
         ./byfn.sh -m generate
 
