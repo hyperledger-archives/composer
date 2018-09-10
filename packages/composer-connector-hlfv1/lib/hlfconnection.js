@@ -712,11 +712,7 @@ class HLFConnection extends Connection {
         try {
             await eventHandler.waitForEvents();
         } catch (error) {
-            // Investigate proposal response results and log if they differ and rethrow
-            if (!this.channel.compareProposalResponseResults(validResponses)) {
-                const warning = 'Peers do not agree, Read Write sets differ';
-                LOG.warn(method, warning);
-            }
+            LOG.error(method, error);
             throw error;
         }
 
@@ -757,22 +753,14 @@ class HLFConnection extends Connection {
                 }
             } else {
 
-                // not an error, if it is from a proposal, verify the response
-                if (isProposal && !this.channel.verifyProposalResponse(responseContent)) {
-                    // the node-sdk doesn't provide any external utilities from parsing the responseContent.
-                    // there are internal ones which may do what is needed or we would have to decode the
-                    // protobufs ourselves but it should really be the node sdk doing this.
-                    const warning = `Proposal response from peer failed verification. ${responseContent.response}`;
-                    LOG.warn(method, warning);
-                    invalidResponseMsgs.push(warning);
-                } else if (responseContent.response.status !== 200) {
+                // not an error, but check the status to be sure.
+                if (responseContent.response.status !== 200) {
                     const warning = `Unexpected response of ${responseContent.response.status}. Payload was: ${responseContent.response.payload}`;
                     LOG.warn(method, warning);
                     invalidResponseMsgs.push(warning);
                 } else {
                     validResponses.push(responseContent);
                 }
-
             }
         });
 
@@ -935,6 +923,7 @@ class HLFConnection extends Connection {
         let txId = this._validateTxId(options);
 
         let eventHandler;
+        let validResponses;
 
         try {
 
@@ -957,7 +946,7 @@ class HLFConnection extends Connection {
             // Validate the endorsement results.
             LOG.debug(method, `Received ${results.length} result(s) from invoking the composer runtime chaincode`, results);
             const proposalResponses = results[0];
-            let {validResponses} = this._validatePeerResponses(proposalResponses, true);
+            validResponses = this._validatePeerResponses(proposalResponses, true).validResponses;
 
             // Extract the response data, if any.
             const firstValidResponse = validResponses[0];
@@ -996,8 +985,16 @@ class HLFConnection extends Connection {
             return result;
 
         } catch (error) {
+            // Log first in case anything below fails and masks the original error
+            LOG.error(method, error);
+
+            // Investigate proposal response results and log if they differ and rethrow
+            if (validResponses && validResponses.length >= 2 && !this.channel.compareProposalResponseResults(validResponses)) {
+                const warning = 'Peers did not agree, Read Write sets differed';
+                LOG.warn(method, warning);
+            }
+
             const newError = new Error('Error trying invoke business network. ' + error);
-            LOG.error(method, newError);
             throw newError;
         }
     }

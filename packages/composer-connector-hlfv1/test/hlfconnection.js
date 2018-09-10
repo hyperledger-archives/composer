@@ -1228,8 +1228,6 @@ describe('HLFConnection', () => {
                 sandbox.stub(HLFConnection, 'createTxEventHandler').returns(mockEventHandler);
 
                 mockChannel.sendTransaction.resolves({ status: 'SUCCESS' });
-                mockChannel.verifyProposalResponse.returns(true);
-                mockChannel.compareProposalResponseResults.returns(false);
                 mockEventHub1.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
                 return connection.start(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
                     .should.be.rejectedWith(/such error/);
@@ -1309,67 +1307,6 @@ describe('HLFConnection', () => {
         });
     });
 
-    describe('#_sendTransaction', () => {
-
-        it('should log if compareProposals returns false',  async () => {
-
-            let mockEventHandler = sinon.createStubInstance(HLFEventHandler);
-            mockEventHandler.waitForEvents.throws(new Error('such error'));
-            sandbox.stub(HLFConnection, 'createTxEventHandler').returns(mockEventHandler);
-
-            const responses = [
-                {
-                    response: {
-                        status: 500,
-                        payload: 'such error'
-                    }
-                }
-            ];
-            sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: responses});
-
-            mockChannel.sendTransaction.resolves({ status: 'SUCCESS' });
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(false);
-
-            try {
-                await connection._sendTransaction(responses, mockTransactionID);
-                sinon.assert.fail('should have thrown');
-            } catch (err) {
-                sinon.assert.calledWith(logWarnSpy, '_sendTransaction', 'Peers do not agree, Read Write sets differ');
-            }
-
-        });
-
-        it('should not log if compareProposals returns false',  async () => {
-
-            let mockEventHandler = sinon.createStubInstance(HLFEventHandler);
-            mockEventHandler.waitForEvents.throws(new Error('such error'));
-            sandbox.stub(HLFConnection, 'createTxEventHandler').returns(mockEventHandler);
-
-            const responses = [
-                {
-                    response: {
-                        status: 500,
-                        payload: 'such error'
-                    }
-                }
-            ];
-            sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: responses});
-
-            mockChannel.sendTransaction.resolves({ status: 'SUCCESS' });
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
-
-            try {
-                await connection._sendTransaction(responses, mockTransactionID);
-                sinon.assert.fail('should have thrown');
-            } catch (err) {
-                sinon.assert.notCalled(logWarnSpy);
-            }
-
-        });
-    });
-
     describe('#_validatePeerResponses', () => {
         it('should return all responses because all are valid', () => {
             const responses = [
@@ -1388,9 +1325,6 @@ describe('HLFConnection', () => {
                 }
             ];
 
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
-
             (function() {
                 const {ignoredErrors, validResponses} = connection._validatePeerResponses(responses, true);
                 ignoredErrors.should.equal(0);
@@ -1403,9 +1337,6 @@ describe('HLFConnection', () => {
             const responses = [
                 err
             ];
-
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
 
             (function() {
                 const {ignoredErrors, validResponses} = connection._validatePeerResponses(responses, false, /chaincode exists/);
@@ -1443,9 +1374,6 @@ describe('HLFConnection', () => {
                 }
             ];
 
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
-
             (function() {
                 connection._validatePeerResponses(responses, true);
             }).should.throw(/No valid responses/);
@@ -1470,8 +1398,7 @@ describe('HLFConnection', () => {
 
             const responses = [resp1, resp2, resp3];
 
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
+            //mockChannel.compareProposalResponseResults.returns(true);
 
             (function() {
                 let {ignoredErrors, validResponses} = connection._validatePeerResponses(responses, true);
@@ -1481,46 +1408,6 @@ describe('HLFConnection', () => {
             }).should.not.throw();
 
         });
-
-        it('should log warning if verifyProposal returns false', () => {
-            const response1 = {
-                response: {
-                    status: 200,
-                    payload: 'NOTVALID'
-                }
-            };
-            const response2 = {
-                response: {
-                    status: 200,
-                    payload: 'I AM VALID'
-                }
-            };
-
-            const responses = [ response1, response2 ];
-
-            mockChannel.verifyProposalResponse.withArgs(response1).returns(false);
-            mockChannel.verifyProposalResponse.withArgs(response2).returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
-            connection._validatePeerResponses(responses, true);
-            sinon.assert.calledWith(logWarnSpy, '_validatePeerResponses', sinon.match(/Proposal response from peer failed verification/));
-        });
-
-        it('should not try to check proposal responses if not a response from a proposal', () => {
-            const responses = [
-                {
-                    response: {
-                        status: 200,
-                        payload: 'no error'
-                    }
-                }
-            ];
-
-            connection._validatePeerResponses(responses, false);
-            sinon.assert.notCalled(mockChannel.verifyProposalResponse);
-            sinon.assert.notCalled(mockChannel.compareProposalResponseResults);
-        });
-
-
     });
 
     describe('#_checkRuntimeVersions', () => {
@@ -2015,6 +1902,62 @@ describe('HLFConnection', () => {
             mockEventHub1.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/Failed to send/);
+        });
+
+        it('should log a warning if proposal results differ after an invocation failure', async () => {
+            const proposalResponses = [
+                {
+                    response: { status: 200 }
+                }, {
+                    response: { status: 200 }
+                }
+            ];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            connection._validatePeerResponses.returns({ignoredErrors: 0, validResponses: proposalResponses});
+            mockChannel.compareProposalResponseResults.returns(false);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'FAILURE'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub1.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
+            try {
+                await connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+                sinon.assert.fail('Expected invocation to fail');
+            } catch (error) {
+                sinon.assert.calledWith(logWarnSpy, 'invokeChainCode', 'Peers did not agree, Read Write sets differed');
+            }
+        });
+
+        it('should not log a warning if proposal results match after an invocation failure', async () => {
+            const proposalResponses = [
+                {
+                    response: { status: 200 }
+                }, {
+                    response: { status: 200 }
+                }
+            ];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            connection._validatePeerResponses.returns({ignoredErrors: 0, validResponses: proposalResponses});
+            mockChannel.compareProposalResponseResults.returns(true);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'FAILURE'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub1.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
+            try {
+                await connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+                sinon.assert.fail('Expected invocation to fail');
+            } catch (error) {
+                sinon.assert.notCalled(logWarnSpy);
+            }
         });
 
         it('should submit an invoke request to the chaincode and order it if commit specified as true', () => {
