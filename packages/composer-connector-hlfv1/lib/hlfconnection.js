@@ -750,22 +750,14 @@ class HLFConnection extends Connection {
                 }
             } else {
 
-                // not an error, if it is from a proposal, verify the response
-                if (isProposal && !this.channel.verifyProposalResponse(responseContent)) {
-                    // the node-sdk doesn't provide any external utilities from parsing the responseContent.
-                    // there are internal ones which may do what is needed or we would have to decode the
-                    // protobufs ourselves but it should really be the node sdk doing this.
-                    const warning = `Proposal response from peer failed verification. ${responseContent.response}`;
-                    LOG.warn(method, warning);
-                    invalidResponseMsgs.push(warning);
-                } else if (responseContent.response.status !== 200) {
+                // not an error, but check the status to be sure.
+                if (responseContent.response.status !== 200) {
                     const warning = `Unexpected response of ${responseContent.response.status}. Payload was: ${responseContent.response.payload}`;
                     LOG.warn(method, warning);
                     invalidResponseMsgs.push(warning);
                 } else {
                     validResponses.push(responseContent);
                 }
-
             }
         });
 
