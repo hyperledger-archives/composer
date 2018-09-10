@@ -33,7 +33,7 @@ const HLFConnection = require('../lib/hlfconnection');
 const HLFConnectionManager = require('../lib/hlfconnectionmanager');
 const HLFSecurityContext = require('../lib/hlfsecuritycontext');
 const HLFQueryHandler = require('../lib/hlfqueryhandler');
-const HLFEventHandler = require('../lib/hlftxeventhandler');
+//const HLFEventHandler = require('../lib/hlftxeventhandler');
 
 const path = require('path');
 const semver = require('semver');
@@ -1223,18 +1223,19 @@ describe('HLFConnection', () => {
                     });
             });
 
+            /*
             it('should throw an error if peers do not agree', () => {
                 let mockEventHandler = sinon.createStubInstance(HLFEventHandler);
                 mockEventHandler.waitForEvents.throws(new Error('such error'));
                 sandbox.stub(HLFConnection, 'createTxEventHandler').returns(mockEventHandler);
 
                 mockChannel.sendTransaction.resolves({ status: 'SUCCESS' });
-                mockChannel.verifyProposalResponse.returns(true);
                 mockChannel.compareProposalResponseResults.returns(false);
                 mockEventHub1.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
                 return connection.start(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
                     .should.be.rejectedWith(/such error/);
             });
+            */
         });
 
         describe('#upgrade', () => {
@@ -1328,9 +1329,6 @@ describe('HLFConnection', () => {
                 }
             ];
 
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
-
             (function() {
                 const {ignoredErrors, validResponses} = connection._validatePeerResponses(responses, true);
                 ignoredErrors.should.equal(0);
@@ -1343,9 +1341,6 @@ describe('HLFConnection', () => {
             const responses = [
                 err
             ];
-
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
 
             (function() {
                 const {ignoredErrors, validResponses} = connection._validatePeerResponses(responses, false, /chaincode exists/);
@@ -1383,9 +1378,6 @@ describe('HLFConnection', () => {
                 }
             ];
 
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
-
             (function() {
                 connection._validatePeerResponses(responses, true);
             }).should.throw(/No valid responses/);
@@ -1410,9 +1402,6 @@ describe('HLFConnection', () => {
 
             const responses = [resp1, resp2, resp3];
 
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
-
             (function() {
                 let {ignoredErrors, validResponses} = connection._validatePeerResponses(responses, true);
                 ignoredErrors.should.equal(0);
@@ -1421,46 +1410,6 @@ describe('HLFConnection', () => {
             }).should.not.throw();
 
         });
-
-        it('should log warning if verifyProposal returns false', () => {
-            const response1 = {
-                response: {
-                    status: 200,
-                    payload: 'NOTVALID'
-                }
-            };
-            const response2 = {
-                response: {
-                    status: 200,
-                    payload: 'I AM VALID'
-                }
-            };
-
-            const responses = [ response1, response2 ];
-
-            mockChannel.verifyProposalResponse.withArgs(response1).returns(false);
-            mockChannel.verifyProposalResponse.withArgs(response2).returns(true);
-            mockChannel.compareProposalResponseResults.returns(true);
-            connection._validatePeerResponses(responses, true);
-            sinon.assert.calledWith(logWarnSpy, '_validatePeerResponses', sinon.match(/Proposal response from peer failed verification/));
-        });
-
-        it('should not try to check proposal responses if not a response from a proposal', () => {
-            const responses = [
-                {
-                    response: {
-                        status: 200,
-                        payload: 'no error'
-                    }
-                }
-            ];
-
-            connection._validatePeerResponses(responses, false);
-            sinon.assert.notCalled(mockChannel.verifyProposalResponse);
-            sinon.assert.notCalled(mockChannel.compareProposalResponseResults);
-        });
-
-
     });
 
     describe('#_checkRuntimeVersions', () => {

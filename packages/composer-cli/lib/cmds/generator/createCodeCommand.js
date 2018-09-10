@@ -23,7 +23,7 @@ module.exports.builder = function (yargs){
     yargs.options(
         {
             'archiveFile':{alias: 'a', required: true,  describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string'},
-            'format':{alias: 'f', required: true, describe: 'Format of code to generate: Java, Go (beta), PlantUML, Typescript (beta), JSONSchema.'},
+            'format':{alias: 'f', required: true, describe: 'Format of code to generate: Java, Go (beta), PlantUML, Typescript (beta), JSONSchema, XmlSchema.'},
             'outputDir':{alias: 'o', required: true, describe:'Output Location'}
         }
     );

@@ -28,6 +28,7 @@ const JSONSchemaVisitor = CodeGen.JSONSchemaVisitor;
 const PlantUMLVisitor = CodeGen.PlantUMLVisitor;
 const TypescriptVisitor = CodeGen.TypescriptVisitor;
 const JavaVisitor = CodeGen.JavaVisitor;
+const XmlSchemaVisitor = CodeGen.XmlSchemaVisitor;
 const FileWriter = CodeGen.FileWriter;
 
 
@@ -50,6 +51,7 @@ let mockTypescript;
 let mockJSONSchema;
 let mockFileWriter;
 let mockJava;
+let mockXmlSchema;
 
 let mockAdminConnection;
 
@@ -71,13 +73,14 @@ describe('composer generator create unit tests', function () {
         mockTypescript = sinon.createStubInstance(TypescriptVisitor);
         mockJSONSchema = sinon.createStubInstance(JSONSchemaVisitor);
         mockJava = sinon.createStubInstance(JavaVisitor);
-
+        mockXmlSchema = sinon.createStubInstance(XmlSchemaVisitor);
 
         mockGoLang.visit.returns('visited');
         mockPlantUML.visit.returns('visited');
         mockTypescript.visit.returns('visited');
         mockJSONSchema.visit.returns('visited');
         mockJava.visit.returns('visited');
+        mockXmlSchema.visit.returns('visited');
 
         mockFileWriter = sinon.createStubInstance(require('composer-common').CodeGen.FileWriter);
         CreateCode.FileWriter = mockFileWriter;
@@ -179,6 +182,23 @@ describe('composer generator create unit tests', function () {
                             let parameters = {};
                             parameters.fileWriter = new FileWriter('/home');
                             sinon.assert.calledWith(mockBusinessNetworkDefinition.accept,mockJava,parameters);
+                        });
+        });
+
+        it('should correctly execute when all params correctly specified', function () {
+
+            let argv = {archiveFile: 'testArchiveFile.zip'
+                                    ,format: 'XmlSchema'
+                                   ,outputDir: '/home'};
+
+            return Create.handler(argv)
+                        .then ((result) => {
+                            argv.thePromise.should.be.a('promise');
+                            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                            sinon.assert.calledOnce(fs.readFileSync);
+                            let parameters = {};
+                            parameters.fileWriter = new FileWriter('/home');
+                            sinon.assert.calledWith(mockBusinessNetworkDefinition.accept,mockXmlSchema,parameters);
                         });
         });
 
