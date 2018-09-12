@@ -40,7 +40,9 @@ function invokeCmd(cmd) {
         });
         // Capture Protactor return code
         proc.on('close', function(code) {
-            if(code !== 0) {
+            // npm 6.4.1 doesn't return a code value when publishing playground so
+            // assume that if no code is returned then it didn't fail.
+            if (code !== undefined && code !== null && code !== 0) {
                 return reject(new Error(`Failed to execute "${cmd}" with return code ${code}`));
             }
             resolve();
