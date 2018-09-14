@@ -20,9 +20,10 @@ const TreeNode = require('../../lib/log/node.js');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const WinstonInjector = require('../../lib/log/winstonInjector.js');
+const Identifiable = require('../../lib/model/identifiable');
+const Typed = require('../../lib/model/typed');
 
 const chai = require('chai');
-
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 const sinon = require('sinon');
@@ -155,6 +156,82 @@ describe('Logger', () => {
             logger.intlog('debug','methodname','message','arg1',err,'arg3');
             sinon.assert.calledOnce(stubLogger.log);
             sinon.assert.calledWith(stubLogger.log, 'debug', sinon.match(/ScriptManager.*methodname\(\)/), 'message',['arg1',{'stack':sinon.match.any},'arg3']);
+        });
+
+        it('should log the `FullyQualifiedIdentifier` if of type Identifiable', () => {
+            let stubLogger=  {
+                log: sinon.stub()
+            };
+            Logger.setFunctionalLogger(stubLogger);
+            Logger._envDebug='composer[debug]:*';
+            const logger = new Logger('ScriptManager');
+
+            // Create and send an 'Identifiable'
+            const suchId = sinon.createStubInstance(Identifiable);
+            suchId.getFullyQualifiedIdentifier.returns('suchQualifiedIdentifier');
+            logger.intlog('debug','methodname','message',suchId);
+
+            // Be assertive
+            sinon.assert.calledOnce(stubLogger.log);
+            sinon.assert.calledWith(stubLogger.log, 'debug', sinon.match(/ScriptManager.*methodname\(\)/), 'message',['suchQualifiedIdentifier']);
+        });
+
+        it('should log the `FullyQualifiedType` if of type Typed', () => {
+            let stubLogger=  {
+                log: sinon.stub()
+            };
+            Logger.setFunctionalLogger(stubLogger);
+            Logger._envDebug='composer[debug]:*';
+            const logger = new Logger('ScriptManager');
+
+            // Create and send a 'Typed'
+            const suchType = sinon.createStubInstance(Typed);
+            suchType.getFullyQualifiedType.returns('suchQualifiedType');
+            logger.intlog('debug','methodname','message',suchType);
+
+            // Be assertive
+            sinon.assert.calledOnce(stubLogger.log);
+            sinon.assert.calledWith(stubLogger.log, 'debug', sinon.match(/ScriptManager.*methodname\(\)/), 'message',['suchQualifiedType']);
+        });
+
+        it('should truncate buffers that exceed the log length limit', () => {
+            let stubLogger=  {
+                log: sinon.stub()
+            };
+            Logger.setFunctionalLogger(stubLogger);
+            Logger._envDebug='composer[debug]:*';
+            const logger = new Logger('ScriptManager');
+
+            // override the bufferLimit
+            logger._maxLength = 10;
+
+            // Create and send a buffer that exceed the limit set above
+            const longBuff = Buffer.from('long message that is long for the sake of being long');
+            logger.intlog('debug','methodname','message',longBuff);
+
+            // Be assertive
+            sinon.assert.calledOnce(stubLogger.log);
+            sinon.assert.calledWith(stubLogger.log, 'debug', sinon.match(/ScriptManager.*methodname\(\)/), 'message',['long messa... truncated from original length of 52']);
+        });
+
+        it('should not truncate buffers that are under the log length limit', () => {
+            let stubLogger=  {
+                log: sinon.stub()
+            };
+            Logger.setFunctionalLogger(stubLogger);
+            Logger._envDebug='composer[debug]:*';
+            const logger = new Logger('ScriptManager');
+
+            // override the bufferLimit
+            logger._maxLength = 10000;
+
+            // Create and send a buffer that is under the limit set above
+            const shortBuff = Buffer.from('short message');
+            logger.intlog('debug','methodname','message',shortBuff);
+
+            // Be assertive
+            sinon.assert.calledOnce(stubLogger.log);
+            sinon.assert.calledWith(stubLogger.log, 'debug', sinon.match(/ScriptManager.*methodname\(\)/), 'message',['short message']);
         });
 
     });
