@@ -39,7 +39,7 @@ module.exports = [{
     target,
     secure: true,
     changeOrigin: true,
-    ws: true,
+    ws: false,
     bypass: function (req, res, proxyOptions) {
         const accept = req.headers.accept || '';
         if (accept.indexOf('html') !== -1) {
