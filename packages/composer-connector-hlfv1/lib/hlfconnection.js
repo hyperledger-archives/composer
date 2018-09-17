@@ -1193,8 +1193,23 @@ class HLFConnection extends Connection {
      * @returns {Array} the list of any peers that satisfy all the criteria.
      */
     getChannelPeersInOrg(peerRoles) {
-        let peers = this.client.getPeersForOrgOnChannel(this.channel.getName());
-        return peers.filter((cPeer) => {
+        // get the list of peers we are interested in
+        let orgPeers = this.client.getPeersForOrgOnChannel(this.channel.getName());
+        // get the actual peers we want to select from as these are the ones
+        // we want to actually use otherwise we create multiple peers with
+        // their own connected stream whereas we want to only have a single stream
+        // to the peer.
+        let actualPeers = this.channel.getPeers();
+
+        // find the actualPeers that are in the organisation
+        let peersToUse = actualPeers.filter((actualPeer) => {
+            return orgPeers.some((orgPeer) => {
+                return actualPeer.getName() === orgPeer.getName();
+            });
+        });
+
+        // now filter to peers returned by their role
+        return peersToUse.filter((cPeer) => {
             return peerRoles.every((peerRole) => {
                 return cPeer.isInRole(peerRole);
             });
