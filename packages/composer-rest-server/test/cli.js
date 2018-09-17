@@ -86,6 +86,8 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.calledOnce(Util.getConnectionSettings);
             const settings = {
                 card: 'admin@org-acme-biznet',
+                explorer: undefined,
+                loggingkey: undefined,
                 namespaces: 'always',
                 apikey: undefined,
                 authentication: false,
@@ -155,6 +157,8 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
                 card: 'admin@org-acme-biznet',
+                explorer: true,
+                loggingkey: undefined,
                 namespaces: 'always',
                 apikey: undefined,
                 port: undefined,
@@ -201,6 +205,8 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
                 card: 'admin@org-acme-biznet',
+                explorer: true,
+                loggingkey: undefined,
                 namespaces: 'always',
                 apikey: APIKEY,
                 port: undefined,
@@ -246,6 +252,8 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
                 card: 'admin@org-acme-biznet',
+                explorer: true,
+                loggingkey: undefined,
                 namespaces: 'always',
                 apikey: undefined,
                 port: undefined,
@@ -291,6 +299,8 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
                 card: 'admin@org-acme-biznet',
+                explorer: true,
+                loggingkey: undefined,
                 namespaces: 'always',
                 port: undefined,
                 apikey: undefined,
@@ -343,8 +353,104 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.calledWith(emit, 'started');
             sinon.assert.calledWith(console.log, sinon.match(/Web server listening at/));
             sinon.assert.calledWith(console.log, sinon.match(/Browse your REST API at/));
+            sinon.assert.neverCalledWith(console.log, sinon.match(/dynamic logging/));
         });
     });
+
+    it('should check the explorer flag and set it as requested', () => {
+        let listen = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('port').returns(3000);
+        process.argv = [
+            process.argv0, 'cli.js',
+            '-c', 'admin@org-acme-biznet',
+            '-u', 'false'
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub().resolves({
+            app: {
+                get
+            },
+            server: {
+                listen
+            }
+        });
+        return proxyquire('../cli', {
+            clear: () => { },
+            chalk: {
+                yellow: () => { return ''; }
+            },
+            './server/server': server
+        }).then(() => {
+            sinon.assert.notCalled(Util.getConnectionSettings);
+            const settings = {
+                card: 'admin@org-acme-biznet',
+                explorer: false,
+                loggingkey: undefined,
+                namespaces: 'always',
+                apikey: undefined,
+                port: undefined,
+                authentication: false,
+                multiuser: false,
+                websockets: true,
+                tls: false,
+                tlscert: defaultTlsCertificate,
+                tlskey: defaultTlsKey
+            };
+            sinon.assert.calledWith(server, settings);
+            sinon.assert.calledOnce(listen);
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1].should.be.a('function');
+        });
+    });
+
+    it('should check the logging flag and set it as requested', () => {
+        let listen = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('port').returns(3000);
+        process.argv = [
+            process.argv0, 'cli.js',
+            '-c', 'admin@org-acme-biznet',
+            '-d', '123457'
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub().resolves({
+            app: {
+                get
+            },
+            server: {
+                listen
+            }
+        });
+        return proxyquire('../cli', {
+            clear: () => { },
+            chalk: {
+                yellow: () => { return ''; }
+            },
+            './server/server': server
+        }).then(() => {
+            sinon.assert.notCalled(Util.getConnectionSettings);
+            const settings = {
+                card: 'admin@org-acme-biznet',
+                explorer: true,
+                loggingkey: '123457',
+                namespaces: 'always',
+                apikey: undefined,
+                port: undefined,
+                authentication: false,
+                multiuser: false,
+                websockets: true,
+                tls: false,
+                tlscert: defaultTlsCertificate,
+                tlskey: defaultTlsKey
+            };
+            sinon.assert.calledWith(server, settings);
+            sinon.assert.calledOnce(listen);
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1].should.be.a('function');
+        });
+    });
+
 
     it('should start and log information when running without explorer', () => {
         let listen = sinon.stub();
@@ -380,6 +486,49 @@ describe('composer-rest-server CLI unit tests', () => {
             sinon.assert.calledWith(emit, 'started');
             sinon.assert.calledWith(console.log, sinon.match(/Web server listening at/));
             sinon.assert.neverCalledWith(console.log, sinon.match(/Browse your REST API at/));
+            sinon.assert.neverCalledWith(console.log, sinon.match(/dynamic logging/));
+        });
+    });
+
+
+    it('should start and log information when dynamic logging enabled', () => {
+        let listen = sinon.stub();
+        let emit = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('port').returns(3000);
+        get.withArgs('url').returns('http://localhost:3000');
+        get.withArgs('loopback-component-explorer').returns(true);
+        get.withArgs('composer').returns({loggingkey: '1234'});
+        process.argv = [
+            process.argv0, 'cli.js',
+            '-c', 'admin@org-acme-biznet',
+            '-d', '1234'
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub().resolves({
+            app: {
+                emit,
+                get
+            },
+            server: {
+                listen
+            }
+        });
+        return proxyquire('../cli', {
+            clear: () => { },
+            chalk: {
+                yellow: () => { return ''; }
+            },
+            './server/server': server
+        }).then(() => {
+            sinon.assert.calledOnce(listen);
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1]();
+            sinon.assert.calledOnce(emit);
+            sinon.assert.calledWith(emit, 'started');
+            sinon.assert.calledWith(console.log, sinon.match(/Web server listening at/));
+            sinon.assert.calledWith(console.log, sinon.match(/Browse your REST API at/));
+            sinon.assert.calledWith(console.log, sinon.match(/dynamic logging/));
         });
     });
 
