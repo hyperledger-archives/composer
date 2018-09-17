@@ -17,7 +17,15 @@
 module.exports = function(server) {
     let router = server.loopback.Router();
     router.get('/', (req, res, next) => {
-        res.redirect('/explorer/');
+        const useExplorer = server.settings.composer.explorer === undefined ||
+                            server.settings.composer.explorer === null ||
+                            server.settings.composer.explorer === true;
+
+        if (useExplorer) {
+            res.redirect('/explorer/');
+        } else {
+            res.redirect('/status/');
+        }
     });
     router.get('/status', server.loopback.status());
     server.use(router);
