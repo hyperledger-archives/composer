@@ -40,11 +40,18 @@ function startRestServer(composer){
             return app.listen(function () {
                 app.emit('started');
                 let baseUrl = app.get('url').replace(/\/$/, '');
+                // eslint-disable-next-line no-console
                 console.log('Web server listening at: %s', baseUrl);
                 /* istanbul ignore next */
                 if (app.get('loopback-component-explorer')) {
                     let explorerPath = app.get('loopback-component-explorer').mountPath;
+                    // eslint-disable-next-line no-console
                     console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
+                }
+                const composerConfig = app.get('composer');
+                if (composerConfig && composerConfig.loggingkey) {
+                            // eslint-disable-next-line no-console
+                    console.log('Rest Server dynamic logging is enabled');
                 }
             });
         });

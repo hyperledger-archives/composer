@@ -45,6 +45,7 @@ module.exports = function (composer) {
         // model dependent on whether or not the multiple user option has been specified.
         const models = require('./model-config.json');
         const multiuser = !!composer.multiuser;
+        const useExplorer = composer.explorer === undefined || composer.explorer === null || composer.explorer === true;
         models.Card.public = multiuser;
 
         // Allow environment variable overrides for the datasources.json file.
@@ -54,17 +55,22 @@ module.exports = function (composer) {
         }
 
         // Call the boot process which will load all models and execute all boot scripts.
+        let loopbackExplorer = null;
+        if (useExplorer) {
+            loopbackExplorer = {
+                mountPath: '/explorer',
+                uiDirs: [
+                    path.resolve(__dirname, '..', 'public')
+                ]
+            };
+        }
+
         const bootOptions = {
             appRootDir: __dirname,
             models: models,
             dataSources: dataSources,
             components: {
-                'loopback-component-explorer': {
-                    mountPath: '/explorer',
-                    uiDirs: [
-                        path.resolve(__dirname, '..', 'public')
-                    ]
-                }
+                'loopback-component-explorer': loopbackExplorer
             }
         };
         boot(app, bootOptions, (error) => {
@@ -221,15 +227,23 @@ if (require.main === module) {
             return server.listen(() => {
                 app.emit('started');
                 let baseUrl = app.get('url').replace(/\/$/, '');
+                // eslint-disable-next-line no-console
                 console.log('Web server listening at: %s', baseUrl);
                 if (app.get('loopback-component-explorer')) {
                     let explorerPath = app.get('loopback-component-explorer').mountPath;
+                    // eslint-disable-next-line no-console
                     console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
+                }
+                const composerConfig = app.get('composer');
+                if (composerConfig && composerConfig.loggingkey) {
+                    // eslint-disable-next-line no-console
+                    console.log('Rest Server dynamic logging is enabled');
                 }
             });
 
         })
         .catch((error) => {
+            // eslint-disable-next-line no-console
             console.error(error);
             process.exit(1);
         });

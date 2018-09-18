@@ -2312,16 +2312,19 @@ describe('HLFConnection', () => {
             mockPeer3.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
 
             mockPeer4 = sinon.createStubInstance(Peer);
+            mockPeer4.index = 4;
             mockPeer4.getName.returns('Peer4');
             mockPeer4.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE).returns(false);
             mockPeer4.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
 
             mockPeer5 = sinon.createStubInstance(Peer);
+            mockPeer5.index = 5;
             mockPeer5.getName.returns('Peer5');
             mockPeer5.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE).returns(true);
             mockPeer5.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
 
             mockPeer6 = sinon.createStubInstance(Peer);
+            mockPeer6.index = 6;
             mockPeer6.getName.returns('Peer6');
             mockPeer6.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE).returns(true);
             mockPeer6.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
@@ -2330,19 +2333,41 @@ describe('HLFConnection', () => {
 
         it('Should find the correct set of Peers #1', () => {
             mockClient.getPeersForOrgOnChannel.withArgs('testchainid').returns([mockPeer4, mockPeer6]);
+            mockChannel.getPeers.returns([mockPeer2, mockPeer3, mockPeer4, mockPeer6]);
             connection.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE, FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).should.deep.equal([mockPeer6]);
         });
 
         it('Should find the correct set of Peers #2', () => {
             mockClient.getPeersForOrgOnChannel.withArgs('testchainid').returns([mockPeer1, mockPeer2, mockPeer3]);
+            mockChannel.getPeers.returns([mockPeer1, mockPeer2, mockPeer3, mockPeer4, mockPeer6]);
             connection.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).should.deep.equal([mockPeer2, mockPeer3]);
             connection.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE, FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).should.deep.equal([mockPeer3]);
         });
 
-        it('should return an empty array if no peers found', () => {
+        it('Should find the correct set of Peers #3', () => {
+            mockClient.getPeersForOrgOnChannel.withArgs('testchainid').returns([mockPeer2, mockPeer3, mockPeer4, mockPeer6]);
+            mockChannel.getPeers.returns([mockPeer4, mockPeer6]);
+            connection.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE, FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).should.deep.equal([mockPeer6]);
+        });
+
+        it('Should return an empty array if no peers found #1', () => {
             mockClient.getPeersForOrgOnChannel.withArgs('testchainid').returns([mockPeer1, mockPeer5, mockPeer4]);
+            mockChannel.getPeers.returns([mockPeer1, mockPeer2, mockPeer3, mockPeer4, mockPeer5, mockPeer6]);
             connection.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).should.deep.equal([]);
         });
+
+        it('Should return an empty array if no peers found #2', () => {
+            mockClient.getPeersForOrgOnChannel.withArgs('testchainid').returns([]);
+            mockChannel.getPeers.returns([mockPeer2, mockPeer3, mockPeer4, mockPeer6]);
+            connection.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE, FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).should.deep.equal([]);
+        });
+
+        it('Should return an empty array if no peers found #3', () => {
+            mockClient.getPeersForOrgOnChannel.withArgs('testchainid').returns([mockPeer4, mockPeer6]);
+            mockChannel.getPeers.returns([]);
+            connection.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE, FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).should.deep.equal([]);
+        });
+
 
     });
 
