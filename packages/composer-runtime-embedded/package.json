@@ -75,7 +75,7 @@
   "dependencies": {
     "composer-runtime": "0.19.15",
     "composer-runtime-pouchdb": "0.19.15",
-    "debug": "2.6.2",
+    "debug": "2.6.9",
     "istanbul-lib-instrument": "1.7.2",
     "pouchdb-adapter-memory": "6.2.0",
     "request": "2.81.0",

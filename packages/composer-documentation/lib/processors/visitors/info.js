@@ -32,7 +32,7 @@ const FunctionDeclaration = require('composer-common').FunctionDeclaration;
 const EventDeclaration = require('composer-common').EventDeclaration;
 const Query = require('composer-common').Query;
 const QueryFile = require('composer-common').QueryFile;
-const debug = require('debug')('concerto:infovisitor');
+const debug = require('debug')('composer:infovisitor');
 
 /**
  * Convert the contents of a {@link ModelManager} instance to a set of JSON
