@@ -149,6 +149,7 @@ class Factory {
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newConcept(ns, type, options) {
+        const method = 'newConcept';
         const qualifiedName = ModelUtil.getFullyQualifiedName(ns, type);
         const classDecl = this.modelManager.getType(qualifiedName);
 
@@ -175,7 +176,7 @@ class Factory {
         newObj.assignFieldDefaults();
         this.initializeNewObject(newObj, classDecl, options);
 
-        LOG.debug('Factory.newResource created concept', classDecl.getFullyQualifiedName() );
+        LOG.debug(method, 'created concept', classDecl.getFullyQualifiedName() );
         return newObj;
     }
 
