@@ -272,7 +272,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
                 context : '/',
                 secure : true,
                 target : 'http://localhost:3000',
-                ws : true
+                ws : false
             }
         ], 'proxy configuration is wrong');
     });
@@ -299,7 +299,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
                 context : '/',
                 secure : true,
                 target : 'https://doges-other-rest-server.dogecorp.com:9999',
-                ws : true
+                ws : false
             }
         ], 'proxy configuration is wrong');
     });
@@ -328,7 +328,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
                 context : '/',
                 secure : true,
                 target : 'https://doges-other-rest-server.dogecorp.com:9999',
-                ws : true
+                ws : false
             }
         ], 'proxy configuration is wrong');
     });
@@ -357,7 +357,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
                 context : '/',
                 secure : true,
                 target : 'http://localhost:3000',
-                ws : true
+                ws : false
             }
         ], 'proxy configuration is wrong');
     });

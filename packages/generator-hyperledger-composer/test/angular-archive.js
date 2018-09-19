@@ -359,7 +359,7 @@ import {Event} from './org.hyperledger.composer.system';
                 context: '/',
                 secure: true,
                 target: 'https://dogescoolrestserver.dogecorp.com:3000',
-                ws: true
+                ws: false
             }
         ], 'proxy configuration is wrong');
     });
@@ -386,7 +386,7 @@ import {Event} from './org.hyperledger.composer.system';
                 context: '/',
                 secure: true,
                 target: 'https://doges-other-rest-server.dogecorp.com:9999',
-                ws: true
+                ws: false
             }
         ], 'proxy configuration is wrong');
     });
@@ -415,7 +415,7 @@ import {Event} from './org.hyperledger.composer.system';
                 context: '/',
                 secure: true,
                 target: 'https://doges-other-rest-server.dogecorp.com:9999',
-                ws: true
+                ws: false
             }
         ], 'proxy configuration is wrong');
     });
@@ -444,7 +444,7 @@ import {Event} from './org.hyperledger.composer.system';
                 context: '/',
                 secure: true,
                 target: 'https://dogescoolrestserver.dogecorp.com:3000',
-                ws: true
+                ws: false
             }
         ], 'proxy configuration is wrong');
     });

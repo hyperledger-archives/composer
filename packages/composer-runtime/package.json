@@ -86,7 +86,6 @@
     }
   },
   "dependencies": {
-    "debug": "2.6.2",
     "fast-json-patch": "1.1.8",
     "request": "2.81.0",
     "request-promise-any": "1.0.5",

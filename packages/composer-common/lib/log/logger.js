@@ -16,6 +16,8 @@
 const composerUtil = require('../util');
 const path = require('path');
 const Tree = require('./tree.js');
+const Identifiable = require('../model/identifiable');
+const Typed = require('../model/typed');
 
 // Note, sprintf is being used here solely to help format the filename of the log file.
 // It is inefficient to use it for general formatting as part of logging.
@@ -31,7 +33,7 @@ let _logger;
 let _clInstances = {};
 
 // the default control string - log from everthing but only at the error level
-let _envDebug = 'composer[error]:*';
+let _envDebug = 'composer[warn]:*';
 
 // callback to use to get additional information
 let _callback;
@@ -119,6 +121,9 @@ class Logger {
         this.className = name;
         // 26 due to the way this actually works...
         this.str25 = Array(26).join(' ');
+
+        // Set a buffer length limit
+        this._maxLength = 100;
     }
 
     /**
@@ -169,7 +174,21 @@ class Logger {
                 if (arguments[i] instanceof Error){
                     let str = '{'+arguments[i].name + '}'+ arguments[i].message+' '+ arguments[i].stack;
                     args.push(  {'stack' : str.match(/[^\r\n]+/g)});
-                }else {
+                } else if (arguments[i] instanceof Identifiable){
+                    args.push(arguments[i].getFullyQualifiedIdentifier());
+                } else if (arguments[i] instanceof Typed){
+                    args.push(arguments[i].getFullyQualifiedType());
+                } else if (Buffer.isBuffer(arguments[i])){
+                    // Check if the full length is greater than permitted + the append string
+                    let appendString = '... truncated from original length of ' + arguments[i].length;
+                    if(arguments[i].length>(this._maxLength + appendString.length)){
+                        let truncated  = arguments[i].slice(0, this._maxLength).toString();
+                        truncated += appendString;
+                        args.push(truncated);
+                    } else {
+                        args.push(arguments[i].toString());
+                    }
+                } else {
                     args.push(arguments[i]);
                 }
             }
@@ -181,7 +200,7 @@ class Logger {
                 _logger.log(logLevel, preamble, msg, args);
             } catch(error) {
                 // an error can be thrown if for example using the winsonInjector logger and an argument is
-                // an InvalidRelationship where attempts to get object defined properties (which the winstonInjecttor does)
+                // an InvalidRelationship where attempts to get object defined properties (which the winstonInjector does)
                 // throws an error.
                 let safeArgs = args.map(arg => arg.toString());
                 _logger.log(logLevel, preamble, msg, safeArgs);
