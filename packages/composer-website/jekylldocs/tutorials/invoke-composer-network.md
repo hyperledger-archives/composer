@@ -98,7 +98,7 @@ If these commands fail, then you have business network cards from a previous ver
 
 2. Create an asset in business network  A
 
-        composer transaction submit --card networkA -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.example.mynetwork.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.mynetwork.Commodity", "resources": [{"$class": "org.example.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.example.mynetwork.Trader#bob@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 250}]}'
+        composer transaction submit --card networkA -d '{"$class": "org.hyperledger.composer.system.AddAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.mynetwork.Commodity", "resources": [{"$class": "org.example.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.example.mynetwork.Trader#bob@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 250}]}'
 
 3. Create a participant in business network B. Run the following command.
 
@@ -106,7 +106,7 @@ If these commands fail, then you have business network cards from a previous ver
 
 4. Create an asset in business network B. Run the following command. Note the different quantity property.
 
-        composer transaction submit --card networkB -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.example.mynetwork.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.mynetwork.Commodity", "resources": [{"$class": "org.example.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.example.mynetwork.Trader#fred@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 500}]}'
+        composer transaction submit --card networkB -d '{"$class": "org.hyperledger.composer.system.AddAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.mynetwork.Commodity", "resources": [{"$class": "org.example.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.example.mynetwork.Trader#fred@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 500}]}'
 
 ## Step Five: Bind the identity on network A to the participant on network B  
 1. Export the networkA card to get the credentials
