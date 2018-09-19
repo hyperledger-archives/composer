@@ -171,7 +171,7 @@ describe('NetworkManager', () => {
                             sinon.assert.calledWith(mockLoggingService.setLoggerCfg,
                                 {
                                     console: { maxLevel: 'none' },
-                                    debug: 'composer[error]:*',
+                                    debug: 'composer[warn]:*',
                                     fakelogger: 'config',
                                     file: {
                                         filename: sinon.match(/trace.*log/),
@@ -180,7 +180,7 @@ describe('NetworkManager', () => {
                                         maxsize: 10000000
                                     },
                                     logger: './winstonInjector.js',
-                                    tree:  { root:  { children: [], include: true, logLevel: 0, name: 'composer' } }
+                                    tree:  { root:  { children: [], include: true, logLevel: 1, name: 'composer' } }
                                 }
 
                             );
