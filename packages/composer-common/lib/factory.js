@@ -14,7 +14,8 @@
 
 'use strict';
 
-const debug = require('debug')('hyperledger-composer');
+const Logger = require('./log/logger');
+const LOG = Logger.getLog('Factory');
 const Globalize = require('./globalize');
 
 const ModelUtil = require('./modelutil');
@@ -79,6 +80,7 @@ class Factory {
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
+        const method = 'newResource';
         options = options || {};
 
         if(typeof(id) !== 'string') {
@@ -127,7 +129,7 @@ class Factory {
         // if we have an identifier, we set it now
         let idField = classDecl.getIdentifierFieldName();
         newObj[idField] = id;
-        debug('Factory.newResource created %s', id );
+        LOG.debug(method, 'Factory.newResource created', id );
         return newObj;
     }
 
@@ -147,6 +149,7 @@ class Factory {
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newConcept(ns, type, options) {
+        const method = 'newConcept';
         const qualifiedName = ModelUtil.getFullyQualifiedName(ns, type);
         const classDecl = this.modelManager.getType(qualifiedName);
 
@@ -173,7 +176,7 @@ class Factory {
         newObj.assignFieldDefaults();
         this.initializeNewObject(newObj, classDecl, options);
 
-        debug('Factory.newResource created concept %s', classDecl.getFullyQualifiedName() );
+        LOG.debug(method, 'created concept', classDecl.getFullyQualifiedName() );
         return newObj;
     }
 
