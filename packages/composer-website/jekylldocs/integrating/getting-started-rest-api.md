@@ -69,9 +69,37 @@ Options:
   -t, --tls             Enable TLS security for the REST API  [boolean] [default: false]
   -e, --tlscert         File containing the TLS certificate  [string] [default: "/usr/local/lib/node_modules/composer-rest-server/cert.pem"]
   -k, --tlskey          File containing the TLS private key  [string] [default: "/usr/local/lib/node_modules/composer-rest-server/key.pem"]
+  -u, --explorer        Enable the test explorer web interface  [boolean] [default: true]
+  -d, --loggingkey      Specify the key to enable dynamic logging for the rest server (just pressing enter will not enable this feature)  [string]
   -h, --help            Show help  [boolean]
   -v, --version         Show version number  [boolean]
 ```
+
+#### Dynamic Rest Server logging
+Logging of the rest server can be controlled in the same way as other composer applications. However to do so requires the rest server to be started with environment variables set and at that point it logs continuously. This has disadvantages of creating large logs, reducing performance of the rest server and if logging is required the rest server needs to be restarted which may be a cumbersome task to achieve.
+
+You can enable dynamic rest server logging by specifying a key. This key is used as part of the URL path. This means that unless someone knows the key, even if they are authenticated, they cannot change the logging of the rest server. 
+
+For example if a key of 45645-575835-A58684 has been set for the logging key, you can either use the rest server explorer (under the Admin section) to alter logging or write an application or use `curl`. For example in a simple case, assuming authentication is disabled you could do
+
+```
+curl -X POST 'http://localhost:3000/api/admin/loglevel/45645-575835-A58684/composer%5Bdebug%5D%3A*/true/false'
+```
+
+This sets the debug to `composer[debug]:*`, the first boolean value says whether to send output to the console, the second boolean value says whether to send it to the file system. In the above example it states to send logging to the console and not to the file system. The response looks like this
+
+```
+{
+    "oldlevel":"composer[error]:*",
+    "newlevel":"composer[debug]:*",
+    "oldConsoleLevel":"none",
+    "newConsoleLevel":"silly",
+    "oldFileLevel":"silly",
+    "newFileLevel":"none"
+}
+```
+indicating what the values were before and what they are now.
+
 
 #### Looking at the generated APIs
 

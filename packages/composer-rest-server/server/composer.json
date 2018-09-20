@@ -7,6 +7,7 @@
     "port": 3000,
     "authentication": false,
     "multiuser": false,
+    "explorer": true,
     "websockets": true,
     "tls": false,
     "tlscert": "/path/to/cert.pem",
