@@ -367,7 +367,7 @@
 <ol>
 <li><p>Start a clean Hyperledger Fabric by running the following commands:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-dev-servers
-export FABRIC_VERSION=hlfv11
+export FABRIC_VERSION=hlfv12
 ./stopFabric.sh
 ./teardownFabric.sh
 ./downloadFabric.sh
@@ -442,13 +442,13 @@ composer network ping --card networkB
 <div class="highlight"><pre><code class="language-" data-lang="">composer participant add --card networkA -d '{"$class": "org.example.mynetwork.Trader", "tradeId": "bob@example.com", "firstName": "Bob", "lastName": "Jones"}'
 </code></pre></div></li>
 <li><p>Create an asset in business network  A</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card networkA -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.example.mynetwork.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.mynetwork.Commodity", "resources": [{"$class": "org.example.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.example.mynetwork.Trader#bob@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 250}]}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card networkA -d '{"$class": "org.hyperledger.composer.system.AddAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.mynetwork.Commodity", "resources": [{"$class": "org.example.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.example.mynetwork.Trader#bob@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 250}]}'
 </code></pre></div></li>
 <li><p>Create a participant in business network B. Run the following command.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer participant add --card networkB -d '{"$class": "org.example.mynetwork.Trader", "tradeId": "fred@example.com", "firstName": "Fred", "lastName": "Bloggs"}'
 </code></pre></div></li>
 <li><p>Create an asset in business network B. Run the following command. Note the different quantity property.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card networkB -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.example.mynetwork.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.mynetwork.Commodity", "resources": [{"$class": "org.example.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.example.mynetwork.Trader#fred@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 500}]}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card networkB -d '{"$class": "org.hyperledger.composer.system.AddAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.mynetwork.Commodity", "resources": [{"$class": "org.example.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.example.mynetwork.Trader#fred@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 500}]}'
 </code></pre></div></li>
 </ol>
 

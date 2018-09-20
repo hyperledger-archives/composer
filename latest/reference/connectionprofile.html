@@ -352,7 +352,7 @@
 
 <p>A Connection Profile is used by Hyperledger Composer to connect to a runtime.</p>
 
-<h2 id="creating-a-connection-profile-for-hyperledger-fabric-v1-1">Creating a Connection Profile for Hyperledger Fabric v1.1</h2>
+<h2 id="creating-a-connection-profile-for-hyperledger-fabric-v1-2">Creating a Connection Profile for Hyperledger Fabric v1.2</h2>
 
 <p>Hyperledger Fabric defines the format of the connection profile. The following is an example of a single organization fabric network</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
@@ -419,7 +419,7 @@
 </code></pre></div>
 <p>Official documentation for this structure can be found here:  <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a>.</p>
 
-<p>The Hyperledger Fabric v1.1 connection profile is significantly different to the connection profiles used by previous versions of Hyperledger Composer. The Hyperledger Fabric v1.1 connection profile defines all the servers that exist, not only in your organization but all organizations as well as all defined channels.</p>
+<p>The Hyperledger Fabric v1.2 connection profile is significantly different to the connection profiles used by previous versions of Hyperledger Composer. The Hyperledger Fabric v1.2 connection profile defines all the servers that exist, not only in your organization but all organizations as well as all defined channels.</p>
 
 <p>The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.</p>
 
@@ -447,7 +447,7 @@
 </code></pre></div>
 <ul>
 <li><code>name</code> is a name used to refer to the connection profile, and is required.</li>
-<li><code>x-type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.1, <code>x-type</code> must be <code>hlfv1</code>.</li>
+<li><code>x-type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.2, <code>x-type</code> must be <code>hlfv1</code>.</li>
 <li><code>x-commitTimeout</code> defines the number of seconds to wait for a commit response to be received for a transaction.</li>
 <li><code>version</code> defines the version of a connection profile and currently only a version of <code>1.0.0</code> is supported.</li>
 </ul>
