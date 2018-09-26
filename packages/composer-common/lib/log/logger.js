@@ -33,7 +33,7 @@ let _logger;
 let _clInstances = {};
 
 // the default control string - log from everthing but only at the error level
-let _envDebug = 'composer[error]:*';
+let _envDebug = 'composer[warn]:*';
 
 // callback to use to get additional information
 let _callback;

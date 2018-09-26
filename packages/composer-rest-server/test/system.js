@@ -371,7 +371,7 @@ describe('System REST API unit tests', () => {
             res.should.be.json;
             let output = res.body;
             output.should.deep.equal({
-                oldLevel: 'composer[error]:*',
+                oldLevel: 'composer[warn]:*',
                 newLevel: 'composer[debug]:*',
                 oldConsoleLevel: 'none',
                 newConsoleLevel: 'silly',
