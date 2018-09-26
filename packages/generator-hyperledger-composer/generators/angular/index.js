@@ -842,44 +842,6 @@ module.exports = yeoman.Base.extend({
                 fileWriter: new FileWriter(this.destinationPath() + '/src/app')
             };
 
-            for (let x = 0; x < conceptList.length; x++) {
-                this.fs.copyTpl(
-                    this.templatePath('src/app/concept/concept.component.ts'),
-                    this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.component.ts'), {
-                        currentConcept: conceptList[x],
-                        namespace: conceptList[x].namespace,
-                        conceptIdentifier: conceptList[x].identifier
-                    }
-                );
-                this.fs.copyTpl(
-                    this.templatePath('src/app/concept/concept.service.ts'),
-                    this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.service.ts'), {
-                        conceptName: conceptList[x].name,
-                        namespace: conceptList[x].namespace,
-                        apiNamespace: this.apiNamespace
-                    }
-                );
-                this.fs.copyTpl(
-                    this.templatePath('src/app/concept/concept.component.spec.ts'),
-                    this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.component.spec.ts'), {
-                        conceptName: conceptList[x].name
-                    }
-                );
-                this.fs.copyTpl(
-                    this.templatePath('src/app/concept/concept.component.html'),
-                    this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.component.html'), {
-                        currentConcept: conceptList[x]
-                    }
-                );
-
-                this.fs.copyTpl(
-                    this.templatePath('src/app/concept/concept.component.css'),
-                    this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.component.css'), {
-                        styling: '{}'
-                    }
-                );
-            }
-
             modelManager.accept(visitor, parameters);
 
             assetList = [];
