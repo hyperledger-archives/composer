@@ -57,7 +57,9 @@ class HLFTxEventHandler {
                         eh.unregisterTxEvent(this.txId);
 
                         // We reject to let the application know that the commit did not complete within the timeout
-                        reject(new Error(`Failed to receive commit notification from ${eh.getPeerAddr()} for transaction '${this.txId}' within the timeout period`));
+                        const timeoutMsg = `Failed to receive commit notification from ${eh.getPeerAddr()} for transaction '${this.txId}' within the timeout period`;
+                        LOG.error(method, timeoutMsg);
+                        reject(new Error(timeoutMsg));
                     }, this.timeout);
 
                     eh.registerTxEvent(this.txId,
@@ -65,7 +67,9 @@ class HLFTxEventHandler {
                             clearTimeout(handle);
                             eh.unregisterTxEvent(this.txId);
                             if (code !== 'VALID') {
-                                reject(new Error(`Peer ${eh.getPeerAddr()} has rejected transaction '${this.txId}' with code ${code}`));
+                                const rejectMsg = `Peer ${eh.getPeerAddr()} has rejected transaction '${this.txId}' with code ${code}`;
+                                LOG.error(rejectMsg);
+                                reject(new Error(rejectMsg));
                             } else {
                                 resolve();
                             }
