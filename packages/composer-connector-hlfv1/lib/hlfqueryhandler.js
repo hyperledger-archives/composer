@@ -149,7 +149,7 @@ class HLFQueryHandler {
 
         // if it has a code value is 14, means unavailable, so throw that error
         // code 2 looks like it is a chaincode response that was an error.
-        if (payload instanceof Error && payload.code && payload.code === 14) {
+        if (payload instanceof Error && payload.code && (payload.code === 14 || payload.code === 1 || payload.code === 4)) {
             throw payload;
         }
 
