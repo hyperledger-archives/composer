@@ -364,7 +364,7 @@
 
 <p>Queries must contain a description and a statement. Query descriptions are a string that describe the function of the query. Query statements contain the operators and functions that control the query behavior.</p>
 
-<p>Query descriptions can be any descriptive string. A query statement must include the <code>SELECT</code> operator and can optionally include <code>FROM</code>, <code>WHERE</code>, <code>AND</code>, <code>ORDER BY</code>, <code>SKIP</code>, and <code>LIMIT</code>.</p>
+<p>Query descriptions can be any descriptive string. A query statement must include the <code>SELECT</code> operator and can optionally include <code>FROM</code>, <code>WHERE</code>, <code>AND</code>, <code>ORDER BY</code>, <code>OR</code>.</p>
 
 <p>Queries should take the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">query Q1{
@@ -378,15 +378,13 @@
 
 <p>Queries may embed parameters using the <code>_$</code> syntax. Note that query parameters must be primitive types (String, Integer, Double, Long, Boolean, DateTime), a Relationship or an Enumeration.</p>
 
-<p>The named query below is defined in terms of 3 parameters:</p>
+<p>The named query below shows an example of this</p>
 <div class="highlight"><pre><code class="language-" data-lang="">query Q18 {
     description: "Select all drivers aged older than PARAM"
     statement:
         SELECT org.example.Driver
             WHERE (_$ageParam &lt; age)
                 ORDER BY [lastName DESC, firstName DESC]
-                    LIMIT _$limitParam
-                        SKIP _$skipParam
 }
 </code></pre></div>
 <p>Query parameters are automatically exposed via the GET method created for named queries by the composer-rest-server.</p>
