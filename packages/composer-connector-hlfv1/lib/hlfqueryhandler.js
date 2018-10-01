@@ -140,7 +140,7 @@ class HLFQueryHandler {
         };
 
         let payloads = await this.connection.channel.queryByChaincode(request);
-        LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the composer runtime chaincode`, payloads);
+        LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the composer runtime chaincode`);
         if (!payloads.length) {
             LOG.error(method, 'No payloads were returned from the query request:' + functionName);
             throw new Error('No payloads were returned from the query request:' + functionName);
