@@ -69,13 +69,13 @@ describe('NodeLoggingService', () => {
         it('should return the default values', () => {
             delete  process.env.CORE_CHAINCODE_LOGGING_LEVEL;
             let value = loggingService.getDefaultCfg();
-            value.debug.should.equal('composer[error]:*');
+            value.debug.should.equal('composer[warn]:*');
         });
 
         it('should return the default value if the enviroment variable is invalid', () => {
             process.env.CORE_CHAINCODE_LOGGING_LEVEL='wibble';
             let value = loggingService.getDefaultCfg();
-            value.debug.should.equal('composer[error]:*');
+            value.debug.should.equal('composer[warn]:*');
         });
 
         it('should map fabric container values to valid composer debug strings', () => {
@@ -87,13 +87,13 @@ describe('NodeLoggingService', () => {
 
 
             process.env.CORE_CHAINCODE_LOGGING_LEVEL='WARNING';
-            loggingService.getDefaultCfg().debug.should.equal('composer[warning]:*');
+            loggingService.getDefaultCfg().debug.should.equal('composer[warn]:*');
 
             process.env.CORE_CHAINCODE_LOGGING_LEVEL='NOTICE';
             loggingService.getDefaultCfg().debug.should.equal('composer[info]:*');
 
             process.env.CORE_CHAINCODE_LOGGING_LEVEL='INFO';
-            loggingService.getDefaultCfg().debug.should.equal('composer[verbose]:*');
+            loggingService.getDefaultCfg().debug.should.equal('composer[info]:*');
 
             process.env.CORE_CHAINCODE_LOGGING_LEVEL='DEBUG';
             loggingService.getDefaultCfg().debug.should.equal('composer[debug]:*');
@@ -148,7 +148,7 @@ describe('NodeLoggingService', () => {
     });
 
     describe('#mapCfg', async ()=>{
-        let expectedDefault = 'composer[error]:*';
+        let expectedDefault = 'composer[warn]:*';
         it('should handle an empty string with default value',()=>{
             loggingService.mapCfg('').should.equal(expectedDefault);
         });
@@ -158,9 +158,9 @@ describe('NodeLoggingService', () => {
         it('should handle a valid fabric value',()=>{
             loggingService.mapCfg('CRITICAL').should.equal('composer[error]:*');
             loggingService.mapCfg('ERROR').should.equal('composer[error]:*');
-            loggingService.mapCfg('WARNING').should.equal('composer[warning]:*');
+            loggingService.mapCfg('WARNING').should.equal('composer[warn]:*');
             loggingService.mapCfg('NOTICE').should.equal('composer[info]:*');
-            loggingService.mapCfg('INFO').should.equal('composer[verbose]:*');
+            loggingService.mapCfg('INFO').should.equal('composer[info]:*');
             loggingService.mapCfg('DEBUG').should.equal('composer[debug]:*');
         });
 
