@@ -52,7 +52,7 @@ class NodeDataCollection extends DataCollection {
         let iterator = await this.stub.getStateByPartialCompositeKey(this.collectionID, []);
         let results = await NodeUtils.getAllResults(iterator);
         LOG.exit(method, results);
-        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
         return results;
     }
 
@@ -72,12 +72,12 @@ class NodeDataCollection extends DataCollection {
         if (value.length === 0) {
             const newErr = new Error(`Object with ID '${id}' in collection with ID '${this.collectionID}' does not exist`);
             LOG.error(method, newErr);
-            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw newErr;
         }
         let retVal = JSON.parse(value.toString('utf8'));
         LOG.exit(method, retVal);
-        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
         return retVal;
     }
 
@@ -96,7 +96,7 @@ class NodeDataCollection extends DataCollection {
         let value = await this.stub.getState(key);
         let retVal = value.length !== 0;
         LOG.exit(method, retVal);
-        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
         return retVal;
     }
 
@@ -120,14 +120,14 @@ class NodeDataCollection extends DataCollection {
             if (value.length !== 0) {
                 const newErr =  new Error(`Failed to add object with ID '${id}' in collection with ID '${this.collectionID}' as the object already exists`);
                 LOG.error(method, newErr);
-                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 throw newErr;
             }
         }
         await this.stub.putState(key, Buffer.from(JSON.stringify(object)));
 
         LOG.exit(method);
-        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
     }
 
     /**
@@ -148,12 +148,12 @@ class NodeDataCollection extends DataCollection {
         if (value.length === 0) {
             const newErr = new Error(`Failed to update object with ID '${id}' in collection with ID '${this.collectionID}' as the object does not exist`);
             LOG.error(method, newErr);
-            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw newErr;
         }
         await this.stub.putState(key, Buffer.from(JSON.stringify(object)));
         LOG.exit(method);
-        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
     }
 
     /**
@@ -170,12 +170,12 @@ class NodeDataCollection extends DataCollection {
         if (value.length === 0) {
             const newErr = new Error(`Failed to delete object with ID '${id}' in collection with ID '${this.collectionID}' as the object does not exist`);
             LOG.error(method, newErr);
-            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw newErr;
         }
         await this.stub.deleteState(key);
         LOG.exit(method);
-        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
     }
 }
 
