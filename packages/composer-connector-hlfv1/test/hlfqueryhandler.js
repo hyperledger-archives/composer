@@ -221,6 +221,24 @@ describe('HLFQueryHandler', () => {
                 .should.be.rejectedWith(/Connect Failed/);
         });
 
+        it('should throw any responses that are errors and code 1 being unavailable.', () => {
+            const response = new Error('14 UNAVAILABLE: Connect Failed');
+            response.code = 1;
+            mockChannel.queryByChaincode.resolves([response]);
+            mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
+            return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/Connect Failed/);
+        });
+
+        it('should throw any responses that are errors and code 4 being unavailable.', () => {
+            const response = new Error('14 UNAVAILABLE: Connect Failed');
+            response.code = 4;
+            mockChannel.queryByChaincode.resolves([response]);
+            mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
+            return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/Connect Failed/);
+        });
+
         it('should throw if query request fails', () => {
             mockChannel.queryByChaincode.rejects(new Error('Query Failed'));
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
