@@ -58,7 +58,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
-                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return results;
             }
         }
@@ -97,7 +97,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
-                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return results;
             }
         }

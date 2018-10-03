@@ -128,7 +128,7 @@ class ConnectionProfileManager {
                                 });
                             }
                             if (!connectionManager) {
-                                LOG.verbose(METHOD, 'not located the module - final try ');
+                                LOG.info(METHOD, 'not located the module - final try ');
                                 // We still didn't find it, so try plain old require
                                 // one last time.
                                 connectionManager = new (require(mod))(this);

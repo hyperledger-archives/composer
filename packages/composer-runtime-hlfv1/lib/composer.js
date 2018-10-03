@@ -97,12 +97,12 @@ class Composer {
             let nodeContext = this._createContext(engine, stub);
             await engine.init(nodeContext, fcn, params);
             LOG.exit(method);
-            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
+            LOG.verbose('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.success();
         }
         catch(err) {
             LOG.error(method, err);
-            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
+            LOG.verbose('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.error(err);
         }
     }
@@ -127,16 +127,16 @@ class Composer {
             let payload = await engine.invoke(nodeContext, fcn, params);
             if (payload !== null && payload !== undefined) {
                 LOG.exit(method, payload);
-                LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
+                LOG.verbose('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
                 return shim.success(Buffer.from(JSON.stringify(payload)));
             }
             LOG.exit(method);
-            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
+            LOG.verbose('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.success();
         }
         catch(err) {
             LOG.error(method, err);
-            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
+            LOG.verbose('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.error(err);
         }
     }
