@@ -110,7 +110,7 @@ class NodeLoggingService extends LoggingService {
      * @return {String} clean string that can be used for setting up logging.
      */
     mapCfg(string){
-        let DEFAULT = 'composer[error]:*';
+        let DEFAULT = 'composer[warn]:*';
         // first split it up into elements based on ,
         let details = string.split(/[\s,]+/);
 
@@ -173,19 +173,19 @@ class NodeLoggingService extends LoggingService {
             debugString='composer[error]:*';
             break;
         case 'warning':
-            debugString='composer[warning]:*';
+            debugString='composer[warn]:*';
             break;
         case 'notice':
             debugString='composer[info]:*';
             break;
         case 'info':
-            debugString='composer[verbose]:*';
+            debugString='composer[info]:*';
             break;
         case 'debug':
             debugString='composer[debug]:*';
             break;
         default:
-            debugString='composer[error]:*';
+            debugString='composer[warn]:*';
             break;
         }
         return debugString;
