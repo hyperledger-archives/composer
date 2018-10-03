@@ -56,13 +56,14 @@ describe('HLFConnection', () => {
     let mockPeer1, mockPeer2, mockPeer3, mockEventHub1, mockEventHub2, mockEventHub3, mockQueryHandler;
     let connectOptions;
     let connection;
-    let mockTransactionID, logWarnSpy;
+    let mockTransactionID, logWarnSpy, logErrorSpy;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         clock = sinon.useFakeTimers();
         const LOG = Logger.getLog('HLFConnection');
         logWarnSpy = sandbox.spy(LOG, 'warn');
+        logErrorSpy = sandbox.spy(LOG, 'error');
         mockConnectionManager = sinon.createStubInstance(HLFConnectionManager);
         mockChannel = sinon.createStubInstance(Channel);
         mockClient = sinon.createStubInstance(Client);
@@ -396,6 +397,7 @@ describe('HLFConnection', () => {
             await connection.disconnect();
             clock.tick(100);
             sinon.assert.calledOnce(stub);
+            sinon.assert.calledOnce(mockChannel.close);
         });
 
         it('should unregister the exit listener', () => {
@@ -410,6 +412,7 @@ describe('HLFConnection', () => {
                 .then(() => {
                     sinon.assert.calledOnce(stubRemove);
                     sinon.assert.calledWith(stubRemove, exitListener);
+                    sinon.assert.calledOnce(mockChannel.close);
                 });
 
 
@@ -421,6 +424,7 @@ describe('HLFConnection', () => {
             return connection.disconnect()
                 .then(() => {
                     sinon.assert.notCalled(mockEventHub1.unregisterChaincodeEvent);
+                    sinon.assert.calledOnce(mockChannel.close);
                 });
         });
 
@@ -433,6 +437,7 @@ describe('HLFConnection', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockEventHub1.unregisterChaincodeEvent);
                     sinon.assert.calledWith(mockEventHub1.unregisterChaincodeEvent, 'handle');
+                    sinon.assert.calledOnce(mockChannel.close);
                 });
         });
 
@@ -442,6 +447,7 @@ describe('HLFConnection', () => {
             return connection.disconnect()
                 .then(() => {
                     sinon.assert.calledOnce(mockEventHub1.disconnect);
+                    sinon.assert.calledOnce(mockChannel.close);
                 });
         });
 
@@ -451,15 +457,46 @@ describe('HLFConnection', () => {
             return connection.disconnect()
                 .then(() => {
                     sinon.assert.notCalled(mockEventHub1.disconnect);
+                    sinon.assert.calledOnce(mockChannel.close);
                 });
         });
 
         it('should handle an error disconnecting from the event hub', () => {
+            mockChannel.getPeers.returns([mockPeer1, mockPeer2]);
+            mockPeer2.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
+            mockChannel.newChannelEventHub.withArgs(mockPeer2).returns(mockEventHub2);
+
             sandbox.stub(process, 'on').withArgs('exit').yields();
             connection._connectToEventHubs();
-            mockEventHub1.isconnected.throws(new Error('such error'));
+            const err = new Error('isconnected error');
+            mockEventHub1.isconnected.throws(err);
+            mockEventHub2.isconnected.returns(true);
             return connection.disconnect()
-                .should.be.rejectedWith(/such error/);
+                .then(() => {
+                    sinon.assert.notCalled(mockEventHub1.disconnect);
+                    sinon.assert.calledOnce(mockEventHub2.disconnect);
+                    sinon.assert.calledOnce(mockChannel.close);
+                    sinon.assert.calledWith(logErrorSpy, 'disconnect', err);
+                });
+        });
+
+        it('should handle an error disconnecting from the event hub #2', () => {
+            mockChannel.getPeers.returns([mockPeer1, mockPeer2]);
+            mockPeer2.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
+            mockChannel.newChannelEventHub.withArgs(mockPeer2).returns(mockEventHub2);
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            connection._connectToEventHubs();
+            mockEventHub1.isconnected.returns(true);
+            mockEventHub2.isconnected.returns(true);
+            const err = new Error('disconnect error');
+            mockEventHub1.disconnect.throws(err);
+            return connection.disconnect()
+                .then(() => {
+                    sinon.assert.calledOnce(mockEventHub1.disconnect);
+                    sinon.assert.calledOnce(mockEventHub2.disconnect);
+                    sinon.assert.calledOnce(mockChannel.close);
+                    sinon.assert.calledWith(logErrorSpy, 'disconnect', err);
+                });
         });
 
         it('should handle being called twice', () => {
