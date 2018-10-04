@@ -30,10 +30,6 @@ The `statement` property contains the defining rules of the query, and can have 
 - `OR` is an optional operator which defines alternative conditions.
 - `CONTAINS` is an optional operator that defines conditions for array values
 - `ORDER BY` is an optional operator which defines the sorting or results.
-- `SKIP` is an optional operator which defines the number of results to skip.
-- `LIMIT` is an optional operator which defines the maximum number of results to return from a query, by default limit is set at 25.
-
-> Note: If you're using {{site.data.conrefs.hlf_full}}  {{site.data.conrefs.hlf_latest}} or below, the `LIMIT` and `SKIP` won't work as there is an issue passing the params to couchdb from fabric. Reference to {{site.data.conrefs.hlf_full}} issue : [FAB-2809](https://jira.hyperledger.org/browse/FAB-2809)
 
 #### Example Query
 
