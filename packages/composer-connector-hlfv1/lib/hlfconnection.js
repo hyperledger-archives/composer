@@ -159,16 +159,18 @@ class HLFConnection extends Connection {
                 }
 
                 this.eventHubs.forEach((eventHub) => {
-                    if (eventHub.isconnected()) {
-                        eventHub.disconnect();
+                    try {
+                        if (eventHub.isconnected()) {
+                            eventHub.disconnect();
+                        }
+                    } catch(error) {
+                        // log an error but don't stop
+                        LOG.error(method, `failed to disconnect from eventhub on ${eventHub.getPeerAddr()}`);
+                        LOG.error(method, error);
                     }
                 });
+                this.channel.close();
                 LOG.exit(method);
-            })
-            .catch((error) => {
-                const newError = new Error('Error trying disconnect. ' + error);
-                LOG.error(method, newError);
-                throw newError;
             });
     }
 
@@ -694,6 +696,7 @@ class HLFConnection extends Connection {
         const proposal = proposalResponse[1];
         const eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, transactionId.getTransactionID(), this.commitTimeout);
         eventHandler.startListening();
+        LOG.debug(method, 'TxEventHandler started listening, sending valid responses to the orderer');
         const response = await this.channel.sendTransaction({
             proposalResponses: validResponses,
             proposal: proposal
@@ -963,6 +966,7 @@ class HLFConnection extends Connection {
             this._checkCCListener();
             eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
             eventHandler.startListening();
+            LOG.debug(method, 'TxEventHandler started listening, sending valid responses to the orderer');
             const response = await this.channel.sendTransaction({
                 proposalResponses: validResponses,
                 proposal: proposal,
