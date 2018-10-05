@@ -190,11 +190,11 @@ A business network archive containing package dependencies can be installed to F
 - Create and import your PeerAdmin card if you haven't done so before using `./createPeerAdmin.sh`
 - Install your pre-prepared business network archive
 ```
-node composer-cli/cli.js network install --card PeerAdmin@hlfv1 --archiveFile test-network@0.0.1.bna`
+node composer-cli/cli.js network install -c PeerAdmin@hlfv1 -a test-network@0.0.1.bna`
 ```
 - instantiate the chaincode.
 ```
-node composer-cli/cli.js network start --card PeerAdmin@hlfv1 -networkAdmin admin -networkAdminEnrollSecret adminpw
+node composer-cli/cli.js network start -c PeerAdmin@hlfv1 -n test-network -V 0.0.1 -A admin -S adminpw
 ```
 
 # Next step

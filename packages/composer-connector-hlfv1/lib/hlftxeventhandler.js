@@ -32,7 +32,8 @@ class HLFTxEventHandler {
      */
     constructor(eventHubs, txId, timeout) {
         const method = 'constructor';
-        LOG.entry(method, eventHubs, txId, timeout);
+        // Don't log the eventHub objects they are too large
+        LOG.entry(method, txId, timeout);
         this.eventHubs = eventHubs || [];
         this.txId = txId || '';
         this.listenerPromises = [];
