@@ -280,7 +280,7 @@ class Logger {
     /**
      * @description Log a message at the _verbose_ level
      *
-     * @param {String} method cupdateLoggerCfgalling method
+     * @param {String} method calling method
      * @param {String} msg Text Message
      * @param {stuff} data Data to log at a verbose level
      *
@@ -297,6 +297,24 @@ class Logger {
         }
         args.unshift('verbose');
         this.intlog.apply(this, args);
+    }
+
+    /**
+     * @description Log a performance message at the _verbose_ level
+     *
+     * @param {String} method calling method
+     * @param {String} msg Text Message
+     * @param {TransactionID} txId The node-sdk transaction id
+     * @param {Date} startTime Date object representing the start of the timed block
+     *
+     * @private
+     */
+    perf(method, msg, txId, startTime) {
+        if (!(this.include && this.logLevel >= LOG_LEVEL_VERBOSE)) {
+            return;
+        }
+        const timeTaken = (Date.now() - startTime).toFixed(2);
+        this.intlog('verbose', method, `[${txId.getTransactionID().substring(0, 8)}] ${msg} ${timeTaken}ms`);
     }
 
     /**

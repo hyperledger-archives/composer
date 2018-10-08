@@ -155,7 +155,8 @@ class IdCard {
      */
     setCredentials(credentials) {
         const method = 'setCredentials';
-        LOG.entry(method, credentials);
+        // Don't log the credentials
+        LOG.entry(method);
 
         this.credentials = credentials || { };
 
