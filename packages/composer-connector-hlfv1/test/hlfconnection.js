@@ -1943,6 +1943,26 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/Failed to send/);
         });
 
+        it('should throw an error if sendTransactionProposal throws an error', () => {
+            mockChannel.sendTransactionProposal.rejects(new Error('sendTransactionProposalError'));
+            return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/sendTransactionProposalError/);
+        });
+
+        it('should throw an error if sendTransaction throws an error', () => {
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).rejects(new Error('sendTransactionError'));
+            return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/sendTransactionError/);
+        });
+
         it('should log a warning if proposal results differ after an invocation failure', async () => {
             const proposalResponses = [
                 {

@@ -69,7 +69,8 @@ class HLFWalletProxy extends KeyValueStore {
                 }
             })
             .then((value) => {
-                LOG.exit(method, value);
+                // Can't log the value, it might be a private key
+                LOG.exit(method);
                 return value;
             })
             .catch((error) => {
@@ -86,7 +87,8 @@ class HLFWalletProxy extends KeyValueStore {
      */
     setValue(name, value) {
         const method = 'setValue';
-        LOG.entry(method, name, value);
+        // can't log the value, it may be a private key
+        LOG.entry(method, name);
         name = this.extractEnrollmentID(name);
         return this.wallet.put(name,value)
             .then(() => {

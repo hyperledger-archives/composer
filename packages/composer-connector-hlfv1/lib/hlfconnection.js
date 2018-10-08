@@ -99,7 +99,8 @@ class HLFConnection extends Connection {
     constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
         const method = 'constructor';
-        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient);
+        // don't log the client, channel, caClient objects here they're too big
+        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions);
 
         // Validate all the arguments.
         if (!connectOptions) {
@@ -389,7 +390,8 @@ class HLFConnection extends Connection {
                 };
                 pollCCListener();
 
-                LOG.exit(method, result);
+                // don't log the result object it's too large
+                LOG.exit(method);
                 return result;
 
             })
@@ -412,7 +414,7 @@ class HLFConnection extends Connection {
      */
     async install(securityContext, businessNetworkDefinition, installOptions) {
         const method = 'install';
-        LOG.entry(method, securityContext, businessNetworkDefinition, installOptions);
+        LOG.entry(method, businessNetworkDefinition, installOptions);
 
         if (!businessNetworkDefinition) {
             throw new Error('businessNetworkDefinition not specified');
@@ -636,7 +638,7 @@ class HLFConnection extends Connection {
      */
     async start(securityContext, businessNetworkName, businessNetworkVersion, startTransaction, startOptions) {
         const method = 'start';
-        LOG.entry(method, securityContext, businessNetworkName, startTransaction, startOptions);
+        LOG.entry(method, businessNetworkName, startTransaction, startOptions);
 
         if (!businessNetworkName) {
             throw new Error('Business network name not specified');
@@ -782,7 +784,7 @@ class HLFConnection extends Connection {
      */
     ping(securityContext) {
         const method = 'ping';
-        LOG.entry(method, securityContext);
+        LOG.entry(method);
 
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
@@ -815,7 +817,7 @@ class HLFConnection extends Connection {
      */
     _checkRuntimeVersions(securityContext) {
         const method = '_checkRuntimeVersions';
-        LOG.entry(method, securityContext);
+        LOG.entry(method);
 
         return this.queryChainCode(securityContext, 'ping', [])
             .then((buffer) => {
@@ -843,7 +845,7 @@ class HLFConnection extends Connection {
      */
     async queryChainCode(securityContext, functionName, args) {
         const method = 'queryChainCode';
-        LOG.entry(method, securityContext, functionName, args);
+        LOG.entry(method, functionName, args);
 
         if (!this.businessNetworkIdentifier) {
             throw new Error('No business network has been specified for this connection');
@@ -869,7 +871,10 @@ class HLFConnection extends Connection {
         }
 
         let txId = this.client.newTransactionID();
+
+        const t0 = Date.now();
         let result = await this.queryHandler.queryChaincode(txId, functionName, args);
+        LOG.perf(method, 'Total duration for queryChaincode: ', txId, t0);
         LOG.exit(method, result ? result : null);
         return result ? result : null;
     }
@@ -886,7 +891,7 @@ class HLFConnection extends Connection {
      */
     async invokeChainCode(securityContext, functionName, args, options = {}) {
         const method = 'invokeChainCode';
-        LOG.entry(method, securityContext, functionName, args, options);
+        LOG.entry(method, functionName, args, options);
 
         // If commit has been set to false, we do not want to order the transaction or wait for any events.
         if (options.commit === false) {
@@ -925,6 +930,7 @@ class HLFConnection extends Connection {
         let eventHandler;
         let validResponses;
 
+        let t0 = Date.now();
         try {
 
             // initialize the channel if it hasn't been initialized already otherwise verification will fail.
@@ -941,7 +947,18 @@ class HLFConnection extends Connection {
                 fcn: functionName,
                 args: args
             };
-            const results = await this.channel.sendTransactionProposal(request); // node sdk will target all peers on the channel that are endorsingPeer
+            LOG.perf(method, 'Total duration to initialize channel: ', txId, t0);
+            t0 = Date.now();
+
+            let results;
+            try {
+                results = await this.channel.sendTransactionProposal(request); // node sdk will target all peers on the channel that are endorsingPeer
+            } catch(error) {
+                LOG.error(method, error);
+                throw new Error(`Error received from sendTransactionProposal: ${error}`);
+            }
+            LOG.perf(method, 'Total duration for sendTransactionProposal: ', txId, t0);
+            t0 = Date.now();
 
             // Validate the endorsement results.
             LOG.debug(method, `Received ${results.length} result(s) from invoking the composer runtime chaincode`, results);
@@ -967,11 +984,22 @@ class HLFConnection extends Connection {
             eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
             eventHandler.startListening();
             LOG.debug(method, 'TxEventHandler started listening, sending valid responses to the orderer');
-            const response = await this.channel.sendTransaction({
-                proposalResponses: validResponses,
-                proposal: proposal,
-                header: header
-            });
+            LOG.perf(method, 'Total duration to prepare proposals for orderer: ', txId, t0);
+            t0 = Date.now();
+
+            let response;
+            try {
+                response = await this.channel.sendTransaction({
+                    proposalResponses: validResponses,
+                    proposal: proposal,
+                    header: header
+                });
+            } catch(error) {
+                LOG.error(method, error);
+                throw new Error(`Error received from sendTransaction: ${error} `);
+            }
+            LOG.perf(method, 'Total duration for sendTransaction: ', txId, t0);
+            t0 = Date.now();
 
             // If the transaction was successful, wait for it to be committed.
             LOG.debug(method, 'Received response from orderer', response);
@@ -981,21 +1009,23 @@ class HLFConnection extends Connection {
                 throw new Error(`Failed to send peer responses for transaction '${txId.getTransactionID()}' to orderer. Response status '${response.status}'`);
             }
             await eventHandler.waitForEvents();
+            LOG.perf(method, 'Total duration for commit notification : ', txId, t0);
 
             LOG.exit(method, result);
             return result;
 
         } catch (error) {
             // Log first in case anything below fails and masks the original error
+            LOG.error(method, `Failed to invoke business network with transaction id: ${txId.getTransactionID()}`);
             LOG.error(method, error);
 
-            // Investigate proposal response results and log if they differ and rethrow
+            // Investigate proposal response results and log if they differ
             if (validResponses && validResponses.length >= 2 && !this.channel.compareProposalResponseResults(validResponses)) {
                 const warning = 'Peers do not agree, Read Write sets differ';
                 LOG.warn(method, warning);
             }
 
-            const newError = new Error('Error trying invoke business network. ' + error);
+            const newError = new Error(`Error trying invoke business network with transaction id ${txId.getTransactionID()}. ${error}`);
             throw newError;
         }
     }
@@ -1017,7 +1047,7 @@ class HLFConnection extends Connection {
      */
     createIdentity(securityContext, userID, options) {
         const method = 'createIdentity';
-        LOG.entry(method, securityContext, userID, options);
+        LOG.entry(method, userID, options);
 
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
@@ -1092,7 +1122,7 @@ class HLFConnection extends Connection {
      */
     list(securityContext) {
         const method = 'list';
-        LOG.entry(method, securityContext);
+        LOG.entry(method);
 
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
@@ -1137,7 +1167,7 @@ class HLFConnection extends Connection {
      */
     async upgrade(securityContext, businessNetworkName, businessNetworkVersion, upgradeOptions) {
         const method = 'upgrade';
-        LOG.entry(method, securityContext, businessNetworkName, upgradeOptions);
+        LOG.entry(method, businessNetworkName, upgradeOptions);
 
         if (!businessNetworkName) {
             throw new Error('Business network name not specified');

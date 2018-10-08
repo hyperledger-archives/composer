@@ -6,13 +6,8 @@ Set up the Composer REST Server with this command
 npm install composer-rest-server -g
 ```
 
-You may need to prefix this with a `sudo` command in order to have the necessary permissions ie.
-```
-sudo npm install composer-rest-server -g
-```
-
 ## Overview
-This is a simple application that prompts the user for details of a connection profile, Business Network Identifier, participant id and participant password.  The application then starts a loopback application which uses the Hyperledger Composer LoopBack Connector to connect to the Business Network, extract the models and then present a page containing the REST APIs that have been generated for the model.   
+This is a simple application that prompts the user for details of a connection profile, Business Network Identifier, participant id and participant password.  The application then starts a loopback application which uses the Hyperledger Composer LoopBack Connector to connect to the Business Network, extract the models and then present a page containing the REST APIs that have been generated for the model.
 
 Executing those APIs will then have a real effect on the business network to which the application is connected.
 

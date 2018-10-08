@@ -53,7 +53,7 @@
     "ora": "1.2.0",
     "prettyoutput": "1.1.1",
     "rimraf": "2.5.4",
-    "through2": "^2.0.3",
+    "through2": "2.0.3",
     "vinyl-fs": "2.4.4",
     "yargs": "10.0.3"
   },
