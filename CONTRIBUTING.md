@@ -24,7 +24,7 @@ If you find a bug in the source code, an error in any documentation, or would li
 
 ## Raising a Composer Improvement Proposal
 
-If you have a suggestion for a Composer Improvement Proposal (CIP), for a feature that is not yet present and you would like to have, please raise an issue using a [CIP template](./contrib-notes/cip-template.md) and tag the issue with the label `improvement proposal`. We endevour to have all CIP items discussed on community calls, so expect to have an invite once raised!
+If you have a suggestion for a Composer Improvement Proposal (CIP), for a feature that is not yet present and you would like to have, please raise an issue using a [CIP template](./contrib-notes/cip-template.md) and tag the issue with the label `improvement proposal`.
 
 ## Getting Started
 
