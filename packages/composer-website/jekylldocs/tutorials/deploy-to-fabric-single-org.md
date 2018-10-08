@@ -54,11 +54,11 @@ The simple {{site.data.conrefs.hlf_full}} network provided in the development en
 
 The configuration for `cryptogen` is stored in the file:
 
-    ~/fabric-dev-servers/fabric-scripts/hlfv11/composer/crypto-config.yaml
+    ~/fabric-dev-servers/fabric-scripts/hlfv12/composer/crypto-config.yaml
 
 The configuration for `configtxgen` is stored in the file:
 
-    ~/fabric-dev-servers/fabric-scripts/hlfv11/composer/configtx.yaml
+    ~/fabric-dev-servers/fabric-scripts/hlfv12/composer/configtx.yaml
 
 You can find more information about these configuration tools, what they do, and how to use them by reading the {{site.data.conrefs.hlf_full}} documentation.
 
@@ -88,7 +88,7 @@ The organization `Org1` is configured with a user named `Admin@org1.example.com`
 
 The user `Admin@org1.example.com` has a set of certificates and private key files stored in the directory:
 
-    ~/fabric-dev-servers/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+    ~/fabric-dev-servers/fabric-scripts/hlfv12/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 
 You will use some of these files later on to interact with the {{site.data.conrefs.hlf_full}} network.
 
@@ -280,7 +280,7 @@ In order to deploy a blockchain business network to this {{site.data.conrefs.hlf
 
 The administrator for our {{site.data.conrefs.hlf_full}} network is a user called `Admin@org1.example.com`. The certificates and private key files for this user are stored in the directory:
 
-    ~/fabric-dev-servers/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+    ~/fabric-dev-servers/fabric-scripts/hlfv12/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 
 You must first locate the certificate file for this user. The certificate is the public part of the identity. The certificate file can be found in the `signcerts` subdirectory and is named `Admin@org1.example.com-cert.pem`. If you look at the contents of this file, then you will find a PEM encoded certificate similar to the following:
 
