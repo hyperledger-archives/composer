@@ -235,7 +235,7 @@ Deploying a business network to the {{site.data.conrefs.hlf_full}} requires the 
 
 The generated API is connected to the deployed blockchain and business network.
 
-## Step Six: Generating an application
+## Step Six: Generating a skeleton Angular application
 
 {{site.data.conrefs.composer_full}} can also generate an Angular 4 application running against the REST API.
 
@@ -262,3 +262,5 @@ The generated API is connected to the deployed blockchain and business network.
 8.  Select **Namespaces are not used**
 
 The Angular generator will then create the scaffolding for the project and install all dependencies. To run the application, navigate to your angular project directory and run <code-block type="commands" sub-type="npm" identifier="start-app" > `npm start` </code-block>. This will fire up an Angular 4 application running against your REST API at <code-block type="arguments" sub-type="request" identifier="app-url" > `http://localhost:4200` </code-block>.
+
+Note: The Yo Angular application generator is aimed at generating skeleton web applications, based on simple and basic business network model definitions (such as the `trade-network` network model here). See more the Angular generator at [Writing Web Applications](../applications/web.html)
