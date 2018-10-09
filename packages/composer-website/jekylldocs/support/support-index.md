@@ -34,10 +34,3 @@ Check out the code, feel free to get involved.
 
 <a href="https://github.com/hyperledger/composer" class="support-button primary">GitHub</a>
 <br><br>
-
-### Community Call
-
-Join our weekly open community calls.
-
-<a href="https://github.com/hyperledger/composer/wiki/" class="support-button primary">Learn how</a>
-<br><br>

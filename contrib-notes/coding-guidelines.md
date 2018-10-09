@@ -82,7 +82,6 @@ When you start working on new issue, please do the following:
 - Use the [mailing list](https://lists.hyperledger.org/mailman/listinfo/hyperledger-composer) to notify the community that you are planning to start _feature_ work and notify that the design has been placed in the GitHub issue
   - this is to ensure that there is a persistent record of what is happening
 - Say hello, on the composer-dev channel on RocketChat
-- At noteable points please join the weekly community call to share what you have done.
 
 
 ### Good Coding Practices Using ESLint
