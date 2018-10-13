@@ -122,6 +122,8 @@ class HLFConnection extends Connection {
         this.caClient = caClient;
         this.initialized = false;
         this.commitTimeout = connectOptions['x-commitTimeout'] ? connectOptions['x-commitTimeout'] * 1000 : 300 * 1000;
+        this.requiredEventHubs = isNaN(connectOptions['x-requiredEventHubs'] * 1) ? 1 : connectOptions['x-requiredEventHubs'] * 1;
+        LOG.debug(method, `required event hubs set to ${this.requiredEventHubs}`);
         this.queryHandler = HLFConnection.createQueryHandler(this);
         LOG.debug(method, `commit timeout set to ${this.commitTimeout}`);
 
@@ -142,35 +144,13 @@ class HLFConnection extends Connection {
 
         if (this.exitListener) {
             process.removeListener('exit', this.exitListener);
-            delete this.exitListener;
-        }
-
-        if (this.ccListenerHandle) {
-            clearTimeout(this.ccListenerHandle);
-            delete this.ccListenerHandle;
+            this.exitListener = undefined;
         }
 
         // Disconnect from the business network.
         return Promise.resolve()
             .then(() => {
-                if (this.ccEvent) {
-                    // unregister the eventhub chaincode event registration as disconnect will
-                    // fire the onError callback.
-                    this.ccEvent.eventHub.unregisterChaincodeEvent(this.ccEvent.handle);
-                }
-
-                this.eventHubs.forEach((eventHub) => {
-                    try {
-                        if (eventHub.isconnected()) {
-                            eventHub.disconnect();
-                        }
-                    } catch(error) {
-                        // log an error but don't stop
-                        LOG.error(method, `failed to disconnect from eventhub on ${eventHub.getPeerAddr()}`);
-                        LOG.error(method, error);
-                    }
-                });
-                this.channel.close();
+                this._disconnect();
                 LOG.exit(method);
             });
     }
@@ -197,8 +177,10 @@ class HLFConnection extends Connection {
         LOG.debug(method, 'Submitting enrollment request');
         let options = { enrollmentID: enrollmentID, enrollmentSecret: enrollmentSecret };
         let user;
+        const t0 = Date.now();
         return this.caClient.enroll(options)
             .then((enrollment) => {
+                LOG.perf(method, `Total duration to enroll ${enrollmentID}: `, null, t0);
                 // Store the certificate data in a new user object.
                 LOG.debug(method, 'Successfully enrolled, creating user object');
                 user = HLFConnection.createUser(enrollmentID, this.client);
@@ -212,127 +194,205 @@ class HLFConnection extends Connection {
 
             })
             .then(() => {
-                LOG.debug(method, 'loading channel configuration');
-                return this._initializeChannel();
-            })
-            .then(() => {
-                LOG.exit(method, user);
+                // Don't log the user, it's too big
+                LOG.exit(method);
                 return user;
             })
             .catch((error) => {
-                const newError = new Error('Error trying to enroll user or load channel configuration. ' + error);
-                LOG.error(method, newError);
+                LOG.error(method, error);
+                const newError = new Error('Error trying to enroll user. ' + error);
                 throw newError;
             });
     }
 
     /**
-     * check the status of the event hubs and attempt to reconnect any event hubs.
+     * check the status of the event hubs and ensure that at least one is connected
+     * throw an error if strategy is to be enforced (ie required event hubs setting)
      */
-    _checkEventhubs() {
-        const method = '_checkEventHubs';
+    async _checkEventHubStrategy() {
+        const method = '_checkEventHubStrategy';
         LOG.entry(method);
 
-        this.eventHubs.forEach((eh) => {
-            eh.checkConnection(true);
-        });
+        const countConnected = () => {
+            let connected = 0;
+            for (const eventHub of this.eventHubs) {
+                if (HLFUtil.eventHubConnected(eventHub)) {
+                    connected++;
+                }
+            }
+            return connected;
+        };
 
-        LOG.exit(method);
-    }
+        // check there is at least one connected event hub, if not throw away
+        // the event hubs as none are usable and get new ones. If we still have
+        // no connected event hubs, throw an error.
+        const initialCount = countConnected();
+        if (initialCount === 0) {
+            LOG.warn(method, 'No connected event hubs found, attempting to re-establish event hubs');
+            await this._connectToEventHubs();
+            if (countConnected() === 0) {
+                if (this.requiredEventHubs > 0) {
+                    const msg = 'Failed to connect to any peer event hubs. It is required that at least 1 event hub has been connected to receive the commit event';
+                    LOG.error(method, msg);
+                    throw Error(msg);
+                } else {
+                    LOG.warn(method, 'Failed to connect to any peer event hubs, unable to determine if transaction will be a success or failure');
+                }
+            }
 
-    /**
-     * check the status of the Chaincode Listener and if it isn't registered then try to register one.
-     * @return {boolean} true if an event hub is connected, false otherwise.
-     */
-    _checkCCListener() {
-        const method = '_checkCCListener';
-        LOG.entry(method);
-
-        if (this.ccEvent) {
-            LOG.exit(method, true);
-            return true;
-        }
-
-        // find a connected event hub and register with it.
-        for (const eh of this.eventHubs) {
-            if (eh.isconnected()) {
-                this._registerForChaincodeEvents(eh);
-                LOG.exit(method, true);
-                return true;
+        } else if (initialCount < this.eventHubs.length) {
+            // run a background connection on the problem event hubs
+            // to try to recover any that have got into a bad state
+            for (const eventHub of this.eventHubs) {
+                if (!HLFUtil.eventHubConnected(eventHub)) {
+                    // event hub at this point could be
+                    // 1. not connected
+                    // 2. in a grpc bad state
+                    // 3. not connected but trying to connect.
+                    // If it is connected we are in a bad grpc state, so disconnect
+                    if (eventHub.isconnected()) {
+                        eventHub.disconnect();
+                    }
+                    // attempt to connect if not trying to connect already.
+                    eventHub.connect(true);
+                }
             }
         }
 
-        LOG.warn(method, `could not find any connected event hubs out of ${this.eventHubs.length} defined hubs to listen on for chaincode events`);
-        LOG.exit(method, false);
-        return false;
+        LOG.exit(method);
     }
 
     /**
      * register a listener for chaincode events
+     * TODO: This should really ensure it is registered to your mspid's peers first
      * @param {ChannelEventHub} eventHub the event hub to listen for events on.
      * @private
      */
-    _registerForChaincodeEvents(eventHub) {
+    _registerForChaincodeEvents() {
         const method = '_registerForChaincodeEvents';
         LOG.entry(method);
 
-        if (this.businessNetworkIdentifier) {
-            LOG.debug(method, `registering for chaincode events on ${eventHub.getPeerAddr()}`);
-            this.ccEvent = {eventHub: eventHub};
-            this.ccEvent.handle = eventHub.registerChaincodeEvent(this.businessNetworkIdentifier, 'composer',
-                (event, blockNum, txID, status) => {
-                    if (status && status === 'VALID') {
-                        let evt = event.payload.toString('utf8');
-                        evt = JSON.parse(evt);
-                        this.emit('events', evt);
-                    }
-                },
-                (err) => {
-                    this.ccEvent = undefined;
-                    LOG.warn(method, `Eventhub for CC Events disconnected with error ${err.message}`);
-                    this._checkCCListener();
-                }
-            );
+        if (!this.businessNetworkIdentifier) {
+            // Don't log an error here as this can be called for connections that aren't business network
+            // connections, so just don't do anything.
+            LOG.exit(method);
+            return;
         }
+
+        // loop through the event hubs and register a chaincode event listener to the first
+        // connected event hub.
+        for (const eventHub of this.eventHubs) {
+            if (HLFUtil.eventHubConnected(eventHub)) {
+                LOG.info(method, `registering for chaincode events on ${eventHub.getPeerAddr()} for ${this.businessNetworkIdentifier}`);
+                this.ccEvent = {eventHub: eventHub};
+                this.ccEvent.handle = eventHub.registerChaincodeEvent(this.businessNetworkIdentifier, 'composer',
+                    (event, blockNum, txID, status) => {
+                        if (status && status === 'VALID') {
+                            let evt = event.payload.toString('utf8');
+                            evt = JSON.parse(evt);
+                            this.emit('events', evt);
+                        }
+                    },
+                    (err) => {
+                        this.ccEvent = undefined;
+                        LOG.warn(method, `Eventhub ${eventHub.getPeerAddr()} for CC Events disconnected with error ${err.message}`);
+                        // attempt to find another event hub to register to, the assumption here is that
+                        // the ChannelEventHub will already have set the hub to not connected so will not
+                        // re-use the failing hub. which looking at the code it currently does.
+                        this._registerForChaincodeEvents();
+                    }
+                );
+                LOG.exit(method);
+                return;
+            }
+        }
+
+        LOG.warn(method, `could not find any connected event hubs out of ${this.eventHubs.length} defined hubs to listen on for chaincode events`);
         LOG.exit(method);
 
     }
 
     /**
-     * Create and connect to channel event hubs for each peer that is an event source.
+     * disconnect all connected event hubs
      * @private
      */
-    _connectToEventHubs() {
+    _disconnectEventHubs() {
+        const method = '_disconnectEventHubs';
+        for (const eventHub of this.eventHubs) {
+            try {
+                if (eventHub.isconnected()) {
+                    eventHub.disconnect();
+                }
+            } catch(error) {
+                // log an error if one would ever occur but don't stop (not sure it would, but just in case changes to
+                // the node-sdk are made, this adds protection)
+                LOG.error(method, `failed to disconnect from eventhub on ${eventHub.getPeerAddr()}`);
+                LOG.error(method, error);
+            }
+        }
+    }
+
+    /**
+     * Create and connect to channel event hubs for each peer that is an event source.
+     * if existing eventhubs, then disconnect and throw them away, the process of
+     * disconnection will signal any event handlers outstanding and remove them.
+     * @private
+     */
+    async _connectToEventHubs() {
         const method = '_connectToEventHubs';
         LOG.entry(method);
 
-        this.eventHubs = [];
+        // if there are already event hubs, disconnect them and start again.
+        if (this.eventHubs.length > 0) {
+            this._disconnectEventHubs();
+            this.eventHubs = [];
+        }
+
+        const connectPromises = [];
         this.channel.getPeers().forEach((peer) => {
             if (peer.isInRole(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE)) {
                 let eventHub = this.channel.newChannelEventHub(peer);
+                let connectPromise = new Promise((resolve, reject) => {
+                    const regId = eventHub.registerBlockEvent(
+                        (block) => {
+                            LOG.debug(method, `event hub ${eventHub.getPeerAddr()} connected successfully`);
+                            eventHub.unregisterBlockEvent(regId);
+                            resolve();
+                        },
+                        (err) => {
+                            // This can include a timeout from the connect call which uses the peer request timeout value
+                            LOG.warn(method, `event hub ${eventHub.getPeerAddr()} failed to connect: ${err.message}`);
+                            eventHub.unregisterBlockEvent(regId);
+                            resolve();
+                        }
+                    );
+                });
                 this.eventHubs.push(eventHub);
+                connectPromises.push(connectPromise);
                 eventHub.connect(true); // request full blocks, not filtered blocks.
             }
         });
 
-        if (this.eventHubs.length > 0) {
-            LOG.debug(method, 'register exit listener for connector');
-            this.exitListener = () => {
-                if (this.ccEvent) {
-                    // unregister the chaincode event registration as disconnect will fire it's error handler
-                    this.ccEvent.eventHub.unregisterChaincodeEvent(this.ccEvent.handle);
-                }
-                this.eventHubs.forEach((eventHub, index) => {
-                    if (eventHub.isconnected()) {
-                        eventHub.disconnect();
-                    }
-                });
-            };
-
-            process.on('exit', this.exitListener);
+        // If we have event hubs and thus outstanding registrations, wait for them to complete
+        if (connectPromises.length > 0) {
+            await Promise.all(connectPromises);
         }
-
         LOG.exit(method);
+    }
+
+    /**
+     * internal disconnect method, also registered as an exit handler
+     * @private
+     */
+    _disconnect() {
+        if (this.ccEvent) {
+            // unregister the chaincode event registration as disconnect will fire it's error handler
+            this.ccEvent.eventHub.unregisterChaincodeEvent(this.ccEvent.handle);
+            this.ccEvent = undefined;
+        }
+        this._disconnectEventHubs();
+        // need to do this in an exit listener because the CLI's never disconnect the connections
+        this.channel.close();
     }
 
     /**
@@ -343,7 +403,7 @@ class HLFConnection extends Connection {
      * @return {Promise} A promise that is resolved with a {@link SecurityContext}
      * object representing the logged in participant, or rejected with a login error.
      */
-    login(identity, enrollmentSecret) {
+    async login(identity, enrollmentSecret) {
         const method = 'login';
         LOG.entry(method, identity);
 
@@ -352,54 +412,43 @@ class HLFConnection extends Connection {
             return Promise.reject(new Error('identity not specified'));
         }
 
-        // Get the user context (certificate) from the state store.
-        return this.client.getUserContext(identity, true)
-            .then((user) => {
+        try {
+            this.user = await this.client.getUserContext(identity, true);
+            if (!this.user || !this.user.isEnrolled()) {
+                LOG.debug(method, 'User not enrolled, submitting enrollment request');
+                this.user = await this.enroll(identity, enrollmentSecret);
+            }
+            LOG.debug(method, 'Creating new security context');
+            let result = new HLFSecurityContext(this);
+            result.setUser(identity);
 
-                // If the user exists and is enrolled, we use the data from the state store.
-                // Otherwise we need to enroll against the CA to download the certificate.
-                if (user && user.isEnrolled()) {
-                    LOG.debug(method, 'User loaded from persistence and has already enrolled');
-                    return user;
-                } else {
-                    LOG.debug(method, 'User not enrolled, submitting enrollment request');
-                    return this.enroll(identity, enrollmentSecret);
-                }
-            })
-            .then((user) => {
+            // now we can connect to the eventhubs and register for chaincode events
+            // have to register for chaincode events here as some people use a business network connection
+            // purely as a chaincode event sink and never submit transactions.
+            await this._connectToEventHubs();
 
-                // Now we can create a security context.
-                LOG.debug(method, 'Creating new security context');
-                let result = new HLFSecurityContext(this);
-                result.setUser(identity);
-                this.user = user;
+            // Register an exit handler
+            LOG.debug(method, 'register exit listener for connector');
+            this.exitListener = () => {
+                this._disconnect();
+            };
+            process.on('exit', this.exitListener);
 
-                // now we can connect to the eventhubs
-                this._connectToEventHubs();
+            // register for chaincode events. This is done to allow business network connections to act
+            // as pure chaincode event listeners (as someone was doing this) but it's important to note here that the
+            // caller has no idea if this has been setup. So if there were no events hubs, there is nothing
+            // to trigger it to connect at all if you never submit a transaction. This is not a good use of a connection
+            // but remains here because it was possible to do before.
+            this._registerForChaincodeEvents();
 
-                // because the event hub connection is asynchronous, we need
-                // to wait a bit before setting up the chaincode event handlers.
-                const pollCCListener = () => {
-                    this.ccListenerHandle = setTimeout(() => {
-                        if (!this._checkCCListener()) {
-                            pollCCListener();
-                        } else {
-                            delete this.ccListenerHandle;
-                        }
-                    }, 100);
-                };
-                pollCCListener();
-
-                // don't log the result object it's too large
-                LOG.exit(method);
-                return result;
-
-            })
-            .catch((error) => {
-                const newError = new Error('Error trying login and get user Context. ' + error);
-                LOG.error(method, error);
-                throw newError;
-            });
+            // don't log the result object it's too large
+            LOG.exit(method);
+            return result;
+        } catch(error) {
+            LOG.error(method, error);
+            const newError = new Error('Error trying login and get user Context. ' + error);
+            throw newError;
+        }
     }
 
     /**
@@ -651,11 +700,11 @@ class HLFConnection extends Connection {
         }
 
         try {
+            LOG.debug(method, 'checking the event hub strategy');
+            await this._checkEventHubStrategy();
+
             LOG.debug(method, 'loading the channel configuration');
             await this._initializeChannel();
-            // check the event hubs and reconnect if possible. Do it here as the connection attempts are asynchronous
-            this._checkEventhubs();
-
 
             const transactionId = this._validateTxId(startOptions);
             const proposal = {
@@ -874,7 +923,7 @@ class HLFConnection extends Connection {
 
         const t0 = Date.now();
         let result = await this.queryHandler.queryChaincode(txId, functionName, args);
-        LOG.perf(method, 'Total duration for queryChaincode: ', txId, t0);
+        LOG.perf(method, `Total duration for queryChaincode to ${functionName}: `, txId, t0);
         LOG.exit(method, result ? result : null);
         return result ? result : null;
     }
@@ -932,13 +981,17 @@ class HLFConnection extends Connection {
 
         let t0 = Date.now();
         try {
+            LOG.debug(method, 'checking the event hub strategy');
+            await this._checkEventHubStrategy();
+            // check to see if a chaincode event is registered and if not register one, but only log a warning if
+            // it can't as we don't know if the chaincode will emit an event or not.
+            if (!this.ccEvent) {
+                this._registerForChaincodeEvents();
+            }
 
             // initialize the channel if it hasn't been initialized already otherwise verification will fail.
             LOG.debug(method, 'loading channel configuration');
             await this._initializeChannel();
-
-            // check the event hubs and reconnect if possible. Do it here as the connection attempts are asynchronous
-            this._checkEventhubs();
 
             // Submit the transaction to the endorsers.
             const request = {
@@ -957,11 +1010,11 @@ class HLFConnection extends Connection {
                 LOG.error(method, error);
                 throw new Error(`Error received from sendTransactionProposal: ${error}`);
             }
-            LOG.perf(method, 'Total duration for sendTransactionProposal: ', txId, t0);
+            LOG.perf(method, `Total duration for sendTransactionProposal ${functionName}: `, txId, t0);
             t0 = Date.now();
 
             // Validate the endorsement results.
-            LOG.debug(method, `Received ${results.length} result(s) from invoking the composer runtime chaincode`, results);
+            LOG.debug(method, `Received ${results.length} result(s) from invoking the composer runtime chaincode`);
             const proposalResponses = results[0];
             validResponses = this._validatePeerResponses(proposalResponses, true).validResponses;
 
@@ -979,8 +1032,6 @@ class HLFConnection extends Connection {
             const proposal = results[1];
             const header = results[2];
 
-            // check that we have a Chaincode listener setup and ready.
-            this._checkCCListener();
             eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
             eventHandler.startListening();
             LOG.debug(method, 'TxEventHandler started listening, sending valid responses to the orderer');
@@ -1177,10 +1228,11 @@ class HLFConnection extends Connection {
         }
 
         try {
+            LOG.debug(method, 'checking the event hub strategy');
+            await this._checkEventHubStrategy();
+
             LOG.debug(method, 'loading the channel configuration');
             await this._initializeChannel();
-            // check the event hubs and reconnect if possible. Do it here as the connection attempts are asynchronous
-            this._checkEventhubs();
 
             const transactionId = this.client.newTransactionID();
             const proposal = {

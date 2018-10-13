@@ -62,6 +62,8 @@ exports.getLogger = function (config){
         colorize: true,
         label: PRODUCT_LABEL,
         silent: (consoleLevel===null),
+        timestamp: timestampFn,
+        formatter: formatterFn,
         level: consoleLevel
     };
 
