@@ -14,6 +14,7 @@
 
 'use strict';
 const Logger = require('composer-common').Logger;
+const HLFUtil = require('./hlfutil');
 
 const LOG = Logger.getLog('HLFTxEventHandler');
 
@@ -50,7 +51,7 @@ class HLFTxEventHandler {
         LOG.entry(method);
 
         this.eventHubs.forEach((eh) => {
-            if (eh.isconnected()) {
+            if (HLFUtil.eventHubConnected(eh)) {
 
                 let handle;
                 let txPromise = new Promise((resolve, reject) => {
@@ -103,7 +104,7 @@ class HLFTxEventHandler {
             LOG.exit(method);
             return Promise.all(this.listenerPromises);
         }
-        LOG.warn(method, 'No event hubs available to listen on to wait for transaction commits');
+        LOG.warn(method, `No event hubs available to listen on to wait for a commit for transaction '${this.txId}'`);
         LOG.exit(method);
         return Promise.resolve();
     }

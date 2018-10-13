@@ -33,7 +33,7 @@ const HLFConnection = require('../lib/hlfconnection');
 const HLFConnectionManager = require('../lib/hlfconnectionmanager');
 const HLFSecurityContext = require('../lib/hlfsecuritycontext');
 const HLFQueryHandler = require('../lib/hlfqueryhandler');
-//const HLFEventHandler = require('../lib/hlftxeventhandler');
+const HLFUtil = require('../lib/hlfutil');
 
 const path = require('path');
 const semver = require('semver');
@@ -82,6 +82,7 @@ describe('HLFConnection', () => {
             getName: sinon.stub().returns('Peer1')
         };
         mockEventHub1 = sinon.createStubInstance(ChannelEventHub);
+        mockEventHub1._id = '1';
         mockEventHub1.getPeerAddr.returns('EventHub1');
 
         mockPeer2 = {
@@ -89,6 +90,7 @@ describe('HLFConnection', () => {
             getName: sinon.stub().returns('Peer2')
         };
         mockEventHub2 = sinon.createStubInstance(ChannelEventHub);
+        mockEventHub2._id = '2';
         mockEventHub2.getPeerAddr.returns('EventHub2');
 
         mockPeer3 = {
@@ -96,6 +98,7 @@ describe('HLFConnection', () => {
             getName: sinon.stub().returns('Peer3')
         };
         mockEventHub3 = sinon.createStubInstance(ChannelEventHub);
+        mockEventHub3._id = '3';
         mockEventHub3.getPeerAddr.returns('EventHub3');
         mockQueryHandler = sinon.createStubInstance(HLFQueryHandler);
         sandbox.stub(HLFConnection, 'createQueryHandler').returns(mockQueryHandler);
@@ -133,7 +136,6 @@ describe('HLFConnection', () => {
 
     });
 
-
     describe('#_getLoggedInUser', () => {
 
         it('should return the current user', () => {
@@ -163,11 +165,34 @@ describe('HLFConnection', () => {
             }).should.throw(/channel not specified/);
         });
 
-
         it('should throw if caClient not specified', () => {
             (() => {
                 new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), { type: 'hlfv1' }, mockClient, mockChannel, null);
             }).should.throw(/caClient not specified/);
+        });
+
+        it('should set the requiredEventHubs to 1 if not specified', () => {
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {}, mockClient, mockChannel, mockCAClient);
+            connection.requiredEventHubs.should.equal(1);
+        });
+
+        it('should set the requiredEventHubs to 0 if specified as 0', () => {
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {'x-requiredEventHubs': 0}, mockClient, mockChannel, mockCAClient);
+            connection.requiredEventHubs.should.equal(0);
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {'x-requiredEventHubs': '0'}, mockClient, mockChannel, mockCAClient);
+            connection.requiredEventHubs.should.equal(0);
+        });
+
+        it('should set the requiredEventHubs to non-zero number specified', () => {
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {'x-requiredEventHubs': 11}, mockClient, mockChannel, mockCAClient);
+            connection.requiredEventHubs.should.equal(11);
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {'x-requiredEventHubs': '11'}, mockClient, mockChannel, mockCAClient);
+            connection.requiredEventHubs.should.equal(11);
+        });
+
+        it('should set the requiredEventHubs to 1 if non numeric string specified', () => {
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
+            connection.requiredEventHubs.should.equal(1);
         });
     });
 
@@ -175,150 +200,210 @@ describe('HLFConnection', () => {
         beforeEach(() => {
             mockChannel.getPeers.returns([mockPeer1]);
             mockPeer1.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
-            mockChannel.newChannelEventHub.withArgs(mockPeer1).returns(mockEventHub1);        });
-
-        it('should ignore a disconnected event hub on process exit', () => {
-            sandbox.stub(process, 'on').withArgs('exit').yields();
-            mockEventHub1.isconnected.returns(false);
-            connection._connectToEventHubs();
-            sinon.assert.calledOnce(process.on);
-            sinon.assert.calledWith(process.on, 'exit');
-            sinon.assert.notCalled(mockEventHub1.disconnect);
+            mockChannel.newChannelEventHub.withArgs(mockPeer1).returns(mockEventHub1);
+            mockChannel.newChannelEventHub.withArgs(mockPeer2).returns(mockEventHub2);
+            mockChannel.newChannelEventHub.withArgs(mockPeer3).returns(mockEventHub3);
         });
 
-        it('should disconnect a connected event hub on process exit', () => {
-            sandbox.stub(process, 'on').withArgs('exit').yields();
-            mockEventHub1.isconnected.returns(true);
-            connection._connectToEventHubs();
-            sinon.assert.calledOnce(process.on);
-            sinon.assert.calledWith(process.on, 'exit');
-            sinon.assert.calledOnce(mockEventHub1.disconnect);
-            sinon.assert.notCalled(mockEventHub1.unregisterChaincodeEvent);
-        });
-
-        it('should do nothing with chaincode event listeners if none registered on process exit', () => {
-            sandbox.stub(process, 'on').withArgs('exit').yields();
-            mockEventHub1.isconnected.returns(true);
-            connection._connectToEventHubs();
-            sinon.assert.notCalled(mockEventHub1.unregisterChaincodeEvent);
-        });
-
-
-        it('should unregister a chaincode listener if listener registered', () => {
-            sandbox.stub(process, 'on').withArgs('exit').yields();
-            mockEventHub1.isconnected.returns(true);
-            connection.ccEvent = {eventHub: mockEventHub1, handle: 'handle'};
-            connection._connectToEventHubs();
-
-            sinon.assert.calledOnce(process.on);
-            sinon.assert.calledWith(process.on, 'exit');
-            sinon.assert.calledOnce(mockEventHub1.unregisterChaincodeEvent);
-            sinon.assert.calledWith(mockEventHub1.unregisterChaincodeEvent, 'handle');
-        });
-
-
-        it('should not register any listeners for chaincode events if no business network is specified', () => {
-            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {}, mockClient, mockChannel, mockCAClient);
-            connection._connectToEventHubs();
-            sinon.assert.notCalled(mockEventHub1.registerChaincodeEvent);
-            should.equal(connection.ccEvent,undefined);
-
-        });
-
-        it('should do nothing and not register an exit handler if there are no eventhubs', () => {
-            mockChannel.getPeers.returns([]);
-            sandbox.stub(process, 'on');
-            connection._connectToEventHubs();
-            sinon.assert.notCalled(mockEventHub1.registerChaincodeEvent);
-            sinon.assert.notCalled(process.on);
-        });
-
-        it('should only connect event hubs where the peer is an event source', () => {
-            sandbox.stub(process, 'on').withArgs('exit').yields();
+        it('should only connect event hubs where the peer is an event source', async () => {
             mockChannel.getPeers.returns([mockPeer1, mockPeer2, mockPeer3]);
             mockPeer2.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(false);
             mockPeer3.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
-            mockChannel.newChannelEventHub.withArgs(mockPeer3).returns(mockEventHub3);
 
-            connection._connectToEventHubs();
+            mockEventHub1.registerBlockEvent.callsFake((successFn, errorFn) => {
+                // invoke the success function on the next tick
+                Promise.resolve().then(successFn);
+                return 1;
+            });
+            mockEventHub3.registerBlockEvent.callsFake((successFn, errorFn) => {
+                // invoke the success function on the next tick
+                Promise.resolve().then(successFn);
+                return 2;
+            });
+
+            await connection._connectToEventHubs();
             sinon.assert.calledOnce(mockEventHub1.connect);
+            sinon.assert.calledWith(mockEventHub1.connect, true);
             sinon.assert.calledOnce(mockEventHub3.connect);
+            sinon.assert.calledWith(mockEventHub3.connect, true);
+            sinon.assert.notCalled(mockEventHub2.connect);
+            connection.eventHubs.length.should.equal(2);
+            sinon.assert.calledOnce(mockEventHub1.unregisterBlockEvent);
+            sinon.assert.calledWith(mockEventHub1.unregisterBlockEvent, 1);
+            sinon.assert.calledOnce(mockEventHub3.unregisterBlockEvent);
+            sinon.assert.calledWith(mockEventHub3.unregisterBlockEvent, 2);
+        });
+
+        it('should wait for event hubs to either connect ok or give an error', async () => {
+            mockChannel.getPeers.returns([mockPeer1, mockPeer2, mockPeer3]);
+            mockPeer2.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
+            mockPeer3.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
+
+            mockEventHub1.registerBlockEvent.callsFake((successFn, errorFn) => {
+                // invoke the success function on the next tick
+                Promise.resolve().then(errorFn.bind(this, new Error('hub1 error')));
+                mockEventHub1.isconnected.returns(false);
+                return 1;
+            });
+            mockEventHub2.registerBlockEvent.callsFake((successFn, errorFn) => {
+                // invoke the success function on the next tick
+                Promise.resolve().then(successFn);
+                mockEventHub2.isconnected.returns(true);
+                return 2;
+            });
+
+            mockEventHub3.registerBlockEvent.callsFake((successFn, errorFn) => {
+                // invoke the success function on the next tick
+                Promise.resolve().then(errorFn.bind(this, new Error('hub3 error')));
+                mockEventHub3.isconnected.returns(false);
+                return 3;
+            });
+
+            await connection._connectToEventHubs();
+            sinon.assert.calledOnce(mockEventHub1.connect);
+            sinon.assert.calledWith(mockEventHub1.connect, true);
+            sinon.assert.calledOnce(mockEventHub2.connect);
+            sinon.assert.calledWith(mockEventHub2.connect, true);
+            sinon.assert.calledOnce(mockEventHub3.connect);
+            sinon.assert.calledWith(mockEventHub3.connect, true);
+            connection.eventHubs.length.should.equal(3);
+            mockEventHub1.isconnected().should.be.false;
+            mockEventHub2.isconnected().should.be.true;
+            mockEventHub3.isconnected().should.be.false;
+            sinon.assert.calledOnce(mockEventHub1.unregisterBlockEvent);
+            sinon.assert.calledWith(mockEventHub1.unregisterBlockEvent, 1);
+            sinon.assert.calledOnce(mockEventHub2.unregisterBlockEvent);
+            sinon.assert.calledWith(mockEventHub2.unregisterBlockEvent, 2);
+            sinon.assert.calledOnce(mockEventHub3.unregisterBlockEvent);
+            sinon.assert.calledWith(mockEventHub3.unregisterBlockEvent, 3);
+        });
+
+        it('should disconnect any existing event hubs before creating new ones', async () => {
+            mockChannel.getPeers.returns([mockPeer1, mockPeer2, mockPeer3]);
+            mockPeer2.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(false);
+            mockPeer3.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
+
+            mockEventHub1.registerBlockEvent.callsFake((successFn, errorFn) => {
+                // invoke the success function on the next tick
+                Promise.resolve().then(successFn);
+                return 1;
+            });
+            mockEventHub3.registerBlockEvent.callsFake((successFn, errorFn) => {
+                // invoke the success function on the next tick
+                Promise.resolve().then(successFn);
+                return 2;
+            });
+
+            connection.eventHubs = [mockEventHub1, mockEventHub2, mockEventHub3];
+            sandbox.stub(connection, '_disconnectEventHubs');
+            await connection._connectToEventHubs();
+            sinon.assert.calledOnce(connection._disconnectEventHubs);
+            connection.eventHubs.length.should.equal(2);
+            sinon.assert.calledOnce(mockEventHub1.connect);
+            sinon.assert.calledWith(mockEventHub1.connect, true);
+            sinon.assert.calledOnce(mockEventHub3.connect);
+            sinon.assert.calledWith(mockEventHub3.connect, true);
             sinon.assert.notCalled(mockEventHub2.connect);
         });
 
+        it('should do nothing if no event hubs to connect to', async () => {
+            mockChannel.getPeers.returns([mockPeer2, mockPeer3]);
+            mockPeer2.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(false);
+            mockPeer3.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(false);
+            await connection._connectToEventHubs();
+            sinon.assert.notCalled(mockEventHub1.connect);
+            sinon.assert.notCalled(mockEventHub2.connect);
+            sinon.assert.notCalled(mockEventHub3.connect);
+            connection.eventHubs.length.should.equal(0);
+        });
     });
 
-    describe('#_checkCCListener', () => {
-        beforeEach(() => {
+    describe('#_disconnectEventHubs', () => {
+        it('should disconnect from the event hub if connected', async () => {
+            mockEventHub1.isconnected.returns(true);
+            connection.eventHubs = [mockEventHub1];
+            await connection._disconnectEventHubs();
+            sinon.assert.calledOnce(mockEventHub1.disconnect);
+        });
 
-            mockChannel.getPeers.returns([mockPeer1, mockPeer2]);
-            mockPeer1.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
-            mockChannel.newChannelEventHub.withArgs(mockPeer1).returns(mockEventHub1);
-            mockPeer2.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
-            mockChannel.newChannelEventHub.withArgs(mockPeer2).returns(mockEventHub2);
+        it('should not disconnect from the event hub if not connected', async () => {
             mockEventHub1.isconnected.returns(false);
-            mockEventHub2.isconnected.returns(true);
-            connection._connectToEventHubs();
-            mockEventHub1.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func).returns('handle');
+            connection.eventHubs = [mockEventHub1];
+            await connection._disconnectEventHubs();
+            sinon.assert.notCalled(mockEventHub1.disconnect);
         });
 
-        it('should do nothing if cc event handler registered', () => {
-            connection._registerForChaincodeEvents(mockEventHub1);
-            const regSpy = sandbox.spy(connection._registerForChaincodeEvents);
-            connection._checkCCListener().should.be.true;
-            sinon.assert.notCalled(regSpy);
-            sinon.assert.notCalled(logWarnSpy);
-        });
-
-        it('should register if not registered to first connected event hub', () => {
-            sandbox.stub(connection, '_registerForChaincodeEvents');
-            connection._checkCCListener().should.be.true;
-            sinon.assert.calledOnce(connection._registerForChaincodeEvents);
-            sinon.assert.calledWith(connection._registerForChaincodeEvents, mockEventHub2);
-            sinon.assert.notCalled(logWarnSpy);
-        });
-
-        it('should log a warning if no connected event hubs', () => {
-            sandbox.stub(connection, '_registerForChaincodeEvents');
+        it('should handle multiple event hubs in different states', async () => {
+            mockEventHub1.isconnected.returns(true);
             mockEventHub2.isconnected.returns(false);
-            connection._checkCCListener().should.be.false;
-            sinon.assert.calledOnce(logWarnSpy);
+            mockEventHub3.isconnected.returns(true);
+            connection.eventHubs = [mockEventHub1, mockEventHub2, mockEventHub3];
+            await connection._disconnectEventHubs();
+            sinon.assert.calledOnce(mockEventHub1.disconnect);
+            sinon.assert.notCalled(mockEventHub2.disconnect);
+            sinon.assert.calledOnce(mockEventHub3.disconnect);
         });
 
-
-    });
-
-    describe('#_checkEventhubs', () => {
-
-        it('should check the connections for every event hub', () => {
-            mockChannel.getPeers.returns([mockPeer1, mockPeer2]);
-            mockPeer1.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
-            mockChannel.newChannelEventHub.withArgs(mockPeer1).returns(mockEventHub1);
-            mockPeer2.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
-            mockChannel.newChannelEventHub.withArgs(mockPeer2).returns(mockEventHub2);
-            mockEventHub1.isconnected.returns(false);
+        it('should handle an error disconnecting from the event hub', async () => {
+            const err = new Error('isconnected error');
+            mockEventHub1.isconnected.throws(err);
             mockEventHub2.isconnected.returns(true);
-            connection._connectToEventHubs();
-            connection._checkEventhubs();
-            sinon.assert.calledOnce(mockEventHub1.checkConnection);
-            sinon.assert.calledOnce(mockEventHub2.checkConnection);
+            connection.eventHubs = [mockEventHub1, mockEventHub2];
+            await connection._disconnectEventHubs();
+            sinon.assert.notCalled(mockEventHub1.disconnect);
+            sinon.assert.calledOnce(mockEventHub2.disconnect);
+            sinon.assert.calledWith(logErrorSpy, '_disconnectEventHubs', err);
         });
 
-        it('should do nothing if there are no event hubs', () => {
-            connection._checkEventhubs();
-            sinon.assert.notCalled(mockEventHub1.checkConnection);
-            sinon.assert.notCalled(mockEventHub2.checkConnection);
+        it('should handle an error disconnecting from the event hub #2', async () => {
+            mockEventHub1.isconnected.returns(true);
+            mockEventHub2.isconnected.returns(true);
+            const err = new Error('disconnect error');
+            mockEventHub1.disconnect.throws(err);
+            connection.eventHubs = [mockEventHub1, mockEventHub2];
+            await connection._disconnectEventHubs();
+            sinon.assert.calledOnce(mockEventHub1.disconnect);
+            sinon.assert.calledOnce(mockEventHub2.disconnect);
+            sinon.assert.calledWith(logErrorSpy, '_disconnectEventHubs', err);
         });
-
     });
 
     describe('#_registerForChaincodeEvents', () => {
         it('should not register if no business network given', () => {
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {}, mockClient, mockChannel, mockCAClient);
-            connection._registerForChaincodeEvents(mockEventHub1);
+            connection.eventHubs = [mockEventHub1];
+            sandbox.stub(HLFUtil, 'eventHubConnected').returns(true);
+            connection._registerForChaincodeEvents();
             sinon.assert.notCalled(mockEventHub1.registerChaincodeEvent);
             should.equal(connection.ccEvent, undefined);
         });
+
+        it('should not register if no connected event hubs', () => {
+            connection.eventHubs = [mockEventHub1, mockEventHub2];
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(mockEventHub1).returns(false);
+            ehc.withArgs(mockEventHub2).returns(false);
+            connection._registerForChaincodeEvents();
+            sinon.assert.notCalled(mockEventHub1.registerChaincodeEvent);
+            should.equal(connection.ccEvent, undefined);
+        });
+
+        it('should register to the first connected event hub', () => {
+            connection.eventHubs = [mockEventHub1, mockEventHub2, mockEventHub3];
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(mockEventHub1).returns(false);
+            ehc.withArgs(mockEventHub2).returns(true);
+            ehc.withArgs(mockEventHub3).returns(true);
+            mockEventHub2.registerChaincodeEvent.returns('handles');
+            connection._registerForChaincodeEvents();
+            sinon.assert.notCalled(mockEventHub1.registerChaincodeEvent);
+            sinon.assert.notCalled(mockEventHub3.registerChaincodeEvent);
+            sinon.assert.calledOnce(mockEventHub2.registerChaincodeEvent);
+            sinon.assert.calledWith(mockEventHub2.registerChaincodeEvent, 'org-acme-biznet', 'composer', sinon.match.func, sinon.match.func);
+            connection.ccEvent.should.deep.equal({eventHub:mockEventHub2, handle:'handles'});
+        });
+
+
 
         it('should register a listener and handle a valid event callback in the event handler', () => {
             const events = {
@@ -329,8 +414,10 @@ describe('HLFConnection', () => {
                 }
             };
             connection.emit = sandbox.stub();
+            connection.eventHubs = [mockEventHub1];
+            sandbox.stub(HLFUtil, 'eventHubConnected').returns(true);
             mockEventHub1.registerChaincodeEvent.returns('handles');
-            connection._registerForChaincodeEvents(mockEventHub1);
+            connection._registerForChaincodeEvents();
             // invokes the mock's callback that got recorded on the registerChaincodeEvent mock method
             mockEventHub1.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func, sinon.match.func).yield(events, 1, 'aTxId', 'VALID');
             sinon.assert.calledOnce(mockEventHub1.registerChaincodeEvent);
@@ -349,8 +436,10 @@ describe('HLFConnection', () => {
                 }
             };
             connection.emit = sandbox.stub();
+            connection.eventHubs = [mockEventHub1];
+            sandbox.stub(HLFUtil, 'eventHubConnected').returns(true);
             mockEventHub1.registerChaincodeEvent.returns('handles');
-            connection._registerForChaincodeEvents(mockEventHub1);
+            connection._registerForChaincodeEvents();
             // invokes the mock's callback that got recorded on the registerChaincodeEvent mock method
             mockEventHub1.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func, sinon.match.func).yield(events, 1, 'aTxId', 'ENDORSEMENT_POLICY_FAILURE');
             sinon.assert.calledOnce(mockEventHub1.registerChaincodeEvent);
@@ -359,157 +448,219 @@ describe('HLFConnection', () => {
             connection.ccEvent.should.deep.equal({eventHub:mockEventHub1, handle:'handles'});
         });
 
-
         it('should register a listener and handle an error callback in the event handler', () => {
 
             connection.emit = sandbox.stub();
-            mockEventHub1.registerChaincodeEvent.returns('handles');
-            sandbox.stub(connection, '_checkCCListener').returns();
+            mockEventHub1.registerChaincodeEvent.returns('handle1');
+            mockEventHub2.registerChaincodeEvent.returns('handle2');
+            connection.eventHubs = [mockEventHub1, mockEventHub2];
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(mockEventHub1).onCall(0).returns(true);
+            ehc.withArgs(mockEventHub1).onCall(1).returns(false);
+            ehc.withArgs(mockEventHub2).returns(true);
+            connection._registerForChaincodeEvents();
+            connection.ccEvent.should.deep.equal({eventHub:mockEventHub1, handle:'handle1'});
 
-            connection._registerForChaincodeEvents(mockEventHub1);
             // invokes the mock's callback that got recorded on the registerChaincodeEvent mock method
             mockEventHub1.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func, sinon.match.func).callArgWith(3, new Error('lost connection'));
             sinon.assert.calledOnce(mockEventHub1.registerChaincodeEvent);
             sinon.assert.calledWith(mockEventHub1.registerChaincodeEvent, 'org-acme-biznet', 'composer', sinon.match.func, sinon.match.func);
+            sinon.assert.calledOnce(mockEventHub2.registerChaincodeEvent);
+            sinon.assert.calledWith(mockEventHub2.registerChaincodeEvent, 'org-acme-biznet', 'composer', sinon.match.func, sinon.match.func);
             sinon.assert.notCalled(connection.emit);
-            sinon.assert.calledOnce(connection._checkCCListener);
-            should.equal(connection.ccEvent, undefined);
+            connection.ccEvent.should.deep.equal({eventHub:mockEventHub2, handle:'handle2'});
             sinon.assert.calledOnce(logWarnSpy);
         });
     });
 
+    describe('#_checkEventHubStrategy', () => {
+        it('should do nothing if all event hubs are connected', async () => {
+            sandbox.stub(connection, '_connectToEventHubs');
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(mockEventHub1).returns(true);
+            ehc.withArgs(mockEventHub2).returns(true);
+            ehc.withArgs(mockEventHub3).returns(true);
+            connection.eventHubs = [mockEventHub1, mockEventHub2, mockEventHub3];
+            await connection._checkEventHubStrategy();
+            sinon.assert.notCalled(connection._connectToEventHubs);
+            sinon.assert.notCalled(mockEventHub1.disconnect);
+            sinon.assert.notCalled(mockEventHub1.connect);
+            sinon.assert.notCalled(mockEventHub2.disconnect);
+            sinon.assert.notCalled(mockEventHub2.connect);
+            sinon.assert.notCalled(mockEventHub3.disconnect);
+            sinon.assert.notCalled(mockEventHub3.connect);
+        });
+
+        it('should not throw an error if at least 1 event hub connected', async () => {
+            sandbox.stub(connection, '_connectToEventHubs');
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(mockEventHub1).returns(true);
+            ehc.withArgs(mockEventHub2).returns(false);
+            ehc.withArgs(mockEventHub3).returns(false);
+            connection.eventHubs = [mockEventHub1, mockEventHub2, mockEventHub3];
+            await connection._checkEventHubStrategy()
+                .should.not.be.rejected;
+            sinon.assert.notCalled(connection._connectToEventHubs);
+            // should run connects in background
+            sinon.assert.notCalled(mockEventHub1.disconnect);
+            sinon.assert.notCalled(mockEventHub1.connect);
+            sinon.assert.calledOnce(mockEventHub2.disconnect);
+            sinon.assert.calledOnce(mockEventHub2.connect);
+            sinon.assert.calledOnce(mockEventHub3.disconnect);
+            sinon.assert.calledOnce(mockEventHub3.connect);
+        });
+
+        it('should reconnect the event hubs if none are connected', async () => {
+            sandbox.stub(connection, '_connectToEventHubs');
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            // first time
+            ehc.withArgs(mockEventHub1).onCall(0).returns(false);
+            ehc.withArgs(mockEventHub2).onCall(0).returns(false);
+            ehc.withArgs(mockEventHub3).onCall(0).returns(false);
+            // after reconnection request
+            ehc.withArgs(mockEventHub1).onCall(1).returns(false);
+            ehc.withArgs(mockEventHub2).onCall(1).returns(true);
+            ehc.withArgs(mockEventHub3).onCall(1).returns(false);
+
+            connection.eventHubs = [mockEventHub1, mockEventHub2, mockEventHub3];
+            await connection._checkEventHubStrategy()
+                .should.not.be.rejected;
+            sinon.assert.calledOnce(connection._connectToEventHubs);
+            // should not run any background connections
+            sinon.assert.notCalled(mockEventHub1.disconnect);
+            sinon.assert.notCalled(mockEventHub1.connect);
+            sinon.assert.notCalled(mockEventHub2.disconnect);
+            sinon.assert.notCalled(mockEventHub2.connect);
+            sinon.assert.notCalled(mockEventHub3.disconnect);
+            sinon.assert.notCalled(mockEventHub3.connect);
+        });
+
+        it('should throw an error if no event hubs after reconnection attempt', async () => {
+            sandbox.stub(connection, '_connectToEventHubs');
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            // first time
+            ehc.withArgs(mockEventHub1).onCall(0).returns(false);
+            ehc.withArgs(mockEventHub2).onCall(0).returns(false);
+            ehc.withArgs(mockEventHub3).onCall(0).returns(false);
+            // after reconnection request
+            ehc.withArgs(mockEventHub1).onCall(1).returns(false);
+            ehc.withArgs(mockEventHub2).onCall(1).returns(false);
+            ehc.withArgs(mockEventHub3).onCall(1).returns(false);
+
+            connection.eventHubs = [mockEventHub1, mockEventHub2, mockEventHub3];
+            await connection._checkEventHubStrategy()
+                .should.be.rejectedWith(/Failed to connect/);
+            sinon.assert.calledOnce(connection._connectToEventHubs);
+            // should not run any background connections
+            sinon.assert.notCalled(mockEventHub1.disconnect);
+            sinon.assert.notCalled(mockEventHub1.connect);
+            sinon.assert.notCalled(mockEventHub2.disconnect);
+            sinon.assert.notCalled(mockEventHub2.connect);
+            sinon.assert.notCalled(mockEventHub3.disconnect);
+            sinon.assert.notCalled(mockEventHub3.connect);
+        });
+
+        it('should only log a warning if no event hubs after reconnection attempt and requiredEventHubs is zero', async () => {
+            sandbox.stub(connection, '_connectToEventHubs');
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            // first time
+            ehc.withArgs(mockEventHub1).onCall(0).returns(false);
+            ehc.withArgs(mockEventHub2).onCall(0).returns(false);
+            ehc.withArgs(mockEventHub3).onCall(0).returns(false);
+            // after reconnection request
+            ehc.withArgs(mockEventHub1).onCall(1).returns(false);
+            ehc.withArgs(mockEventHub2).onCall(1).returns(false);
+            ehc.withArgs(mockEventHub3).onCall(1).returns(false);
+
+            connection.eventHubs = [mockEventHub1, mockEventHub2, mockEventHub3];
+            connection.requiredEventHubs = 0;
+            await connection._checkEventHubStrategy()
+                .should.not.be.rejected;
+            sinon.assert.calledOnce(connection._connectToEventHubs);
+            // should not run any background connections
+            sinon.assert.notCalled(mockEventHub1.disconnect);
+            sinon.assert.notCalled(mockEventHub1.connect);
+            sinon.assert.notCalled(mockEventHub2.disconnect);
+            sinon.assert.notCalled(mockEventHub2.connect);
+            sinon.assert.notCalled(mockEventHub3.disconnect);
+            sinon.assert.notCalled(mockEventHub3.connect);
+            // should log a warning
+            sinon.assert.calledWithMatch(logWarnSpy, '_checkEventHubStrategy', 'Failed to connect');
+        });
+
+    });
+
     describe('#disconnect', () => {
         beforeEach(() => {
-            mockChannel.getPeers.returns([mockPeer1]);
-            mockPeer1.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
-            mockChannel.newChannelEventHub.withArgs(mockPeer1).returns(mockEventHub1);
-            mockEventHub1.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func).returns('handle');
+            sandbox.stub(connection, '_disconnect');
         });
 
-        it('should clear any pending chaincode listener handles', async () => {
-            const stub = sinon.stub();
-            // Verify that the fake timer works.
-            connection.ccListenerHandle = setTimeout(stub, 100);
-            clock.tick(100);
-            sinon.assert.calledOnce(stub);
-            // Set up the fake timer again.
-            connection.ccListenerHandle = setTimeout(stub, 100);
-            await connection.disconnect();
-            clock.tick(100);
-            sinon.assert.calledOnce(stub);
-            sinon.assert.calledOnce(mockChannel.close);
-        });
-
-        it('should unregister the exit listener', () => {
-            let stubExit = sandbox.stub(process, 'on').withArgs('exit').yields();
+        it('should unregister the exit listener and call internal disconnect', async () => {
+            sandbox.stub(process, 'on').withArgs('exit').returns('exitHandle');
             let stubRemove = sandbox.stub(process, 'removeListener');
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {}, mockClient, mockChannel, [mockEventHub1], mockCAClient);
-            connection._connectToEventHubs();
-            sinon.assert.calledOnce(stubExit);
-            let exitListener = stubExit.firstCall.args[0];
-
-            return connection.disconnect()
-                .then(() => {
-                    sinon.assert.calledOnce(stubRemove);
-                    sinon.assert.calledWith(stubRemove, exitListener);
-                    sinon.assert.calledOnce(mockChannel.close);
-                });
-
-
+            sandbox.stub(connection, '_disconnect');
+            let stubFn = () => {};
+            connection.exitListener = process.on('exit', stubFn);
+            await connection.disconnect();
+            sinon.assert.calledOnce(stubRemove);
+            sinon.assert.calledWith(stubRemove, 'exit', 'exitHandle');
+            sinon.assert.calledOnce(connection._disconnect);
         });
 
-        it('should not unregister any chaincode listeners if non were setup', () => {
+        it('should not unregister exit listener if non were setup', async () => {
+            sandbox.stub(process, 'removeListener');
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {}, mockClient, mockChannel, [mockEventHub1], mockCAClient);
-            connection._connectToEventHubs();
-            return connection.disconnect()
-                .then(() => {
-                    sinon.assert.notCalled(mockEventHub1.unregisterChaincodeEvent);
-                    sinon.assert.calledOnce(mockChannel.close);
-                });
+            sandbox.stub(connection, '_disconnect');
+            await connection.disconnect();
+            sinon.assert.notCalled(process.removeListener);
+            sinon.assert.calledOnce(connection._disconnect);
+        });
+
+        it('should handle being called twice', async () => {
+            sandbox.stub(process, 'on').withArgs('exit').returns('exitHandle');
+            let stubRemove = sandbox.stub(process, 'removeListener');
+            let stubFn = () => {};
+            connection.exitListener = process.on('exit', stubFn);
+            mockEventHub1.unregisterChaincodeEvent.returns(true);
+            connection.ccEvent = {eventHub: mockEventHub1, handle: 'handled'};
+
+            await connection.disconnect();
+            await connection.disconnect();
+            sinon.assert.calledOnce(stubRemove);
+            sinon.assert.calledWith(stubRemove, 'exit', 'exitHandle');
+            sinon.assert.calledTwice(connection._disconnect);
+        });
+
+    });
+
+    describe('#_disconnect', () => {
+        beforeEach(() => {
+            sandbox.stub(connection, '_disconnectEventHubs');
+        });
+
+        it('should close channel, disconnect event hubs', () => {
+            connection._disconnect();
+            sinon.assert.calledOnce(mockChannel.close);
+            sinon.assert.calledOnce(connection._disconnectEventHubs);
         });
 
         it('should unregister a registered chaincode listener', () => {
-            mockEventHub1.unregisterChaincodeEvent.returns(true);
-            connection._connectToEventHubs();
-            mockEventHub1.isconnected.returns(true);
-            connection._checkCCListener();
-            return connection.disconnect()
-                .then(() => {
-                    sinon.assert.calledOnce(mockEventHub1.unregisterChaincodeEvent);
-                    sinon.assert.calledWith(mockEventHub1.unregisterChaincodeEvent, 'handle');
-                    sinon.assert.calledOnce(mockChannel.close);
-                });
-        });
-
-        it('should disconnect from the event hub if connected', () => {
-            mockEventHub1.isconnected.returns(true);
-            connection._connectToEventHubs();
-            return connection.disconnect()
-                .then(() => {
-                    sinon.assert.calledOnce(mockEventHub1.disconnect);
-                    sinon.assert.calledOnce(mockChannel.close);
-                });
-        });
-
-        it('should not disconnect from the event hub if not connected', () => {
-            mockEventHub1.isconnected.returns(false);
-            connection._connectToEventHubs();
-            return connection.disconnect()
-                .then(() => {
-                    sinon.assert.notCalled(mockEventHub1.disconnect);
-                    sinon.assert.calledOnce(mockChannel.close);
-                });
-        });
-
-        it('should handle an error disconnecting from the event hub', () => {
-            mockChannel.getPeers.returns([mockPeer1, mockPeer2]);
-            mockPeer2.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
-            mockChannel.newChannelEventHub.withArgs(mockPeer2).returns(mockEventHub2);
-
-            sandbox.stub(process, 'on').withArgs('exit').yields();
-            connection._connectToEventHubs();
-            const err = new Error('isconnected error');
-            mockEventHub1.isconnected.throws(err);
-            mockEventHub2.isconnected.returns(true);
-            return connection.disconnect()
-                .then(() => {
-                    sinon.assert.notCalled(mockEventHub1.disconnect);
-                    sinon.assert.calledOnce(mockEventHub2.disconnect);
-                    sinon.assert.calledOnce(mockChannel.close);
-                    sinon.assert.calledWith(logErrorSpy, 'disconnect', err);
-                });
-        });
-
-        it('should handle an error disconnecting from the event hub #2', () => {
-            mockChannel.getPeers.returns([mockPeer1, mockPeer2]);
-            mockPeer2.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
-            mockChannel.newChannelEventHub.withArgs(mockPeer2).returns(mockEventHub2);
-            sandbox.stub(process, 'on').withArgs('exit').yields();
-            connection._connectToEventHubs();
-            mockEventHub1.isconnected.returns(true);
-            mockEventHub2.isconnected.returns(true);
-            const err = new Error('disconnect error');
-            mockEventHub1.disconnect.throws(err);
-            return connection.disconnect()
-                .then(() => {
-                    sinon.assert.calledOnce(mockEventHub1.disconnect);
-                    sinon.assert.calledOnce(mockEventHub2.disconnect);
-                    sinon.assert.calledOnce(mockChannel.close);
-                    sinon.assert.calledWith(logErrorSpy, 'disconnect', err);
-                });
+            connection.ccEvent = {eventHub: mockEventHub1, handle: 'handled'};
+            connection._disconnect();
+            sinon.assert.calledOnce(mockEventHub1.unregisterChaincodeEvent);
+            sinon.assert.calledWith(mockEventHub1.unregisterChaincodeEvent, 'handled');
+            sinon.assert.calledOnce(mockChannel.close);
+            sinon.assert.calledOnce(connection._disconnectEventHubs);
         });
 
         it('should handle being called twice', () => {
-            mockEventHub1.isconnected.returns(true);
-            connection._connectToEventHubs();
-            return connection.disconnect()
-                .then(() => {
-                    mockEventHub1.isconnected.returns(false);
-                    return connection.disconnect();
-                })
-                .then(() => {
-                    sinon.assert.calledOnce(mockEventHub1.disconnect);
-                });
+            connection.ccEvent = {eventHub: mockEventHub1, handle: 'handled'};
+            connection._disconnect();
+            connection._disconnect();
+            sinon.assert.calledOnce(mockEventHub1.unregisterChaincodeEvent);
+            sinon.assert.calledTwice(mockChannel.close);
+            sinon.assert.calledTwice(connection._disconnectEventHubs);
         });
 
     });
@@ -557,8 +708,9 @@ describe('HLFConnection', () => {
     describe('#login', () => {
 
         beforeEach(() => {
-            sandbox.stub(connection, '_connectToEventHubs').returns();
-            sandbox.stub(connection, '_checkCCListener').returns(false);
+            sandbox.stub(process, 'on').withArgs('exit').returns('exithandle');
+            sandbox.stub(connection, '_connectToEventHubs').resolves();
+            sandbox.stub(connection, '_registerForChaincodeEvents').returns();
         });
 
         it('should reject if identity not specified', () => {
@@ -573,6 +725,28 @@ describe('HLFConnection', () => {
                 .then((securityContext) => {
                     securityContext.should.be.an.instanceOf(HLFSecurityContext);
                     securityContext.getUser().should.equal('admin');
+                    sinon.assert.calledOnce(connection._connectToEventHubs);
+                    sinon.assert.calledOnce(connection._registerForChaincodeEvents);
+                    // check exit handler registered
+                    sinon.assert.calledOnce(process.on);
+                    sinon.assert.calledWith(process.on, 'exit', connection.exitListener);
+                });
+        });
+
+        it('should enroll a user from the state store if not enrolled', () => {
+            mockClient.getUserContext.withArgs('admin').resolves(mockUser);
+            mockUser.isEnrolled.returns(false);
+            sandbox.stub(connection, 'enroll').withArgs('admin', 'adminpw').resolves(mockUser);
+            return connection.login('admin', 'adminpw')
+                .then((securityContext) => {
+                    securityContext.should.be.an.instanceOf(HLFSecurityContext);
+                    securityContext.getUser().should.equal('admin');
+                    sinon.assert.calledOnce(connection.enroll);
+                    sinon.assert.calledOnce(connection._connectToEventHubs);
+                    sinon.assert.calledOnce(connection._registerForChaincodeEvents);
+                    // check exit handler registered
+                    sinon.assert.calledOnce(process.on);
+                    sinon.assert.calledWith(process.on, 'exit', connection.exitListener);
                 });
         });
 
@@ -583,6 +757,12 @@ describe('HLFConnection', () => {
                 .then((securityContext) => {
                     securityContext.should.be.an.instanceOf(HLFSecurityContext);
                     securityContext.getUser().should.equal('admin');
+                    sinon.assert.calledOnce(connection.enroll);
+                    sinon.assert.calledOnce(connection._connectToEventHubs);
+                    sinon.assert.calledOnce(connection._registerForChaincodeEvents);
+                    // check exit handler registered
+                    sinon.assert.calledOnce(process.on);
+                    sinon.assert.calledWith(process.on, 'exit', connection.exitListener);
                 });
         });
 
@@ -592,24 +772,19 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/such error/);
         });
 
-        it('should poll and set up the chaincode listener', async () => {
+        it('should invoke disconnect on process exit', () => {
+            sandbox.restore();
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(connection, '_connectToEventHubs').resolves();
+            sandbox.stub(connection, '_registerForChaincodeEvents').returns();
+            sandbox.stub(connection, '_disconnect');
             mockClient.getUserContext.withArgs('admin').resolves(mockUser);
             mockUser.isEnrolled.returns(true);
-            await connection.login('admin', 'adminpw');
-            // Should not have been called immediately.
-            sinon.assert.notCalled(connection._checkCCListener);
-            // Should have been called after 100ms, and requeued.
-            clock.tick(100);
-            sinon.assert.calledOnce(connection._checkCCListener);
-            // Should have been called after 200ms, and not requeued.
-            connection._checkCCListener.returns(true);
-            clock.tick(100);
-            sinon.assert.calledTwice(connection._checkCCListener);
-            // Should not be called again.
-            clock.tick(100);
-            sinon.assert.calledTwice(connection._checkCCListener);
+            return connection.login('admin', 'adminpw')
+                .then((securityContext) => {
+                    sinon.assert.calledOnce(connection._disconnect);
+                });
         });
-
     });
 
     describe('#install', () => {
@@ -1004,17 +1179,17 @@ describe('HLFConnection', () => {
                 chaincodeId: mockBusinessNetwork.getName(),
                 txId: mockTransactionID,
             };
-
             sandbox.stub(process, 'on').withArgs('exit').yields();
             mockChannel.getPeers.returns([mockPeer1]);
             mockPeer1.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
             mockChannel.newChannelEventHub.withArgs(mockPeer1).returns(mockEventHub1);
             connection._connectToEventHubs();
             mockEventHub1.isconnected.returns(true);
+            mockEventHub1.checkConnection.returns('READY');
             mockEventHub1.getPeerAddr.returns('mockPeer1');
             sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: validProposalResponses});
             sandbox.stub(connection, '_initializeChannel').resolves();
-            sandbox.stub(connection, '_checkEventhubs').returns();
+            sandbox.stub(connection, '_checkEventHubStrategy').resolves();
         });
 
         describe('#start', () => {
@@ -1051,7 +1226,7 @@ describe('HLFConnection', () => {
                     };
                 });
                 sandbox.stub(connection, '_initializeChannel').resolves();
-                sandbox.stub(connection, '_checkEventhubs').returns();
+                sandbox.stub(connection, '_checkEventHubStrategy').resolves();
                 connection._connectToEventHubs();
                 mockChannel.sendTransaction.withArgs(sinon.match({
                     proposalResponses: validProposalResponses,
@@ -1062,7 +1237,7 @@ describe('HLFConnection', () => {
                 return connection.start(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
                     .should.be.rejectedWith(/Failed to receive commit notification/)
                     .then(() => {
-                        sinon.assert.calledOnce(connection._checkEventhubs);
+                        sinon.assert.calledOnce(connection._checkEventHubStrategy);
                         sinon.assert.calledWith(global.setTimeout, sinon.match.func, sinon.match.number);
                         sinon.assert.calledWith(global.setTimeout, sinon.match.func, 22 * 1000);
                     });
@@ -1100,7 +1275,7 @@ describe('HLFConnection', () => {
                         sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                         expectedProposal['endorsement-policy'] = policy;
                         sinon.assert.calledWith(mockChannel.sendInstantiateProposal, expectedProposal);
-                        sinon.assert.calledOnce(connection._checkEventhubs);
+                        sinon.assert.calledOnce(connection._checkEventHubStrategy);
                         sinon.assert.calledOnce(mockChannel.sendTransaction);
                     });
             });
@@ -1125,7 +1300,7 @@ describe('HLFConnection', () => {
                         sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                         expectedProposal['endorsement-policy'] = policy;
                         sinon.assert.calledWith(mockChannel.sendInstantiateProposal, expectedProposal);
-                        sinon.assert.calledOnce(connection._checkEventhubs);
+                        sinon.assert.calledOnce(connection._checkEventHubStrategy);
                         sinon.assert.calledOnce(mockChannel.sendTransaction);
                     });
             });
@@ -1150,7 +1325,7 @@ describe('HLFConnection', () => {
                         sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                         expectedProposal['endorsement-policy'] = JSON.parse(policyString);
                         sinon.assert.calledWith(mockChannel.sendInstantiateProposal, expectedProposal);
-                        sinon.assert.calledOnce(connection._checkEventhubs);
+                        sinon.assert.calledOnce(connection._checkEventHubStrategy);
                         sinon.assert.calledOnce(mockChannel.sendTransaction);
                     });
             });
@@ -1172,7 +1347,7 @@ describe('HLFConnection', () => {
                         sinon.assert.calledOnce(connection._initializeChannel);
                         sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                         sinon.assert.calledWith(mockChannel.sendInstantiateProposal, expectedProposal);
-                        sinon.assert.calledOnce(connection._checkEventhubs);
+                        sinon.assert.calledOnce(connection._checkEventHubStrategy);
                         sinon.assert.calledOnce(mockChannel.sendTransaction);
                     });
             });
@@ -1218,12 +1393,21 @@ describe('HLFConnection', () => {
                         sinon.assert.calledOnce(connection._initializeChannel);
                         sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                         sinon.assert.calledWith(mockChannel.sendInstantiateProposal, expectedProposal);
-                        sinon.assert.calledOnce(connection._checkEventhubs);
+                        sinon.assert.calledOnce(connection._checkEventHubStrategy);
                         sinon.assert.calledOnce(mockChannel.sendTransaction);
                     });
             });
 
-            it('should throw any instantiate fails to validate', () => {
+            it('should throw if eventHubStrategy is not satisfied', () => {
+                connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {}, mockClient, mockChannel, mockCAClient);
+                sandbox.stub(connection, '_initializeChannel').resolves();
+                sandbox.stub(connection, '_checkEventHubStrategy').rejects(new Error('failed strategy'));
+
+                return connection.start(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
+                    .should.be.rejectedWith(/failed strategy/);
+            });
+
+            it('should throw if instantiate fails to validate', () => {
                 const errorResp = new Error('such error');
                 const instantiateResponses = [ errorResp ];
                 const proposal = { proposal: 'i do' };
@@ -1256,23 +1440,9 @@ describe('HLFConnection', () => {
                 return connection.start(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
                     .should.be.rejectedWith(/Peer mockPeer1 has rejected transaction '00000000-0000-0000-0000-000000000000'/)
                     .then(() => {
-                        sinon.assert.calledOnce(connection._checkEventhubs);
+                        sinon.assert.calledOnce(connection._checkEventHubStrategy);
                     });
             });
-
-            /*
-            it('should throw an error if peers do not agree', () => {
-                let mockEventHandler = sinon.createStubInstance(HLFEventHandler);
-                mockEventHandler.waitForEvents.throws(new Error('such error'));
-                sandbox.stub(HLFConnection, 'createTxEventHandler').returns(mockEventHandler);
-
-                mockChannel.sendTransaction.resolves({ status: 'SUCCESS' });
-                mockChannel.compareProposalResponseResults.returns(false);
-                mockEventHub1.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-                return connection.start(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
-                    .should.be.rejectedWith(/such error/);
-            });
-            */
         });
 
         describe('#upgrade', () => {
@@ -1291,6 +1461,16 @@ describe('HLFConnection', () => {
                     .should.be.rejectedWith(/network version/i);
             });
 
+            it('should throw if eventHubStrategy is not satisfied', () => {
+                connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {}, mockClient, mockChannel, mockCAClient);
+                sandbox.stub(connection, '_initializeChannel').resolves();
+                sandbox.stub(connection, '_checkEventHubStrategy').rejects(new Error('failed strategy'));
+
+                return connection.upgrade(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion())
+                    .should.be.rejectedWith(/failed strategy/);
+            });
+
+
             //TODO: Should throw if chaincode not instantiated
 
             it('should send proposal', () => {
@@ -1304,7 +1484,7 @@ describe('HLFConnection', () => {
 
                 return connection.upgrade(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion())
                     .then(() => {
-                        sinon.assert.calledOnce(connection._checkEventhubs);
+                        sinon.assert.calledOnce(connection._checkEventHubStrategy);
                         sinon.assert.calledWith(mockChannel.sendUpgradeProposal, expectedProposal);
                     });
             });
@@ -1322,7 +1502,7 @@ describe('HLFConnection', () => {
                     .then(() => {
                         return mockChannel.sendUpgradeProposal.returnValues[0];
                     }).then(proposalResponse => {
-                        sinon.assert.calledOnce(connection._checkEventhubs);
+                        sinon.assert.calledOnce(connection._checkEventHubStrategy);
                         sinon.assert.calledWith(mockChannel.sendTransaction, sinon.match({
                             proposal: proposalResponse[1],
                             proposalResponses: validProposalResponses,
@@ -1684,14 +1864,15 @@ describe('HLFConnection', () => {
         beforeEach(() => {
             sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: validResponses});
             sandbox.stub(connection, '_initializeChannel').resolves();
-            sandbox.stub(connection, '_checkCCListener').returns();
-            sandbox.stub(connection, '_checkEventhubs').returns();
+            sandbox.stub(connection, '_registerForChaincodeEvents').returns();
+            sandbox.stub(connection, '_checkEventHubStrategy').resolves();
             sandbox.stub(process, 'on').withArgs('exit').yields();
             mockChannel.getPeers.returns([mockPeer1]);
             mockPeer1.isInRole = sinon.stub().withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
             mockChannel.newChannelEventHub.withArgs(mockPeer1).returns(mockEventHub1);
             connection._connectToEventHubs();
             mockEventHub1.isconnected.returns(true);
+            mockEventHub1.checkConnection.returns('READY');
             mockEventHub1.getPeerAddr.returns('mockPeer1');
 
         });
@@ -1716,6 +1897,39 @@ describe('HLFConnection', () => {
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', [3.142])
                 .should.be.rejectedWith(/invalid arg specified: 3.142/);
         });
+
+        it('should throw if eventHubStrategy is not satisfied', () => {
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {}, mockClient, mockChannel, mockCAClient);
+            sandbox.stub(connection, '_initializeChannel').resolves();
+            sandbox.stub(connection, '_checkEventHubStrategy').rejects(new Error('failed strategy'));
+
+            return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/failed strategy/);
+        });
+
+        it('should not register a chaincode event listener if one already registered', () => {
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub1.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
+            connection.ccEvent = {eventhub: 'hub', handle: 'handle'};
+            return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
+                .then((result) => {
+                    sinon.assert.notCalled(connection._registerForChaincodeEvents);
+                });
+        });
+
 
         it('should submit an invoke request to the chaincode which does not return data', () => {
             const proposalResponses = [{
@@ -1744,8 +1958,8 @@ describe('HLFConnection', () => {
                         args: ['arg1', 'arg2']
                     });
                     sinon.assert.calledOnce(mockChannel.sendTransaction);
-                    sinon.assert.calledOnce(connection._checkCCListener);
-                    sinon.assert.calledOnce(connection._checkEventhubs);
+                    sinon.assert.calledOnce(connection._registerForChaincodeEvents);
+                    sinon.assert.calledOnce(connection._checkEventHubStrategy);
                 });
         });
 
@@ -1778,8 +1992,8 @@ describe('HLFConnection', () => {
                         args: ['arg1', 'arg2']
                     });
                     sinon.assert.calledOnce(mockChannel.sendTransaction);
-                    sinon.assert.calledOnce(connection._checkCCListener);
-                    sinon.assert.calledOnce(connection._checkEventhubs);
+                    sinon.assert.calledOnce(connection._registerForChaincodeEvents);
+                    sinon.assert.calledOnce(connection._checkEventHubStrategy);
                 });
         });
 
@@ -1812,8 +2026,8 @@ describe('HLFConnection', () => {
                         args: ['arg1', 'arg2']
                     });
                     sinon.assert.calledOnce(mockChannel.sendTransaction);
-                    sinon.assert.calledOnce(connection._checkCCListener);
-                    sinon.assert.calledOnce(connection._checkEventhubs);
+                    sinon.assert.calledOnce(connection._registerForChaincodeEvents);
+                    sinon.assert.calledOnce(connection._checkEventHubStrategy);
                 });
         });
 
@@ -1847,8 +2061,8 @@ describe('HLFConnection', () => {
                         args: ['arg1', 'arg2']
                     });
                     sinon.assert.calledOnce(mockChannel.sendTransaction);
-                    sinon.assert.calledOnce(connection._checkCCListener);
-                    sinon.assert.calledOnce(connection._checkEventhubs);
+                    sinon.assert.calledOnce(connection._registerForChaincodeEvents);
+                    sinon.assert.calledOnce(connection._checkEventHubStrategy);
                 });
         });
 
@@ -1870,7 +2084,7 @@ describe('HLFConnection', () => {
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), connectOptions, mockClient, mockChannel, mockCAClient);
             sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: validResponses});
             sandbox.stub(connection, '_initializeChannel').resolves();
-            sandbox.stub(connection, '_checkEventhubs').returns();
+            sandbox.stub(connection, '_checkEventHubStrategy').resolves();
 
             connection._connectToEventHubs();
             // This is the transaction proposal and response (from the peers).
@@ -1914,12 +2128,11 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             sandbox.stub(global, 'setTimeout').yields();
-            // mockEventHub.registerTxEvent.yields();
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/Failed to receive commit notification/)
                 .then(() => {
-                    sinon.assert.calledOnce(connection._checkCCListener);
-                    sinon.assert.calledOnce(connection._checkEventhubs);
+                    sinon.assert.calledOnce(connection._registerForChaincodeEvents);
+                    sinon.assert.calledOnce(connection._checkEventHubStrategy);
                 });
         });
 
@@ -2048,8 +2261,8 @@ describe('HLFConnection', () => {
                         args: ['arg1', 'arg2']
                     });
                     sinon.assert.calledOnce(mockChannel.sendTransaction);
-                    sinon.assert.calledOnce(connection._checkCCListener);
-                    sinon.assert.calledOnce(connection._checkEventhubs);
+                    sinon.assert.calledOnce(connection._registerForChaincodeEvents);
+                    sinon.assert.calledOnce(connection._checkEventHubStrategy);
                 });
         });
 
