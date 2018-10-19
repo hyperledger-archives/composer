@@ -208,7 +208,7 @@ To configure a Certificate Authority to use TLS, use the following format:
     "ca.org1.example.com": {
         "url": "https://ca.org1.example.com:7054",
         "caName": "ca.org1.example.com",
-        "http": {
+        "httpOptions": {
             "verify": false
         },
         "tlsCACerts": {
