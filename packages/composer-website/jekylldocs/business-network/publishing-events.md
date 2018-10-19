@@ -10,7 +10,7 @@ excerpt: Emitting Events from Transaction Processor Functions
 
 # Emitting Events
 
-Events can be emitted by {{site.data.conrefs.composer_full}} and subscribed to by external applications. Events are defined in the model file of a business network definition, and are emitted by transaction JavaScript in the transaction processor functions file.
+Events can be emitted by {{site.data.conrefs.composer_full}} and subscribed to by external applications. Events are defined in the model file of a business network definition, and are emitted by transaction JavaScript in the transaction processor functions file. Note that although the code to emit the event is inside a transaction processor function, the event is not emitted immediately when this code is run. Instead, event emissions are performed once the transaction has been committed.
 
 ## Before you begin
 

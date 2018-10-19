@@ -16,10 +16,10 @@
 # These environment variables are used in docker-compose.yaml configurations.
 
 # Fabric base images (peer, orderer, ccenv, tools)
-export FABRIC_BASE_VERSION=1.2.0
+export FABRIC_BASE_VERSION=1.2.1
 
 # Fabric CA
-export FABRIC_CA_VERSION=1.2.0
+export FABRIC_CA_VERSION=1.2.1
 
 # Third-party images (couchdb, kafka, zookeeper)
 export FABRIC_THIRDPARTY_VERSION=0.4.10

@@ -78,7 +78,7 @@ class ModelManager {
 
         // add the system model
         SYSTEM_MODELS.forEach((SYSTEM_MODEL) => {
-            LOG.info(method, SYSTEM_MODEL);
+            LOG.debug(method, SYSTEM_MODEL);
             let m = new ModelFile(this, SYSTEM_MODEL.contents, SYSTEM_MODEL.fileName);
             this.modelFiles[m.getNamespace()] = m;
         });

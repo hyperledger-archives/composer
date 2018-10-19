@@ -26,7 +26,7 @@ Filters are similar to queries, but use the LoopBack filter syntax, and can only
 
 Queries must contain a description and a statement. Query descriptions are a string that describe the function of the query. Query statements contain the operators and functions that control the query behavior.
 
-Query descriptions can be any descriptive string. A query statement must include the `SELECT` operator and can optionally include `FROM`, `WHERE`, `AND`, `ORDER BY`, `SKIP`, and `LIMIT`.
+Query descriptions can be any descriptive string. A query statement must include the `SELECT` operator and can optionally include `FROM`, `WHERE`, `AND`, `ORDER BY`, and `OR`.
 
 Queries should take the following format:
 
@@ -43,7 +43,7 @@ query Q1{
 
 Queries may embed parameters using the `_$` syntax. Note that query parameters must be primitive types (String, Integer, Double, Long, Boolean, DateTime), a Relationship or an Enumeration.
 
-The named query below is defined in terms of 3 parameters:
+The named query below is defined in terms of 1 parameter:
 
 ```
 query Q18 {
@@ -52,8 +52,6 @@ query Q18 {
         SELECT org.example.Driver
             WHERE (_$ageParam < age)
                 ORDER BY [lastName DESC, firstName DESC]
-                    LIMIT _$limitParam
-                        SKIP _$skipParam
 }
 ```
 

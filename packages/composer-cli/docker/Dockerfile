@@ -26,7 +26,7 @@ RUN deluser --remove-home node && \
     adduser -u 1000 -G composer -s /bin/sh -D composer && \
     apk add --no-cache make gcc g++ python git libc6-compat && \
     su -c "npm config set prefix '/home/composer/.npm-global'" - composer && \
-    su -c "npm install --production -g composer-cli@${VERSION}" - composer && \
+    su -c "npm install --production -g composer-cli@${VERSION} composer-wallet-redis composer-wallet-cloudant composer-wallet-ibmcos" - composer && \
     su -c "npm cache clean --force" - composer && \
     rm -rf /home/composer/.config /home/composer/.node-gyp /home/composer/.npm && \
     apk del make gcc g++ python git

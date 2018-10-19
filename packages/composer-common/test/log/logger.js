@@ -270,31 +270,37 @@ describe('Logger', () => {
             sinon.assert.calledWith(logger.intlog, 'debug', 'Method','Message','Data');
         });
 
-        it('info method should call debug level, no args', () => {
+        it('info method should call info level, no args', () => {
             logger.info('Method', 'Message', 'Data');
             sinon.assert.calledOnce(logger.intlog);
             sinon.assert.calledWith(logger.intlog, 'info', 'Method','Message','Data');
         });
 
-        it('verbose method should call debug level, no args', () => {
+        it('verbose method should call verbose level, no args', () => {
             logger.verbose('Method', 'Message', 'Data');
             sinon.assert.calledOnce(logger.intlog);
             sinon.assert.calledWith(logger.intlog, 'verbose', 'Method','Message','Data');
         });
 
-        it('error method should call debug level, no args', () => {
+        it('perf method should call verbose level, no args', () => {
+            logger.perf('Method', 'Perf message', {getTransactionID: () => {return 'txid';}}, new Date());
+            sinon.assert.calledOnce(logger.intlog);
+            sinon.assert.calledWith(logger.intlog, 'verbose', 'Method', sinon.match.string);
+        });
+
+        it('error method should call error level, no args', () => {
             logger.error('Method', 'Message', 'Data');
             sinon.assert.calledOnce(logger.intlog);
             sinon.assert.calledWith(logger.intlog, 'error', 'Method','Message','Data');
         });
 
-        it('entry method should call debug level, no args', () => {
+        it('entry method should call entry level, no args', () => {
             logger.entry('Method', 'Message', 'Data');
             sinon.assert.calledOnce(logger.intlog);
             sinon.assert.calledWith(logger.intlog, 'debug', 'Method','>','Message','Data');
         });
 
-        it('exit method should call debug level, no args', () => {
+        it('exit method should call exit level, no args', () => {
             logger.exit('Method', 'Message', 'Data');
             sinon.assert.calledOnce(logger.intlog);
             sinon.assert.calledWith(logger.intlog, 'debug', 'Method','<','Message','Data');
@@ -322,37 +328,42 @@ describe('Logger', () => {
             levelsandbox.restore();
         });
 
-        it('warn method should call warn level, no args', () => {
+        it('warn method should not call warn level, no args', () => {
             logger.warn('Method', 'Message', 'Data');
             sinon.assert.notCalled(logger.intlog);
         });
 
-        it('debug method should call debug level, no args', () => {
+        it('debug method should not call debug level, no args', () => {
             logger.debug('Method', 'Message', 'Data');
             sinon.assert.notCalled(logger.intlog);
         });
 
-        it('info method should call debug level, no args', () => {
+        it('info method should not call info level, no args', () => {
             logger.info('Method', 'Message', 'Data');
             sinon.assert.notCalled(logger.intlog);
         });
 
-        it('verbose method should call debug level, no args', () => {
+        it('verbose method should not call verbose level, no args', () => {
             logger.verbose('Method', 'Message', 'Data');
             sinon.assert.notCalled(logger.intlog);
         });
 
-        it('error method should call debug level, no args', () => {
+        it('perf method should not call verbose level, no args', () => {
+            logger.perf('Method', 'Perf message', {getTransactionID: () => {return 'txid';}}, new Date());
+            sinon.assert.notCalled(logger.intlog);
+        });
+
+        it('error method should not call error level, no args', () => {
             logger.error('Method', 'Message', 'Data');
             sinon.assert.notCalled(logger.intlog);
         });
 
-        it('entry method should call debug level, no args', () => {
+        it('entry method should not call entry level, no args', () => {
             logger.entry('Method', 'Message', 'Data');
             sinon.assert.notCalled(logger.intlog);
         });
 
-        it('exit method should call debug level, no args', () => {
+        it('exit method should not call exit level, no args', () => {
             logger.exit('Method', 'Message', 'Data');
             sinon.assert.notCalled(logger.intlog);
         });

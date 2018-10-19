@@ -130,7 +130,7 @@ class HLFQueryHandler {
      */
     async querySinglePeer(peer, txId, functionName, args) {
         const method = 'querySinglePeer';
-        LOG.entry(method, peer, txId, functionName, args);
+        LOG.entry(method, peer.getName(), txId, functionName, args);
         const request = {
             targets: [peer],
             chaincodeId: this.connection.businessNetworkIdentifier,
@@ -140,16 +140,21 @@ class HLFQueryHandler {
         };
 
         let payloads = await this.connection.channel.queryByChaincode(request);
-        LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the composer runtime chaincode`, payloads);
+        LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the composer runtime chaincode`);
         if (!payloads.length) {
             LOG.error(method, 'No payloads were returned from the query request:' + functionName);
             throw new Error('No payloads were returned from the query request:' + functionName);
         }
         const payload = payloads[0];
 
-        // if it has a code value is 14, means unavailable, so throw that error
-        // code 2 looks like it is a chaincode response that was an error.
-        if (payload instanceof Error && payload.code && payload.code === 14) {
+        //
+        // need to also handle the grpc error codes as before, but now need to handle the change in the
+        // node-sdk with a horrible match a string error, but would need a fix to node-sdk to resolve.
+        // A Fix is in 1.3
+        if (payload instanceof Error && (
+                (payload.code && (payload.code === 14 || payload.code === 1 || payload.code === 4)) ||
+                (payload.message.match(/Failed to connect before the deadline/))
+            )) {
             throw payload;
         }
 
