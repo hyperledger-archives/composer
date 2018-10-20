@@ -27,7 +27,7 @@ businessNetworkConnection.on('event', (event) => {
 });
 ```
 
-  This includes an event called `BasicEvent` which was created in the [publishing events](../business-network/publishing-events.html) documentation. The `eventId` property is always the same as the `transactionId` of the transaction which emitted the event, with an appended number in the form `"transactionId": "<transactionId>#number"`.
+  This includes an event called `BasicEvent` which was created in the [publishing events](../business-network/publishing-events.html) documentation. The `eventId` property is always the same as the `transactionId` of the transaction which emitted the event, with an appended number in the form `"eventId": "<transactionId>#number"`.
 
 ## What next?
 

@@ -8,6 +8,12 @@ We're going to assume that you've been through the Getting Started section and w
 
 To help getting started with this, there's a [Yeoman](http://yeoman.io/) generator that creates a suitable directory structure and helps bring in the required model and network modules.
 
+Note:
+
+The Yo Angular application generator only supports simple, basic business network model definitions - it is a simple application generator. The generated application (including the web forms it produces) will not support more complex types or field expressions - eg. concepts do not work, and other more complex modeled types or expressions too - you should check errors upon generation, or when using the skeleton app (eg. internal errors posted in the Angular application), and check for exceptions/validation errors in the REST server logging where the REST server was started. Note that concepts (an abstract class in the modeling language) if defined, are ignored if present in your model file, so as to complete generation of the skeleton application. It applies whether you connect to an existing business network, or generate an Angular skeleton from a business network archive (BNA) file. Complex field definitions (concepts is an example) or expressions will not appear in the generated HTML forms, and won't do,  unless you choose to go on and customise the skeleton web application yourself.
+
+Please note the same advisory applies to the CLI generator and generated app (ie `yo hyperledger-composer:cli` below )  - the simple node JS application will not show complex  types or field expressions in any sample asset listings, and again may show exceptions etc. etc.
+
 ## Yeoman
 
 If you don't already have it, install Yeoman

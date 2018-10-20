@@ -80,11 +80,12 @@ class HLFConnectionManager extends ConnectionManager {
      */
     static useHSM(ccp) {
         const method = 'useHSM';
-        LOG.entry(method, ccp);
+        LOG.entry(method);
 
         if (!ccp.client) {
             return false;
         }
+        LOG.debug(method, 'client-section:', ccp.client);
         const hsmConfig = ccp.client['x-hsm'];
         let useHSM = false;
         if (hsmConfig && hsmConfig.library && hsmConfig.library.trim().length !== 0 && hsmConfig.pin && hsmConfig.slot !== null && hsmConfig.slot !== undefined) {
@@ -104,7 +105,7 @@ class HLFConnectionManager extends ConnectionManager {
      */
     static getStoreLocation(ccp) {
         const method = 'getStoreLocation';
-        LOG.entry(method, ccp);
+        LOG.entry(method, ccp.cardName);
         let pathToUse;
         if (ccp.cardName) {
             pathToUse = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', ccp.cardName);
@@ -138,7 +139,7 @@ class HLFConnectionManager extends ConnectionManager {
      */
     static getHSMCryptoSuite(ccp, keyValStorePath) {
         const method = 'getHSMCryptoSuite';
-        LOG.entry(method, ccp, keyValStorePath);
+        LOG.entry(method, ccp.client, keyValStorePath);
 
         const hsmConfig = ccp.client['x-hsm'];
 
@@ -180,12 +181,11 @@ class HLFConnectionManager extends ConnectionManager {
      * Create a new client.
      * @param {object} ccp The Common Connection Profile
      * @param {boolean} [setupStore] true if a store is required to be setup
-     * @param {Wallet} [wallet] the wallet to use for the store
      * @return {Promise} A promise which resolves to a client or rejects if an error occurs
      */
     static async createClient(ccp, setupStore) {
         const method = 'createClient';
-        LOG.entry(method, ccp, setupStore);
+        LOG.entry(method, setupStore);
 
         let client;
         let wallet;
@@ -248,7 +248,7 @@ class HLFConnectionManager extends ConnectionManager {
             throw newError;
         }
 
-        LOG.exit(method, client);
+        LOG.exit(method);
         return client;
     }
 
@@ -259,7 +259,7 @@ class HLFConnectionManager extends ConnectionManager {
      */
     static async setupWallet(client, wallet) {
         const method = 'setupWallet';
-        LOG.entry(method, client, wallet);
+        LOG.entry(method, wallet);
         try {
             let store = await new HLFWalletProxy(wallet);
             client.setStateStore(store);
@@ -285,7 +285,7 @@ class HLFConnectionManager extends ConnectionManager {
      */
     static async setupHSM(client, ccp, wallet) {
         const method = 'setupHSM';
-        LOG.entry(method, client, ccp, wallet);
+        LOG.entry(method, wallet);
         let keyValStorePath = HLFConnectionManager.getStoreLocation(ccp);
         let store;
         try {
@@ -474,7 +474,8 @@ class HLFConnectionManager extends ConnectionManager {
 
         // Now we can create the connection.
         let connection = HLFConnectionManager.createHLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient);
-        LOG.exit(method, connection);
+        // Don't log the connection object it's too big
+        LOG.exit(method);
         return connection;
     }
 

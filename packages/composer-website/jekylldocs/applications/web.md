@@ -23,7 +23,11 @@ The flow for building an Angular application is as follows:
 
 <img src="../assets/img/Angular.svg" style="border: none;" alt="Angular Generator Flow">
 
-If you already have a Business Network Archive and would like to build a skeleton Angular application, use the following reference instructions, if you would like to fully understand how to develop a BNA from scratch and build an application from there please see the [Developer Tutorial](../tutorials/developer-tutorial.html).
+If you already have a Business Network Archive and would like to build a skeleton Angular application (see note below), use the following reference instructions, if you would like to fully understand how to develop a BNA from scratch and build an application from there please see the [Developer Tutorial](../tutorials/developer-tutorial.html).
+
+Note:
+
+The Yo Angular application generator only supports simple, basic business network model definitions - it is a simple application generator. The generated application (including the web forms it produces) will not support more complex types or field expressions - eg. concepts do not work, and other more complex modeled types or expressions too - you should check errors upon generation, or when using the skeleton app (eg. internal errors posted in the Angular application), and check for exceptions/validation errors in the REST server logging where the REST server was started. Note that concepts (an abstract class in the modeling language) if defined, are ignored if present in your model file, so as to complete generation of the skeleton application. It applies whether you connect to an existing business network, or generate an Angular skeleton from a business network archive (BNA) file. Complex field definitions (concepts is an example) or expressions will not appear in the generated HTML forms, and won't do,  unless you choose to go on and customise the skeleton web application yourself.
 
 **Prerequisites**
 

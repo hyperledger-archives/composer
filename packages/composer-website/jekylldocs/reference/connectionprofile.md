@@ -201,8 +201,25 @@ Here you define all the certificate authorities
 }
 ```
 
+To configure a Certificate Authority to use TLS, use the following format:
+
+```
+"certificateAuthorities": {
+    "ca.org1.example.com": {
+        "url": "https://ca.org1.example.com:7054",
+        "caName": "ca.org1.example.com",
+        "httpOptions": {
+            "verify": false
+        },
+        "tlsCACerts": {
+            "pem": "-----BEGIN CERTIFICATE----- <etc> "
+        }
+    }
+}
+```
+
 - `url` defines the url of a {{site.data.conrefs.hlf_full}} certificate authority to connect to. If your certificate authority requires a name, it must be defined in `caName`.
-- `trustedRoots` and `verify` options for the Certificate Authority are described here https://fabric-sdk-node.github.io/global.html#TLSOptions
+- `trustedRoots` and `verify` options for the Certificate Authority are described in more detail at https://fabric-sdk-node.github.io/tutorial-network-config.html
 
 
 ### Organizations
