@@ -523,9 +523,23 @@
     }
 }
 </code></pre></div>
+<p>To configure a Certificate Authority to use TLS, use the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"certificateAuthorities": {
+    "ca.org1.example.com": {
+        "url": "https://ca.org1.example.com:7054",
+        "caName": "ca.org1.example.com",
+        "httpOptions": {
+            "verify": false
+        },
+        "tlsCACerts": {
+            "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
+        }
+    }
+}
+</code></pre></div>
 <ul>
 <li><code>url</code> defines the url of a Hyperledger Fabric certificate authority to connect to. If your certificate authority requires a name, it must be defined in <code>caName</code>.</li>
-<li><code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described here <a href="https://fabric-sdk-node.github.io/global.html#TLSOptions">https://fabric-sdk-node.github.io/global.html#TLSOptions</a></li>
+<li><code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described in more detail at <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a></li>
 </ul>
 
 <h3 id="organizations">Organizations</h3>
