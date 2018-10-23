@@ -21,7 +21,6 @@ const Util = require('composer-common').Util;
 
 /**
  * Internal Utility Class
- * <p><a href="diagrams/util.svg"><img src="diagrams/util.svg" style="width:100%;"/></a></p>
  * @private
  */
 class HLFUtil {
@@ -37,6 +36,22 @@ class HLFUtil {
         } else if (!(securityContext instanceof HLFSecurityContext)) {
             throw new SecurityException(Globalize.formatMessage('util-securitycheck-novalidcontext'));
         }
+    }
+
+    /**
+     * Check the connectivity status of an event hub
+     * @param {ChannelEventHub} eventHub the channel event hub to check connectivity status for
+     * @returns {boolean} true if appears to be connected ok
+     */
+    static eventHubConnected(eventHub) {
+        const connectionState = eventHub.checkConnection();
+        // An eventHub can be connected, but in 1 of 3 states: IDLE, CONNECTING or READY.
+        // if it's IDLE or CONNECTING then the channel still usable, it's just either freed resources (IDLE) internally
+        // or in a state of re-establishing the connection (CONNECTING). But because the node sdk in _checkConnection
+        // checks only for the READY state and disconnects it and throws an error otherwise, and _checkConnection is used
+        // for the registrations, we can only check for READY. The default for IDLE_TIMEOUT for GRPC is as far as I know
+        // for now, INT_MAX so connnections should never go into IDLE or CONNECTING state.
+        return eventHub.isconnected() && connectionState === 'READY';
     }
 
 }

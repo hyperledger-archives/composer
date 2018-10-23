@@ -252,7 +252,7 @@ Feature: Cli-identities steps
     Scenario: Using the CLI, I can issue an Identity to the participant called Frank using Ange
         When I run the following expected pass CLI command
             """
-            composer identity issue --card admin@basic-sample-network -u fra -a org.acme.sample.SampleParticipant#fra -f ./tmp/frank@basic-sample-network.card
+            composer identity issue --card ange@basic-sample-network -u fra -a org.acme.sample.SampleParticipant#fra -f ./tmp/frank@basic-sample-network.card
             """
         Then The stdout information should include text matching /Command succeeded/
         Then I have the following files
