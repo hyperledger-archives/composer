@@ -21,6 +21,9 @@ const cmdUtil = require('./lib/cmds/utils/cmdutils');
 const yargs = require('yargs');
 const chalk = require('chalk');
 const version = 'v' +require('./package.json').version;
+const Logger = require('composer-common').Logger;
+const LOG = Logger.getLog('CLI');
+LOG.info('CLI', 'CLI Launched with', process.argv);
 
 let results = yargs
     .commandDir('./lib/cmds')
@@ -41,11 +44,11 @@ if (typeof(results.thePromise) !== 'undefined'){
         if (!results.quiet) {
             cmdUtil.log(chalk.green('\nCommand succeeded\n'));
         }
-        process.exit(0);
+        Logger.flushLogFileAndExit(0);
     }).catch((error) => {
         cmdUtil.log(error+chalk.red('\nCommand failed\n'));
-        process.exit(1);
+        Logger.flushLogFileAndExit(1);
     });
 } else {
-    process.exit(0);
+    Logger.flushLogFileAndExit(0);
 }

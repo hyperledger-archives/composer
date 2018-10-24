@@ -430,6 +430,26 @@ class Logger {
     }
 
     /**
+     * flush out the standard composer log file and exit. This is only of use to CLI
+     * applications which will log to the file system.
+     * @param {*} err the exit value
+     */
+    static flushLogFileAndExit(err) {
+        const fileTransport = _logger && _logger.transports ? _logger.transports['debug-file'] : null;
+        if (fileTransport && fileTransport._stream) {
+            fileTransport.on('flush', () => {
+                process.exit(err);
+            });
+            // calling close on the logger sometimes hung the cli
+            // flush could fail if there was no stream, but appears to be more reliable.
+            fileTransport.flush();
+        } else {
+            process.exit(err);
+        }
+
+    }
+
+    /**
      * return the log configuration that is in force, note that this method just returns the information
      * it does create, modify or delete it
      *
@@ -665,9 +685,7 @@ class Logger {
         const loggerToUse = localConfig.logger;
         let myLogger;
         try {
-            // const mod = 'config';
             const req = require;
-            // const config = req(mod);
             myLogger = req(loggerToUse);
         } catch (e) {
              // Print the error to the console and just use the null logger instead.
