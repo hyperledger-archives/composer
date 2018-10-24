@@ -24,6 +24,7 @@ const Identifiable = require('../../lib/model/identifiable');
 const Typed = require('../../lib/model/typed');
 
 const chai = require('chai');
+
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 const sinon = require('sinon');
@@ -287,6 +288,11 @@ describe('Logger', () => {
             sinon.assert.calledWith(logger.intlog, 'verbose', 'Method', sinon.match.string);
         });
 
+        it('perf method should call verbose level and work without a txid, no args', () => {
+            logger.perf('Method', 'Perf message', null, new Date());
+            sinon.assert.calledOnce(logger.intlog);
+            sinon.assert.calledWith(logger.intlog, 'verbose', 'Method', sinon.match.string);
+        });
 
         it('error method should call error level, no args', () => {
             logger.error('Method', 'Message', 'Data');
@@ -446,7 +452,7 @@ describe('Logger', () => {
 
     });
 
-    describe('#getLoggerCfg', () => {
+    describe('#processLoggerConfig', () => {
         let sandbox;
 
         beforeEach(()=>{
@@ -854,6 +860,88 @@ describe('Logger', () => {
 
         });
 
+    });
+
+    describe('#flushLogFileAndExit', () => {
+        let sandbox;
+
+        beforeEach(()=>{
+            Logger.__reset();
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(()=>{
+            Logger.__reset();
+            sandbox.restore();
+        });
+
+        it('should just exit with error code if no transports defined', () => {
+            sandbox.stub(process, 'exit');
+            let stubLogger = {
+            };
+
+            Logger.setFunctionalLogger(stubLogger);
+            Logger.flushLogFileAndExit(99);
+            sinon.assert.calledOnce(process.exit);
+            sinon.assert.calledWith(process.exit, 99);
+        });
+
+        it('should just exit with error code if no file logger transport defined', () => {
+            sandbox.stub(process, 'exit');
+            let stubTransport = {
+                on: sinon.stub(),
+                flush: sinon.stub()
+            };
+            let stubLogger = {
+                transports: {'info-file': stubTransport}
+            };
+
+            Logger.setFunctionalLogger(stubLogger);
+            Logger.flushLogFileAndExit(0);
+            sinon.assert.calledOnce(process.exit);
+            sinon.assert.calledWith(process.exit, 0);
+            sinon.assert.notCalled(stubTransport.on);
+            sinon.assert.notCalled(stubTransport.flush);
+        });
+
+        it('should just exit with error code if file logger transport defined, but no stream exists', () => {
+            sandbox.stub(process, 'exit');
+            let stubTransport = {
+                on: sinon.stub(),
+                flush: sinon.stub()
+            };
+            let stubLogger = {
+                transports: {'debug-file': stubTransport}
+            };
+
+            Logger.setFunctionalLogger(stubLogger);
+            Logger.flushLogFileAndExit(0);
+            sinon.assert.calledOnce(process.exit);
+            sinon.assert.calledWith(process.exit, 0);
+            sinon.assert.notCalled(stubTransport.on);
+            sinon.assert.notCalled(stubTransport.flush);
+        });
+
+
+        it('should register a flush handler and exit only when that exit handler is called if file logger transport defined', () => {
+            sandbox.stub(process, 'exit');
+            let stubTransport = {
+                on: sinon.stub().yields(),
+                flush: sinon.stub(),
+                _stream: {}
+            };
+            let stubLogger = {
+                close: sinon.stub(),
+                transports: {'debug-file': stubTransport}
+            };
+
+            Logger.setFunctionalLogger(stubLogger);
+            Logger.flushLogFileAndExit(77);
+            sinon.assert.calledOnce(process.exit);
+            sinon.assert.calledWith(process.exit, 77);
+            sinon.assert.calledOnce(stubTransport.flush);
+            sinon.assert.calledOnce(stubTransport.on);
+        });
     });
 
     describe('#invokeAllLevels', ()=>{

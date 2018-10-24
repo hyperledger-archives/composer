@@ -20,6 +20,7 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 const path = require('path');
+const Logger = require('composer-common').Logger;
 
 const yargs = require('yargs');
 const chalk = require('chalk');
@@ -66,7 +67,7 @@ describe('composer cli', () => {
         sandbox.stub(yargs, 'alias').returns(yargs);
         sandbox.stub(yargs, 'version').returns(yargs);
 
-        sandbox.stub(process, 'exit');
+        sandbox.stub(Logger, 'flushLogFileAndExit');
         sandbox.stub(chalk, 'green');
         sandbox.stub(chalk, 'red');
     });
@@ -92,7 +93,7 @@ describe('composer cli', () => {
             sinon.assert.calledOnce(yargs.alias);
             sinon.assert.calledOnce(yargs.version);
             sinon.assert.calledOnce(yargs.describe);
-            sinon.assert.calledWith(process.exit, 0);
+            sinon.assert.calledWith(Logger.flushLogFileAndExit, 0);
 
         });
 
@@ -100,19 +101,19 @@ describe('composer cli', () => {
             sandbox.stub(yargs, 'describe').returns({ argv: {thePromise: new fakePromise()} });
             delete require.cache[path.resolve(__dirname, '../cli.js')];
             require('../cli.js');
-            sinon.assert.calledWith(process.exit, 0);
+            sinon.assert.calledWith(Logger.flushLogFileAndExit, 0);
         });
         it('Should handle resolved promise, with the quiet setting', () => {
             sandbox.stub(yargs, 'describe').returns({ argv: {thePromise: new fakePromise(),quiet:true} });
             delete require.cache[path.resolve(__dirname, '../cli.js')];
             require('../cli.js');
-            sinon.assert.calledWith(process.exit, 0);
+            sinon.assert.calledWith(Logger.flushLogFileAndExit, 0);
         });
         it('Should handle rejected promise', () => {
             sandbox.stub(yargs, 'describe').returns({ argv: {thePromise: new fakePromise()} });
             delete require.cache[path.resolve(__dirname, '../cli.js')];
             require('../cli.js');
-            sinon.assert.calledWith(process.exit, 1);
+            sinon.assert.calledWith(Logger.flushLogFileAndExit, 1);
         });
 
     });
