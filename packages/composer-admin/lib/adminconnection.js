@@ -500,6 +500,10 @@ class AdminConnection {
      *
      * Note this will remove ALL the contents of the network registries, but not any system registries
      *
+     * IMPORTANT: Never use this api on a production or shared business network. It should only ever be
+     * used as a quick reset against a business network running locally on your machine for which you will
+     * not keep. Use this for your local development testing purposes only
+     *
      * @example
      * // Resets a Business Network Definition
      * let adminConnection = new AdminConnection();
