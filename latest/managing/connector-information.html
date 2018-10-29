@@ -431,11 +431,17 @@ in your /home/user1/config directory:</p>
 <p>To grant an identity the authority to register new identities with a certificate authority from the command line, the <code>-x</code> option is available (which is a shortcut replacement for <code>-o issuer=true</code>).</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer identity issue -c admin@digitalproperty-network -u MyUser -a net.biz.digitalPropertyNetwork.Person#P1 -x
 </code></pre></div>
-<h2 id="api">API</h2>
+<p>To define the affiliation to use specify <code>-o affiliation=org2.department1</code>. If you specifically don&#39;t want to specify an affiliation and not have the default of <code>org1</code> used, then specify as follows <code>-o affiliation=&#39;&#39;</code>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer identity issue -c admin@digitalproperty-network -u MyUser -a net.biz.digitalPropertyNetwork.Person#P1 -o affiliation=org2.department1
+</code></pre></div>
+<h3 id="api">API</h3>
 
 <p>To specify the issuer property you set it in an object and pass this object as part of the <code>issueOptions</code> on <code>issueIdentity</code>.
 For example to issue an identity that has issuer authority</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">issueIdentity</span><span class="p">(</span><span class="nx">participantId</span><span class="p">,</span> <span class="nx">newUserId</span><span class="p">,</span> <span class="p">{</span><span class="na">issuer</span><span class="p">:</span> <span class="kc">true</span><span class="p">});</span>
+</code></pre></div>
+<p>To specify the affiliation property</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">issueIdentity</span><span class="p">(</span><span class="nx">participantId</span><span class="p">,</span> <span class="nx">newUserId</span><span class="p">,</span> <span class="p">{</span><span class="na">affiliation</span><span class="p">:</span> <span class="s1">'org.department1'</span><span class="p">});</span>
 </code></pre></div>
 <h2 id="next-steps">Next steps</h2>
 
