@@ -56,12 +56,12 @@ describe('HLFConnection', () => {
     let mockPeer1, mockPeer2, mockPeer3, mockEventHub1, mockEventHub2, mockEventHub3, mockQueryHandler;
     let connectOptions;
     let connection;
-    let mockTransactionID, logWarnSpy, logErrorSpy;
+    let mockTransactionID, logWarnSpy, logErrorSpy, logInfoSpy, LOG;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         clock = sinon.useFakeTimers();
-        const LOG = Logger.getLog('HLFConnection');
+        LOG = Logger.getLog('HLFConnection');
         logWarnSpy = sandbox.spy(LOG, 'warn');
         logErrorSpy = sandbox.spy(LOG, 'error');
         mockConnectionManager = sinon.createStubInstance(HLFConnectionManager);
@@ -193,6 +193,18 @@ describe('HLFConnection', () => {
         it('should set the requiredEventHubs to 1 if non numeric string specified', () => {
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
             connection.requiredEventHubs.should.equal(1);
+        });
+
+        it('should log at info a fabric level connection being created', () => {
+            logInfoSpy = sandbox.spy(LOG, 'info');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
+            sinon.assert.calledWith(logInfoSpy, 'constructor', sinon.match(/no business network/));
+        });
+
+        it('should log at info a business network level connection being created', () => {
+            logInfoSpy = sandbox.spy(LOG, 'info');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'test-business-network', {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
+            sinon.assert.calledWith(logInfoSpy, 'constructor', sinon.match(/test-business-network/));
         });
     });
 
@@ -636,6 +648,20 @@ describe('HLFConnection', () => {
             sinon.assert.calledOnce(stubRemove);
             sinon.assert.calledWith(stubRemove, 'exit', 'exitHandle');
             sinon.assert.calledTwice(connection._disconnect);
+        });
+
+        it('should log at info a fabric level connection being disconnected', () => {
+            logInfoSpy = sandbox.spy(LOG, 'info');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
+            connection.disconnect();
+            sinon.assert.calledWith(logInfoSpy.secondCall, 'disconnect', sinon.match(/no business network/));
+        });
+
+        it('should log at info a business network level connection being created', () => {
+            logInfoSpy = sandbox.spy(LOG, 'info');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'test-business-network', {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
+            connection.disconnect();
+            sinon.assert.calledWith(logInfoSpy.secondCall, 'disconnect', sinon.match(/test-business-network/));
         });
 
     });

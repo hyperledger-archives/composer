@@ -120,9 +120,9 @@ class HLFTxEventHandler {
                 LOG.error(method, msg);
                 throw Error(msg);
             }
-            LOG.exit(method);
+        } else {
+            LOG.warn(method, `No event hubs available to listen on to wait for a commit for transaction '${this.txId}'`);
         }
-        LOG.warn(method, `No event hubs available to listen on to wait for a commit for transaction '${this.txId}'`);
         LOG.exit(method);
     }
 

@@ -46,6 +46,7 @@ describe('HLFQueryHandler', () => {
         mockPeer3.index = 3;
         mockConnection = sinon.createStubInstance(HLFConnection);
         mockTransactionID = sinon.createStubInstance(TransactionID);
+        mockTransactionID.getTransactionID.returns('0987654321');
         mockChannel = sinon.createStubInstance(Channel);
         mockConnection.channel = mockChannel;
         mockConnection.getChannelPeersInOrg.withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([mockPeer2, mockPeer1, mockPeer3]);
