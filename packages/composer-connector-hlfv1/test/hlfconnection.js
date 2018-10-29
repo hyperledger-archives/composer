@@ -1889,7 +1889,7 @@ describe('HLFConnection', () => {
             logPerfSpy = sandbox.spy(LOG, 'perf');
             mockQueryHandler.queryChaincode.withArgs(mockTransactionID, 'myfunc', ['arg1', 'arg2']).resolves(response);
             await connection.queryChainCode(mockSecurityContext, 'executeQuery', ['qType', 'myQuery']);
-            sinon.assert.calledWith(logPerfSpy, 'queryChainCode', sinon.match(/execute query type.*qType.*myQuery/));
+            sinon.assert.calledWith(logPerfSpy, 'queryChainCode', sinon.match(/execute 'qType' query 'myQuery'/));
         });
 
         it('should log a specific perf message when invoking non executeQuery function', async () => {
