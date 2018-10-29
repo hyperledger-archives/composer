@@ -259,7 +259,7 @@ class HLFConnectionManager extends ConnectionManager {
      */
     static async setupWallet(client, wallet) {
         const method = 'setupWallet';
-        LOG.entry(method, client, wallet);
+        LOG.entry(method, wallet);
         try {
             let store = await new HLFWalletProxy(wallet);
             client.setStateStore(store);
@@ -285,7 +285,7 @@ class HLFConnectionManager extends ConnectionManager {
      */
     static async setupHSM(client, ccp, wallet) {
         const method = 'setupHSM';
-        LOG.entry(method, client, wallet);
+        LOG.entry(method, wallet);
         let keyValStorePath = HLFConnectionManager.getStoreLocation(ccp);
         let store;
         try {

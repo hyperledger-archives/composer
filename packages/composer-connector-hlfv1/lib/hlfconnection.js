@@ -102,6 +102,12 @@ class HLFConnection extends Connection {
         // don't log the client, channel, caClient objects here they're too big
         LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions);
 
+        if (this.businessNetworkIdentifier) {
+            LOG.info(method, `Creating a connection using profile ${connectionProfile} to network ${businessNetworkIdentifier}`);
+        } else {
+            LOG.info(method, `Creating a connection using profile ${connectionProfile} to fabric (no business network)`);
+        }
+
         // Validate all the arguments.
         if (!connectOptions) {
             throw new Error('connectOptions not specified');
@@ -139,6 +145,11 @@ class HLFConnection extends Connection {
     disconnect() {
         const method = 'disconnect';
         LOG.entry(method);
+        if (this.businessNetworkIdentifier) {
+            LOG.info(method, `Disconnecting the connection to ${this.businessNetworkIdentifier}`);
+        } else {
+            LOG.info(method, 'Disconnecting the connection to fabric (no business network)');
+        }
 
         if (this.exitListener) {
             process.removeListener('exit', this.exitListener);
@@ -197,8 +208,10 @@ class HLFConnection extends Connection {
         LOG.debug(method, 'Submitting enrollment request');
         let options = { enrollmentID: enrollmentID, enrollmentSecret: enrollmentSecret };
         let user;
+        const t0 = Date.now();
         return this.caClient.enroll(options)
             .then((enrollment) => {
+                LOG.perf(method, `Total duration to enroll ${enrollmentID}: `, null, t0);
                 // Store the certificate data in a new user object.
                 LOG.debug(method, 'Successfully enrolled, creating user object');
                 user = HLFConnection.createUser(enrollmentID, this.client);
@@ -216,12 +229,13 @@ class HLFConnection extends Connection {
                 return this._initializeChannel();
             })
             .then(() => {
-                LOG.exit(method, user);
+                // Don't log the user, it's too big
+                LOG.exit(method);
                 return user;
             })
             .catch((error) => {
+                LOG.error(method, error);
                 const newError = new Error('Error trying to enroll user or load channel configuration. ' + error);
-                LOG.error(method, newError);
                 throw newError;
             });
     }
@@ -876,8 +890,10 @@ class HLFConnection extends Connection {
         let txId = this.client.newTransactionID();
 
         const t0 = Date.now();
+        LOG.perf(method, `start of querying chaincode ${functionName}(${args})`, txId, t0);
+
         let result = await this.queryHandler.queryChaincode(txId, functionName, args);
-        LOG.perf(method, 'Total duration for queryChaincode: ', txId, t0);
+        LOG.perf(method, `Total duration for queryChaincode to ${functionName}: `, txId, t0);
         LOG.exit(method, result ? result : null);
         return result ? result : null;
     }
@@ -934,6 +950,8 @@ class HLFConnection extends Connection {
         let validResponses;
 
         let t0 = Date.now();
+        LOG.perf(method, `start of chaincode invocation ${functionName}(${args})`, txId, t0);
+
         try {
 
             // initialize the channel if it hasn't been initialized already otherwise verification will fail.
@@ -950,7 +968,7 @@ class HLFConnection extends Connection {
                 fcn: functionName,
                 args: args
             };
-            LOG.perf(method, 'Total duration to initialize channel: ', txId, t0);
+            LOG.perf(method, 'Total duration to initialize: ', txId, t0);
             t0 = Date.now();
 
             let results;
@@ -960,11 +978,11 @@ class HLFConnection extends Connection {
                 LOG.error(method, error);
                 throw new Error(`Error received from sendTransactionProposal: ${error}`);
             }
-            LOG.perf(method, 'Total duration for sendTransactionProposal: ', txId, t0);
+            LOG.perf(method, `Total duration for sendTransactionProposal ${functionName}: `, txId, t0);
             t0 = Date.now();
 
             // Validate the endorsement results.
-            LOG.debug(method, `Received ${results.length} result(s) from invoking the composer runtime chaincode`, results);
+            LOG.debug(method, `Received ${results.length} result(s) from invoking the composer runtime chaincode`);
             const proposalResponses = results[0];
             validResponses = this._validatePeerResponses(proposalResponses, true).validResponses;
 
