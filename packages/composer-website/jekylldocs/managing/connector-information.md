@@ -120,13 +120,25 @@ To grant an identity the authority to register new identities with a certificate
 composer identity issue -c admin@digitalproperty-network -u MyUser -a net.biz.digitalPropertyNetwork.Person#P1 -x
 ```
 
-## API
+To define the affiliation to use specify `-o affiliation=org2.department1`. If you specifically don't want to specify an affiliation and not have the default of `org1` used, then specify as follows `-o affiliation=''`.
+
+```
+composer identity issue -c admin@digitalproperty-network -u MyUser -a net.biz.digitalPropertyNetwork.Person#P1 -o affiliation=org2.department1
+```
+
+### API
 
 To specify the issuer property you set it in an object and pass this object as part of the `issueOptions` on `issueIdentity`.
 For example to issue an identity that has issuer authority
 
 ```javascript
 await businessNetworkConnection.issueIdentity(participantId, newUserId, {issuer: true});
+```
+
+To specify the affiliation property
+
+```javascript
+await businessNetworkConnection.issueIdentity(participantId, newUserId, {affiliation: 'org.department1'});
 ```
 
 ## Next steps

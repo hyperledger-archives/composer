@@ -70,7 +70,9 @@ const _logLevelAsString = {
 
 // If  composer[debug]:acls is provided, the debug level of trace will be used for specified string.
 const PROFILES = {
-    'acls' : ['composer[#]:AccessController']
+    'acls' : ['composer[#]:AccessController'],
+    'hlfv1': ['composer[#]:HLFConnectionManager','composer[#]:HLFConnection',
+        'composer[#]:HLFQueryHandler', 'composer[#]:HLFTxEventHandler']
 };
 
 /**
@@ -304,7 +306,7 @@ class Logger {
      *
      * @param {String} method calling method
      * @param {String} msg Text Message
-     * @param {TransactionID} txId The node-sdk transaction id
+     * @param {TransactionID} txId The node-sdk transaction id or null if no txid
      * @param {Date} startTime Date object representing the start of the timed block
      *
      * @private
@@ -314,7 +316,11 @@ class Logger {
             return;
         }
         const timeTaken = (Date.now() - startTime).toFixed(2);
-        this.intlog('verbose', method, `[${txId.getTransactionID().substring(0, 8)}] ${msg} ${timeTaken}ms`);
+        if (txId && txId.getTransactionID) {
+            this.intlog('verbose', method, `[${txId.getTransactionID().substring(0, 8)}] ${msg} ${timeTaken}ms`);
+        } else {
+            this.intlog('verbose', method, `[NO TXID ] ${msg} ${timeTaken}ms`);
+        }
     }
 
     /**

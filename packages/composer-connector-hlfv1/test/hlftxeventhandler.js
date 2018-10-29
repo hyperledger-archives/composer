@@ -17,6 +17,7 @@
 const HLFTxEventHandler = require('../lib/hlftxeventhandler');
 const ChannelEventHub = require('fabric-client/lib/ChannelEventHub');
 const Logger = require('composer-common').Logger;
+const HLFUtil = require('../lib/hlfutil');
 
 const sinon = require('sinon');
 const chai = require('chai');
@@ -29,7 +30,9 @@ describe('HLFTxEventHandler', () => {
     let eventhub1, eventhub2;
     beforeEach(() => {
         eventhub1 = sinon.createStubInstance(ChannelEventHub);
+        eventhub1._id = '1';
         eventhub2 = sinon.createStubInstance(ChannelEventHub);
+        eventhub2._id = '2';
         sandbox = sinon.sandbox.create();
         const LOG = Logger.getLog('HLFTxEventHandler');
         logWarnSpy = sandbox.spy(LOG, 'warn');
@@ -39,20 +42,33 @@ describe('HLFTxEventHandler', () => {
     });
 
     describe('#startListening', () => {
-        it('Should do nothing if no events hubs', () => {
+        it('Should do nothing if no events hubs and none are required', () => {
+            sandbox.stub(global, 'setTimeout');
+            let evHandler = new HLFTxEventHandler(null, null, null, 0);
+            evHandler.startListening();
+            sinon.assert.notCalled(global.setTimeout);
+            evHandler = new HLFTxEventHandler([], '1234', 100, 0);
+            evHandler.startListening();
+            sinon.assert.notCalled(global.setTimeout);
+        });
+
+        it('Should throw an error if no event hubs and an event hub is required', () => {
             sandbox.stub(global, 'setTimeout');
             let evHandler = new HLFTxEventHandler(null, null, null);
-            evHandler.startListening();
+            (() => {
+                evHandler.startListening();
+            }).should.throw(/No connected event hubs/);
             sinon.assert.notCalled(global.setTimeout);
             evHandler = new HLFTxEventHandler([], '1234', 100);
-            evHandler.startListening();
+            (() => {
+                evHandler.startListening();
+            }).should.throw(/No connected event hubs/);
             sinon.assert.notCalled(global.setTimeout);
-
         });
 
         it('Should set up a timeout and register for a single event hub', () => {
             sandbox.stub(global, 'setTimeout');
-            eventhub1.isconnected.returns(true);
+            sandbox.stub(HLFUtil, 'eventHubConnected').withArgs(eventhub1).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1], '1234', 31);
             evHandler.startListening();
             sinon.assert.calledOnce(global.setTimeout);
@@ -64,8 +80,9 @@ describe('HLFTxEventHandler', () => {
 
         it('Should set up timeouts and register for multiple event hubs', () => {
             sandbox.stub(global, 'setTimeout');
-            eventhub1.isconnected.returns(true);
-            eventhub2.isconnected.returns(true);
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(eventhub1).returns(true);
+            ehc.withArgs(eventhub2).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
             evHandler.startListening();
             sinon.assert.calledTwice(global.setTimeout);
@@ -79,8 +96,9 @@ describe('HLFTxEventHandler', () => {
 
         it('Should ignore non connected event hubs', () => {
             sandbox.stub(global, 'setTimeout');
-            eventhub1.isconnected.returns(false);
-            eventhub2.isconnected.returns(true);
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(eventhub1).returns(false);
+            ehc.withArgs(eventhub2).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
             evHandler.startListening();
             sinon.assert.calledOnce(global.setTimeout);
@@ -93,8 +111,9 @@ describe('HLFTxEventHandler', () => {
 
         it('Should handle timeout for an event', () => {
             sandbox.stub(global, 'setTimeout').yields();
-            eventhub1.isconnected.returns(true);
-            eventhub2.isconnected.returns(true);
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(eventhub1).returns(true);
+            ehc.withArgs(eventhub2).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
             evHandler.startListening();
             evHandler.waitForEvents().should.eventually.be.rejectedWith(/commit notification/)
@@ -104,14 +123,12 @@ describe('HLFTxEventHandler', () => {
                     sinon.assert.calledOnce(eventhub2.unregisterTxEvent);
                     sinon.assert.calledWith(eventhub2.unregisterTxEvent, '1234');
                 });
-
-
         });
 
         it('Should handle a transaction event response which is valid', async () => {
             sandbox.stub(global, 'setTimeout');
             sandbox.stub(global, 'clearTimeout');
-            eventhub1.isconnected.returns(true);
+            sandbox.stub(HLFUtil, 'eventHubConnected').withArgs(eventhub1).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1], '1234', 31);
             evHandler.startListening();
             eventhub1.registerTxEvent.yield('1234', 'VALID');
@@ -123,13 +140,12 @@ describe('HLFTxEventHandler', () => {
             } catch(err) {
                 should.fail(null,null,`${err} unexpected`);
             }
-
         });
 
         it('Should handle a transaction event response which is not valid', async () => {
             sandbox.stub(global, 'setTimeout');
             sandbox.stub(global, 'clearTimeout');
-            eventhub1.isconnected.returns(true);
+            sandbox.stub(HLFUtil, 'eventHubConnected').withArgs(eventhub1).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1], '1234', 31);
             evHandler.startListening();
             eventhub1.registerTxEvent.yield('1234', 'ENDORSEMENT_POLICY_FAILURE');
@@ -144,24 +160,84 @@ describe('HLFTxEventHandler', () => {
             }
         });
 
-        it('Should handle a transaction error response', async () => {
+        it('Should handle a transaction listener error response on the only single event hub', async () => {
             sandbox.stub(global, 'setTimeout');
             sandbox.stub(global, 'clearTimeout');
-            eventhub1.isconnected.returns(true);
+            sandbox.stub(HLFUtil, 'eventHubConnected').withArgs(eventhub1).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1], '1234', 31);
             evHandler.startListening();
             eventhub1.registerTxEvent.callArgWith(2, new Error('lost connection'));
             sinon.assert.calledOnce(global.clearTimeout);
             sinon.assert.calledOnce(eventhub1.unregisterTxEvent);
             sinon.assert.calledWith(eventhub1.unregisterTxEvent, '1234');
+            await evHandler.waitForEvents().should.be.rejectedWith(/No event hubs responded/);
             sinon.assert.calledOnce(logWarnSpy);
-            try {
-                await evHandler.waitForEvents();
-            } catch(err) {
-                should.fail(null,null,`${err} unexpected`);
-            }
-
         });
+    });
+
+    it('Should handle a transaction listener error response all event hubs and event hubs required', async () => {
+        sandbox.stub(global, 'setTimeout');
+        sandbox.stub(global, 'clearTimeout');
+        const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+        ehc.withArgs(eventhub1).returns(true);
+        ehc.withArgs(eventhub2).returns(true);
+        let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
+        evHandler.startListening();
+        eventhub1.registerTxEvent.callArgWith(2, new Error('lost connection'));
+        eventhub2.registerTxEvent.callArgWith(2, new Error('lost connection'));
+        sinon.assert.calledTwice(global.clearTimeout);
+        sinon.assert.calledOnce(eventhub1.unregisterTxEvent);
+        sinon.assert.calledWith(eventhub1.unregisterTxEvent, '1234');
+        sinon.assert.calledOnce(eventhub2.unregisterTxEvent);
+        sinon.assert.calledWith(eventhub2.unregisterTxEvent, '1234');
+        await evHandler.waitForEvents().should.be.rejectedWith(/No event hubs responded/);
+        sinon.assert.calledTwice(logWarnSpy);
+    });
+
+    it('Should handle a transaction listener error response all event hubs but no event hubs required', async () => {
+        sandbox.stub(global, 'setTimeout');
+        sandbox.stub(global, 'clearTimeout');
+        const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+        ehc.withArgs(eventhub1).returns(true);
+        ehc.withArgs(eventhub2).returns(true);
+        let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31, 0);
+        evHandler.startListening();
+        eventhub1.registerTxEvent.callArgWith(2, new Error('lost connection'));
+        eventhub2.registerTxEvent.callArgWith(2, new Error('lost connection'));
+        sinon.assert.calledTwice(global.clearTimeout);
+        sinon.assert.calledOnce(eventhub1.unregisterTxEvent);
+        sinon.assert.calledWith(eventhub1.unregisterTxEvent, '1234');
+        sinon.assert.calledOnce(eventhub2.unregisterTxEvent);
+        sinon.assert.calledWith(eventhub2.unregisterTxEvent, '1234');
+        try {
+            await evHandler.waitForEvents();
+        } catch(err) {
+            should.fail(null,null,`${err} unexpected`);
+        }
+        sinon.assert.calledThrice(logWarnSpy);
+    });
+
+    it('Should handle a transaction listener error response on one but not all of the event hubs', async () => {
+        sandbox.stub(global, 'setTimeout');
+        sandbox.stub(global, 'clearTimeout');
+        const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+        ehc.withArgs(eventhub1).returns(true);
+        ehc.withArgs(eventhub2).returns(true);
+        let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
+        evHandler.startListening();
+        eventhub1.registerTxEvent.callArgWith(2, new Error('lost connection'));
+        eventhub2.registerTxEvent.yield('1234', 'VALID');
+        sinon.assert.calledTwice(global.clearTimeout);
+        sinon.assert.calledOnce(eventhub1.unregisterTxEvent);
+        sinon.assert.calledWith(eventhub1.unregisterTxEvent, '1234');
+        sinon.assert.calledOnce(eventhub2.unregisterTxEvent);
+        sinon.assert.calledWith(eventhub2.unregisterTxEvent, '1234');
+        sinon.assert.calledOnce(logWarnSpy);
+        try {
+            await evHandler.waitForEvents();
+        } catch(err) {
+            should.fail(null, null, `${err} unexpected`);
+        }
     });
 
     describe('#waitForEvents', () => {
@@ -176,7 +252,7 @@ describe('HLFTxEventHandler', () => {
 
         it('Should do wait for 1 event', () => {
             sandbox.stub(global, 'setTimeout');
-            eventhub1.isconnected.returns(true);
+            sandbox.stub(HLFUtil, 'eventHubConnected').withArgs(eventhub1).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1], '1234', 31);
             evHandler.startListening();
             evHandler.listenerPromises[0].should.be.instanceOf(Promise);
@@ -186,27 +262,29 @@ describe('HLFTxEventHandler', () => {
             evHandler = new HLFTxEventHandler([eventhub1], '1234', 31);
             evHandler.startListening();
             evHandler.listenerPromises[0].should.be.instanceOf(Promise);
-            evHandler.listenerPromises[0] = Promise.reject();
-            evHandler.waitForEvents().should.eventually.be.rejected;
+            evHandler.listenerPromises[0] = Promise.reject(new Error('some error'));
+            evHandler.waitForEvents().should.eventually.be.rejectedWith(/some error/);
         });
 
         it('Should do wait more than 1 event', () => {
             sandbox.stub(global, 'setTimeout');
-            eventhub1.isconnected.returns(true);
-            eventhub2.isconnected.returns(true);
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(eventhub1).returns(true);
+            ehc.withArgs(eventhub2).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
             evHandler.startListening();
             evHandler.listenerPromises[0].should.be.instanceOf(Promise);
             evHandler.listenerPromises[0] = Promise.resolve();
             evHandler.listenerPromises[1].should.be.instanceOf(Promise);
-            evHandler.listenerPromises[1] = Promise.reject();
-            evHandler.waitForEvents().should.eventually.be.rejected;
+            evHandler.listenerPromises[1] = Promise.reject(new Error('some error'));
+            evHandler.waitForEvents().should.eventually.be.rejectedWith(/some error/);
         });
 
         it('Should handle timeout for an event', () => {
             sandbox.stub(global, 'setTimeout').yields();
-            eventhub1.isconnected.returns(true);
-            eventhub2.isconnected.returns(true);
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(eventhub1).returns(true);
+            ehc.withArgs(eventhub2).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
             evHandler.startListening();
             evHandler.waitForEvents().should.eventually.be.rejectedWith(/commit notification/)
@@ -225,8 +303,9 @@ describe('HLFTxEventHandler', () => {
             sandbox.stub(global, 'clearTimeout');
             eventhub1.registerTxEvent.callsArgWith(1, '1234', 'VALID');
             eventhub2.registerTxEvent.callsArgWith(1, '1234', 'VALID');
-            eventhub1.isconnected.returns(true);
-            eventhub2.isconnected.returns(true);
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(eventhub1).returns(true);
+            ehc.withArgs(eventhub2).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
             evHandler.startListening();
             evHandler.waitForEvents()
@@ -239,7 +318,6 @@ describe('HLFTxEventHandler', () => {
                     sinon.assert.calledWith(global.clearTimeout.firstCall, 'handle1');
                     sinon.assert.calledWith(global.clearTimeout.secondCall, 'handle2');
                 });
-
         });
 
         it('Should handle a transaction event response which isn\'t valid', () => {
@@ -249,8 +327,9 @@ describe('HLFTxEventHandler', () => {
             sandbox.stub(global, 'clearTimeout');
             eventhub1.registerTxEvent.callsArgWith(1, '1234', 'VALID');
             eventhub2.registerTxEvent.callsArgWith(1, '1234', 'INVALID');
-            eventhub1.isconnected.returns(true);
-            eventhub2.isconnected.returns(true);
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(eventhub1).returns(true);
+            ehc.withArgs(eventhub2).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
             evHandler.startListening();
             evHandler.waitForEvents().should.eventually.be.rejectedWith(/rejected transaction/)
@@ -263,7 +342,6 @@ describe('HLFTxEventHandler', () => {
                     sinon.assert.calledWith(global.clearTimeout.firstCall, 'handle1');
                     sinon.assert.calledWith(global.clearTimeout.secondCall, 'handle2');
                 });
-
         });
 
     });
@@ -282,11 +360,11 @@ describe('HLFTxEventHandler', () => {
         it('Should do nothing if no events hubs', () => {
             sandbox.stub(global, 'setTimeout');
             sandbox.stub(global, 'clearTimeout');
-            let evHandler = new HLFTxEventHandler(null, null, null);
+            let evHandler = new HLFTxEventHandler(null, null, null, 0);
             evHandler.startListening();
             evHandler.cancelListening();
             sinon.assert.notCalled(global.clearTimeout);
-            evHandler = new HLFTxEventHandler([], '1234', 100);
+            evHandler = new HLFTxEventHandler([], '1234', 100, 0);
             evHandler.startListening();
             evHandler.cancelListening();
             sinon.assert.notCalled(global.clearTimeout);
@@ -297,8 +375,9 @@ describe('HLFTxEventHandler', () => {
             setTimeoutStub.onFirstCall().returns('handle1');
             setTimeoutStub.onSecondCall().returns('handle2');
             sandbox.stub(global, 'clearTimeout');
-            eventhub1.isconnected.returns(true);
-            eventhub2.isconnected.returns(true);
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(eventhub1).returns(true);
+            ehc.withArgs(eventhub2).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 100);
             evHandler.startListening();
             evHandler.cancelListening();
@@ -315,7 +394,7 @@ describe('HLFTxEventHandler', () => {
         it('Should cancel timer and registration for a single event hub', () => {
             sandbox.stub(global, 'setTimeout').returns('handle1');
             sandbox.stub(global, 'clearTimeout');
-            eventhub1.isconnected.returns(true);
+            sandbox.stub(HLFUtil, 'eventHubConnected').withArgs(eventhub1).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1], '1234', 100);
             evHandler.startListening();
             evHandler.cancelListening();
@@ -328,8 +407,9 @@ describe('HLFTxEventHandler', () => {
 
         it('Should do nothing if created with event hubs but start listening not called', () => {
             sandbox.stub(global, 'clearTimeout');
-            eventhub1.isconnected.returns(true);
-            eventhub2.isconnected.returns(true);
+            const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
+            ehc.withArgs(eventhub1).returns(true);
+            ehc.withArgs(eventhub2).returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 100);
             evHandler.cancelListening();
             sinon.assert.notCalled(global.clearTimeout);
