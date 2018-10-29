@@ -102,6 +102,12 @@ class HLFConnection extends Connection {
         // don't log the client, channel, caClient objects here they're too big
         LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions);
 
+        if (this.businessNetworkIdentifier) {
+            LOG.info(method, `Creating a connection using profile ${connectionProfile} to network ${businessNetworkIdentifier}`);
+        } else {
+            LOG.info(method, `Creating a connection using profile ${connectionProfile} to fabric (no business network)`);
+        }
+
         // Validate all the arguments.
         if (!connectOptions) {
             throw new Error('connectOptions not specified');
@@ -141,6 +147,11 @@ class HLFConnection extends Connection {
     disconnect() {
         const method = 'disconnect';
         LOG.entry(method);
+        if (this.businessNetworkIdentifier) {
+            LOG.info(method, `Disconnecting the connection to ${this.businessNetworkIdentifier}`);
+        } else {
+            LOG.info(method, 'Disconnecting the connection to fabric (no business network)');
+        }
 
         if (this.exitListener) {
             process.removeListener('exit', this.exitListener);
@@ -922,7 +933,11 @@ class HLFConnection extends Connection {
         let txId = this.client.newTransactionID();
 
         const t0 = Date.now();
+        LOG.perf(method, `start of querying chaincode ${functionName}(${args})`, txId, t0);
+
         let result = await this.queryHandler.queryChaincode(txId, functionName, args);
+
+        // need to know which query was executed, otherwise just need to know which function was executed.
         LOG.perf(method, `Total duration for queryChaincode to ${functionName}: `, txId, t0);
         LOG.exit(method, result ? result : null);
         return result ? result : null;
@@ -978,8 +993,8 @@ class HLFConnection extends Connection {
 
         let eventHandler;
         let validResponses;
-
         let t0 = Date.now();
+        LOG.perf(method, `start of chaincode invocation ${functionName}(${args})`, txId, t0);
         try {
             LOG.debug(method, 'checking the event hub strategy');
             await this._checkEventHubStrategy();
@@ -1000,7 +1015,7 @@ class HLFConnection extends Connection {
                 fcn: functionName,
                 args: args
             };
-            LOG.perf(method, 'Total duration to initialize channel: ', txId, t0);
+            LOG.perf(method, 'Total duration to initialize: ', txId, t0);
             t0 = Date.now();
 
             let results;
