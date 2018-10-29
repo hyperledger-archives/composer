@@ -56,7 +56,7 @@ describe('HLFConnection', () => {
     let mockPeer1, mockPeer2, mockPeer3, mockEventHub1, mockEventHub2, mockEventHub3, mockQueryHandler;
     let connectOptions;
     let connection;
-    let mockTransactionID, logWarnSpy, logErrorSpy, logPerfSpy, logInfoSpy, LOG;
+    let mockTransactionID, logWarnSpy, logErrorSpy, logInfoSpy, LOG;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -1883,23 +1883,6 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/such error/);
 
         });
-
-        it('should log a specific perf message when invoking executeQuery', async () => {
-            const response = Buffer.from('hello world');
-            logPerfSpy = sandbox.spy(LOG, 'perf');
-            mockQueryHandler.queryChaincode.withArgs(mockTransactionID, 'myfunc', ['arg1', 'arg2']).resolves(response);
-            await connection.queryChainCode(mockSecurityContext, 'executeQuery', ['qType', 'myQuery']);
-            sinon.assert.calledWith(logPerfSpy, 'queryChainCode', sinon.match(/execute query type.*qType.*myQuery/));
-        });
-
-        it('should log a specific perf message when invoking non executeQuery function', async () => {
-            const response = Buffer.from('hello world');
-            logPerfSpy = sandbox.spy(LOG, 'perf');
-            mockQueryHandler.queryChaincode.withArgs(mockTransactionID, 'myfunc', ['arg1', 'arg2']).resolves(response);
-            await connection.queryChainCode(mockSecurityContext, 'someFn', ['arg1', 'arg2']);
-            sinon.assert.calledWith(logPerfSpy, 'queryChainCode', sinon.match(/for queryChaincode to someFn/));
-        });
-
     });
 
     describe('#invokeChainCode', () => {

@@ -175,7 +175,7 @@ describe('HLFTxEventHandler', () => {
         });
     });
 
-    it('Should handle a transaction listener error response all event hubs and event hubs required', async () => {
+    it('Should handle a transaction listener error response from all event hubs and event hubs required', async () => {
         sandbox.stub(global, 'setTimeout');
         sandbox.stub(global, 'clearTimeout');
         const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
@@ -194,7 +194,7 @@ describe('HLFTxEventHandler', () => {
         sinon.assert.calledTwice(logWarnSpy);
     });
 
-    it('Should handle a transaction listener error response all event hubs but no event hubs required', async () => {
+    it('Should handle a transaction listener error response from all event hubs but no event hubs required', async () => {
         sandbox.stub(global, 'setTimeout');
         sandbox.stub(global, 'clearTimeout');
         const ehc = sandbox.stub(HLFUtil, 'eventHubConnected');
@@ -214,7 +214,7 @@ describe('HLFTxEventHandler', () => {
         } catch(err) {
             should.fail(null,null,`${err} unexpected`);
         }
-        sinon.assert.calledThrice(logWarnSpy);
+        sinon.assert.calledTwice(logWarnSpy);
     });
 
     it('Should handle a transaction listener error response on one but not all of the event hubs', async () => {

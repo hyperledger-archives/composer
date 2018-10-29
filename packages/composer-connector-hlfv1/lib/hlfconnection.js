@@ -933,14 +933,12 @@ class HLFConnection extends Connection {
         let txId = this.client.newTransactionID();
 
         const t0 = Date.now();
+        LOG.perf(method, `start of querying chaincode ${functionName}(${args})`, txId, t0);
+
         let result = await this.queryHandler.queryChaincode(txId, functionName, args);
 
         // need to know which query was executed, otherwise just need to know which function was executed.
-        if (functionName === 'executeQuery') {
-            LOG.perf(method, `Total duration for queryChaincode to execute '${args[0]}' query '${args[1]}': `, txId, t0);
-        } else {
-            LOG.perf(method, `Total duration for queryChaincode to ${functionName}: `, txId, t0);
-        }
+        LOG.perf(method, `Total duration for queryChaincode to ${functionName}: `, txId, t0);
         LOG.exit(method, result ? result : null);
         return result ? result : null;
     }
@@ -995,8 +993,8 @@ class HLFConnection extends Connection {
 
         let eventHandler;
         let validResponses;
-
         let t0 = Date.now();
+        LOG.perf(method, `start of chaincode invocation ${functionName}(${args})`, txId, t0);
         try {
             LOG.debug(method, 'checking the event hub strategy');
             await this._checkEventHubStrategy();
@@ -1017,7 +1015,7 @@ class HLFConnection extends Connection {
                 fcn: functionName,
                 args: args
             };
-            LOG.perf(method, 'Total duration to initialize channel: ', txId, t0);
+            LOG.perf(method, 'Total duration to initialize: ', txId, t0);
             t0 = Date.now();
 
             let results;
