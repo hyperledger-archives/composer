@@ -10,7 +10,9 @@ excerpt: Hyperledger Composer Network Reset Command
 
 ---
 
-The `composer network reset` command deletes the contents of all the registries in the State Database.  It is fast way for developers to reset the Business Network and remove test data. 
+The `composer network reset` command deletes the contents of all the registries in the State Database.  It is fast way for developers to reset the Business Network and remove test data.
+
+**IMPORTANT: Never use this command on a production or shared business network. It should only ever be used as a quick reset against a business network running locally on your machine for which you will not keep. Use this for your local development testing purposes only**
 
 `composer network reset -c admin@example-network`
 

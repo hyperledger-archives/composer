@@ -54,6 +54,7 @@
     "loopback-component-explorer": "5.2.0",
     "loopback-component-passport": "3.2.0",
     "loopback-connector-composer": "0.20.3",
+    "loopback-datasource-juggler": "3.24.1",
     "passport-local": "1.0.0",
     "pug": "2.0.0",
     "serve-favicon": "2.5.0",

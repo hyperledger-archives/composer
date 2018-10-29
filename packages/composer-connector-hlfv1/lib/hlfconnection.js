@@ -1049,7 +1049,7 @@ class HLFConnection extends Connection {
             const proposal = results[1];
             const header = results[2];
 
-            eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
+            eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout, this.requiredEventHubs);
             eventHandler.startListening();
             LOG.debug(method, 'TxEventHandler started listening, sending valid responses to the orderer');
             LOG.perf(method, 'Total duration to prepare proposals for orderer: ', txId, t0);
