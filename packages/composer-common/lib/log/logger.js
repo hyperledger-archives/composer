@@ -70,7 +70,9 @@ const _logLevelAsString = {
 
 // If  composer[debug]:acls is provided, the debug level of trace will be used for specified string.
 const PROFILES = {
-    'acls' : ['composer[#]:AccessController']
+    'acls' : ['composer[#]:AccessController'],
+    'hlfv1': ['composer[#]:HLFConnectionManager','composer[#]:HLFConnection',
+        'composer[#]:HLFQueryHandler', 'composer[#]:HLFTxEventHandler']
 };
 
 /**
@@ -304,7 +306,7 @@ class Logger {
      *
      * @param {String} method calling method
      * @param {String} msg Text Message
-     * @param {TransactionID} txId The node-sdk transaction id
+     * @param {TransactionID} txId The node-sdk transaction id or null if no txid
      * @param {Date} startTime Date object representing the start of the timed block
      *
      * @private
@@ -314,7 +316,11 @@ class Logger {
             return;
         }
         const timeTaken = (Date.now() - startTime).toFixed(2);
-        this.intlog('verbose', method, `[${txId.getTransactionID().substring(0, 8)}] ${msg} ${timeTaken}ms`);
+        if (txId && txId.getTransactionID) {
+            this.intlog('verbose', method, `[${txId.getTransactionID().substring(0, 8)}] ${msg} ${timeTaken}ms`);
+        } else {
+            this.intlog('verbose', method, `[NO TXID ] ${msg} ${timeTaken}ms`);
+        }
     }
 
     /**
@@ -421,6 +427,26 @@ class Logger {
             });
         }
         return _config;
+    }
+
+    /**
+     * flush out the standard composer log file and exit. This is only of use to CLI
+     * applications which will log to the file system.
+     * @param {*} err the exit value
+     */
+    static flushLogFileAndExit(err) {
+        const fileTransport = _logger && _logger.transports ? _logger.transports['debug-file'] : null;
+        if (fileTransport && fileTransport._stream) {
+            fileTransport.on('flush', () => {
+                process.exit(err);
+            });
+            // calling close on the logger sometimes hung the cli
+            // flush could fail if there was no stream, but appears to be more reliable.
+            fileTransport.flush();
+        } else {
+            process.exit(err);
+        }
+
     }
 
     /**
@@ -659,9 +685,7 @@ class Logger {
         const loggerToUse = localConfig.logger;
         let myLogger;
         try {
-            // const mod = 'config';
             const req = require;
-            // const config = req(mod);
             myLogger = req(loggerToUse);
         } catch (e) {
              // Print the error to the console and just use the null logger instead.
