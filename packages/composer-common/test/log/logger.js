@@ -24,6 +24,7 @@ const Identifiable = require('../../lib/model/identifiable');
 const Typed = require('../../lib/model/typed');
 
 const chai = require('chai');
+
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 const sinon = require('sinon');
@@ -287,6 +288,11 @@ describe('Logger', () => {
             sinon.assert.calledWith(logger.intlog, 'verbose', 'Method', sinon.match.string);
         });
 
+        it('perf method should call verbose level and work without a txid, no args', () => {
+            logger.perf('Method', 'Perf message', null, new Date());
+            sinon.assert.calledOnce(logger.intlog);
+            sinon.assert.calledWith(logger.intlog, 'verbose', 'Method', sinon.match.string);
+        });
 
         it('error method should call error level, no args', () => {
             logger.error('Method', 'Message', 'Data');

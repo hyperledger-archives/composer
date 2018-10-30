@@ -103,7 +103,7 @@ class HLFTxEventHandler {
             LOG.exit(method);
             return Promise.all(this.listenerPromises);
         }
-        LOG.warn(method, 'No event hubs available to listen on to wait for transaction commits');
+        LOG.warn(method, `No event hubs available to listen on to wait for a commit for transaction '${this.txId}'`);
         LOG.exit(method);
         return Promise.resolve();
     }

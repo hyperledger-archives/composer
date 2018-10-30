@@ -57,12 +57,12 @@ describe('HLFConnection', () => {
     let mockPeer1, mockPeer2, mockPeer3, mockEventHub1, mockEventHub2, mockEventHub3, mockQueryHandler;
     let connectOptions;
     let connection;
-    let mockTransactionID, logWarnSpy, logErrorSpy;
+    let mockTransactionID, logWarnSpy, logErrorSpy, logInfoSpy, LOG;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         clock = sinon.useFakeTimers();
-        const LOG = Logger.getLog('HLFConnection');
+        LOG = Logger.getLog('HLFConnection');
         logWarnSpy = sandbox.spy(LOG, 'warn');
         logErrorSpy = sandbox.spy(LOG, 'error');
         mockConnectionManager = sinon.createStubInstance(HLFConnectionManager);
@@ -161,19 +161,32 @@ describe('HLFConnection', () => {
             }).should.throw(/channel not specified/);
         });
 
-
         it('should throw if caClient not specified', () => {
             (() => {
                 new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), { type: 'hlfv1' }, mockClient, mockChannel, null);
             }).should.throw(/caClient not specified/);
         });
+
+        it('should log at info a fabric level connection being created', () => {
+            logInfoSpy = sandbox.spy(LOG, 'info');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
+            sinon.assert.calledWith(logInfoSpy, 'constructor', sinon.match(/no business network/));
+        });
+
+        it('should log at info a business network level connection being created', () => {
+            logInfoSpy = sandbox.spy(LOG, 'info');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'test-business-network', {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
+            sinon.assert.calledWith(logInfoSpy, 'constructor', sinon.match(/test-business-network/));
+        });
+
     });
 
     describe('#_connectToEventHubs', () => {
         beforeEach(() => {
             mockChannel.getPeers.returns([mockPeer1]);
             mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
-            mockChannel.newChannelEventHub.withArgs(mockPeer1).returns(mockEventHub1);        });
+            mockChannel.newChannelEventHub.withArgs(mockPeer1).returns(mockEventHub1);
+        });
 
         it('should ignore a disconnected event hub on process exit', () => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
@@ -497,8 +510,6 @@ describe('HLFConnection', () => {
                 });
         });
 
-
-
         it('should handle being called twice', () => {
             mockEventHub1.isconnected.returns(true);
             connection._connectToEventHubs();
@@ -510,6 +521,20 @@ describe('HLFConnection', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockEventHub1.disconnect);
                 });
+        });
+
+        it('should log at info a fabric level connection being disconnected', () => {
+            logInfoSpy = sandbox.spy(LOG, 'info');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
+            connection.disconnect();
+            sinon.assert.calledWith(logInfoSpy.secondCall, 'disconnect', sinon.match(/no business network/));
+        });
+
+        it('should log at info a business network level connection being created', () => {
+            logInfoSpy = sandbox.spy(LOG, 'info');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'test-business-network', {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
+            connection.disconnect();
+            sinon.assert.calledWith(logInfoSpy.secondCall, 'disconnect', sinon.match(/test-business-network/));
         });
 
     });

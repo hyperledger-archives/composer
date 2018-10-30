@@ -130,7 +130,7 @@ class HLFQueryHandler {
      */
     async querySinglePeer(peer, txId, functionName, args) {
         const method = 'querySinglePeer';
-        LOG.entry(method, peer, txId, functionName, args);
+        LOG.entry(method, peer.getName(), txId, functionName, args);
         const request = {
             targets: [peer],
             chaincodeId: this.connection.businessNetworkIdentifier,
@@ -139,7 +139,9 @@ class HLFQueryHandler {
             args: args
         };
 
+        const t0 = Date.now();
         let payloads = await this.connection.channel.queryByChaincode(request);
+        LOG.perf(method, `Total duration for node-sdk queryByChaincode to ${functionName}: `, txId, t0);
         LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the composer runtime chaincode`);
         if (!payloads.length) {
             LOG.error(method, 'No payloads were returned from the query request:' + functionName);
