@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -24,7 +24,7 @@
 set -e
 
 # Array of supported versions
-declare -a versions=('trusty' 'xenial' 'yakkety');
+declare -a versions=('trusty' 'xenial' 'yakkety', 'bionic');
 
 # check the version and extract codename of ubuntu if release codename not provided by user
 if [ -z "$1" ]; then
@@ -67,15 +67,8 @@ export NVM_DIR="${HOME}/.nvm"
 
 # Install node
 echo "# Installing nodeJS"
-nvm install --lts
-
-# Configure nvm to use version 6.9.5
-nvm use --lts
-nvm alias default 'lts/*'
-
-# Install the latest version of npm
-echo "# Installing npm"
-npm install npm@latest -g
+nvm install 8
+nvm use 8
 
 # Ensure that CA certificates are installed
 sudo apt-get -y install apt-transport-https ca-certificates
