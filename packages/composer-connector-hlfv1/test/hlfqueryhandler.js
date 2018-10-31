@@ -73,7 +73,7 @@ describe('HLFQueryHandler', () => {
 
         it('should not switch to another peer if peer returns a payload which is an error', async () => {
             const response = new Error('my chaincode error');
-            mockChannel.queryByChaincode.resolves([response]);
+            sandbox.stub(queryHandler, 'queryByChaincode').resolves([response]);
             let qspSpy = sinon.spy(queryHandler, 'querySinglePeer');
             try {
                 await queryHandler.queryChaincode(mockTransactionID, 'myfunc', ['arg1', 'arg2']);
@@ -175,11 +175,11 @@ describe('HLFQueryHandler', () => {
 
         it('should query a single peer', async () => {
             const response = Buffer.from('hello world');
-            mockChannel.queryByChaincode.resolves([response]);
+            sandbox.stub(queryHandler, 'queryByChaincode').resolves([response]);
             mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
             let result = await queryHandler.querySinglePeer(mockPeer2, mockTransactionID, 'myfunc', ['arg1', 'arg2']);
-            sinon.assert.calledOnce(mockChannel.queryByChaincode);
-            sinon.assert.calledWith(mockChannel.queryByChaincode, {
+            sinon.assert.calledOnce(queryHandler.queryByChaincode);
+            sinon.assert.calledWith(queryHandler.queryByChaincode, {
                 chaincodeId: 'org-acme-biznet',
                 txId: mockTransactionID,
                 fcn: 'myfunc',
@@ -191,18 +191,18 @@ describe('HLFQueryHandler', () => {
         });
 
         it('should throw if no responses are returned', () => {
-            mockChannel.queryByChaincode.resolves([]);
+            sandbox.stub(queryHandler, 'queryByChaincode').resolves([]);
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/No payloads were returned from the query request/);
         });
 
         it('should return any responses that are errors and not UNAVAILABLE', async () => {
             const response = new Error('such error');
-            mockChannel.queryByChaincode.resolves([response]);
+            sandbox.stub(queryHandler, 'queryByChaincode').resolves([response]);
             mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
             let result = await queryHandler.querySinglePeer(mockPeer2, mockTransactionID, 'myfunc', ['arg1', 'arg2']);
-            sinon.assert.calledOnce(mockChannel.queryByChaincode);
-            sinon.assert.calledWith(mockChannel.queryByChaincode, {
+            sinon.assert.calledOnce(queryHandler.queryByChaincode);
+            sinon.assert.calledWith(queryHandler.queryByChaincode, {
                 chaincodeId: 'org-acme-biznet',
                 txId: mockTransactionID,
                 fcn: 'myfunc',
@@ -216,7 +216,7 @@ describe('HLFQueryHandler', () => {
         it('should throw any responses that are errors and code 14 being unavailable.', () => {
             const response = new Error('14 UNAVAILABLE: Connect Failed');
             response.code = 14;
-            mockChannel.queryByChaincode.resolves([response]);
+            sandbox.stub(queryHandler, 'queryByChaincode').resolves([response]);
             mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/Connect Failed/);
@@ -225,7 +225,7 @@ describe('HLFQueryHandler', () => {
         it('should throw any responses that are errors and code 1 being unavailable.', () => {
             const response = new Error('1 UNAVAILABLE: Connect Failed');
             response.code = 1;
-            mockChannel.queryByChaincode.resolves([response]);
+            sandbox.stub(queryHandler, 'queryByChaincode').resolves([response]);
             mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/Connect Failed/);
@@ -234,7 +234,7 @@ describe('HLFQueryHandler', () => {
         it('should throw any responses that are errors and code 4 being unavailable.', () => {
             const response = new Error('4 UNAVAILABLE: Connect Failed');
             response.code = 4;
-            mockChannel.queryByChaincode.resolves([response]);
+            sandbox.stub(queryHandler, 'queryByChaincode').resolves([response]);
             mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/Connect Failed/);
@@ -242,18 +242,136 @@ describe('HLFQueryHandler', () => {
 
         it('should throw any responses that are exceeded deadline responses.', () => {
             const response = new Error('Failed to connect before the deadline');
-            mockChannel.queryByChaincode.resolves([response]);
+            sandbox.stub(queryHandler, 'queryByChaincode').resolves([response]);
             mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/Failed to connect before the deadline/);
         });
 
-
         it('should throw if query request fails', () => {
-            mockChannel.queryByChaincode.rejects(new Error('Query Failed'));
+            sandbox.stub(queryHandler, 'queryByChaincode').rejects(new Error('Query Failed'));
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/Query Failed/);
         });
     });
 
+    describe('#queryByChaincode', () => {
+        it('should handle single good response', async () => {
+            const request = {
+                id: 1
+            };
+            const results = [
+                [{
+                    response: {
+                        payload: 'some payload'
+                    }
+                }]
+            ];
+            mockChannel.sendTransactionProposal.resolves(results);
+            const responses = await queryHandler.queryByChaincode(request);
+            sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+            sinon.assert.calledWith(mockChannel.sendTransactionProposal, request);
+            responses.length.should.equal(1);
+            responses[0].should.equal('some payload');
+        });
+
+        it('should handle multiple good responses', async () => {
+            const request = {
+                id: 1
+            };
+            const results = [[
+                {
+                    response: {
+                        payload: 'some payload'
+                    }
+                },
+                {
+                    response: {
+                        payload: 'another payload'
+                    }
+                },
+                {
+                    response: {
+                        payload: 'final payload'
+                    }
+                }
+            ]];
+            mockChannel.sendTransactionProposal.resolves(results);
+            const responses = await queryHandler.queryByChaincode(request);
+            sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+            sinon.assert.calledWith(mockChannel.sendTransactionProposal, request);
+            responses.length.should.equal(3);
+            responses[0].should.equal('some payload');
+            responses[1].should.equal('another payload');
+            responses[2].should.equal('final payload');
+        });
+
+        it('should handle single error response', async () => {
+            const request = {
+                id: 1
+            };
+            const results = [
+                [ new Error('some error') ]
+            ];
+            mockChannel.sendTransactionProposal.resolves(results);
+            const responses = await queryHandler.queryByChaincode(request);
+            sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+            sinon.assert.calledWith(mockChannel.sendTransactionProposal, request);
+            responses.length.should.equal(1);
+            responses[0].should.be.instanceOf(Error);
+            responses[0].message.should.equal('some error');
+        });
+
+        it('should handle multiple different response types', async () => {
+            const request = {
+                id: 1
+            };
+            const results = [[
+
+                new Error('some error'),
+
+                {
+                    response: {
+                        payload: 'another payload'
+                    }
+                },
+                {
+                    response: 'a strange error'
+                },
+                {
+                    data: 'I am not just an android'
+                }
+            ]];
+            mockChannel.sendTransactionProposal.resolves(results);
+            const responses = await queryHandler.queryByChaincode(request);
+            sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+            sinon.assert.calledWith(mockChannel.sendTransactionProposal, request);
+            responses.length.should.equal(4);
+            responses[0].should.be.instanceOf(Error);
+            responses[0].message.should.equal('some error');
+            responses[1].should.equal('another payload');
+            responses[2].should.be.instanceOf(Error);
+            responses[3].should.be.instanceOf(Error);
+        });
+
+        it('should handle no responses', async () => {
+            const request = {
+                id: 1
+            };
+            let results = [];
+            mockChannel.sendTransactionProposal.resolves(results);
+            await queryHandler.queryByChaincode(request).should.be.rejectedWith(/Payload results are missing/);
+            results = ['not an array'];
+            mockChannel.sendTransactionProposal.resolves(results);
+            await queryHandler.queryByChaincode(request).should.be.rejectedWith(/Payload results are missing/);
+        });
+
+        it('should handle error from sendTransactionProposal', async () => {
+            const request = {
+                id: 1
+            };
+            mockChannel.sendTransactionProposal.rejects(new Error('sendTxProp error'));
+            await queryHandler.queryByChaincode(request).should.be.rejectedWith(/sendTxProp error/);
+        });
+    });
 });
