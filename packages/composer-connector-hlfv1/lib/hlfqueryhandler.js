@@ -140,8 +140,8 @@ class HLFQueryHandler {
         };
 
         const t0 = Date.now();
-        let payloads = await this.connection.channel.queryByChaincode(request);
-        LOG.perf(method, `Total duration for node-sdk queryByChaincode to ${functionName}: `, txId, t0);
+        let payloads = await this.queryByChaincode(request);
+        LOG.perf(method, `Total duration for queryByChaincode to ${functionName}: `, txId, t0);
         LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the composer runtime chaincode`);
         if (!payloads.length) {
             LOG.error(method, 'No payloads were returned from the query request:' + functionName);
@@ -163,6 +163,43 @@ class HLFQueryHandler {
         LOG.exit(method, payload);
         return payload;
 
+    }
+
+    /**
+     * Perform a chaincode query and parse the responses.
+     * @param {object} request the proposal for a query
+     * @return {array} the responses
+     */
+    async queryByChaincode(request) {
+        const method = 'queryByChaincode';
+        LOG.entry(method, request);
+        try {
+            const results = await this.connection.channel.sendTransactionProposal(request);
+            const responses = results[0];
+            if (responses && Array.isArray(responses)) {
+                let results = [];
+                for (let i = 0; i < responses.length; i++) {
+                    let response = responses[i];
+                    if (response instanceof Error) {
+                        results.push(response);
+                    }
+                    else if (response.response && response.response.payload) {
+                        results.push(response.response.payload);
+                    }
+                    else {
+                        results.push(new Error(response));
+                    }
+                }
+                LOG.exit(method);
+                return results;
+            }
+            const err = new Error('Payload results are missing from the chaincode query');
+            LOG.error(method, err);
+            throw err;
+        } catch(err) {
+            LOG.error(method, err);
+            throw err;
+        }
     }
 }
 
