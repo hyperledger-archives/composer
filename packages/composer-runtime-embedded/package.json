@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-embedded",
-  "version": "0.19.18",
+  "version": "0.19.19",
   "description": "The embedded runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=8",
@@ -73,8 +73,8 @@
     }
   },
   "dependencies": {
-    "composer-runtime": "0.19.18",
-    "composer-runtime-pouchdb": "0.19.18",
+    "composer-runtime": "0.19.19",
+    "composer-runtime-pouchdb": "0.19.19",
     "debug": "2.6.9",
     "istanbul-lib-instrument": "1.7.2",
     "pouchdb-adapter-memory": "6.2.0",
