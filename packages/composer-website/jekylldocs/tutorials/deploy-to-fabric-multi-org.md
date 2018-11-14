@@ -317,29 +317,16 @@ We need a base connection profile that describes this fabric network which can t
 
 Copy this base file (above) into a new file  `byfn-network.json` under the new directory `/tmp/composer` and save it.
 
-Open `byfn-network.json` and replace all instances of the text `INSERT_ORG1_CA_CERT` with the CA certificate for the peer nodes for `Org1`: - use the following command to get the certificate from the .pem file so that it can be embedded into the above connection profile.
+Use the following command to get each certificates from its pem file and replace it with the following text instances `INSERT_ORDERER_CA_CERT`, `INSERT_ORG1_CA_CERT` and `INSERT_ORG2_CA_CERT` and update `byfn-network.json` file all.
 
-    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt > /tmp/composer/org1/ca-org1.txt
+The command below uses [jq](http://stedolan.github.io/jq/) which is a command-line JSON processor, the first part where we use the `--arg` in order to set a variable and pass it to jq as a variable. then we convert the certificate to a single line string using `"$(<path/to/file.crt)"`.
+In order to save jq output in the same file we can use `sponge` which soak up standard input and write to a file.
 
-Copy the contents of the file `/tmp/composer/org1/ca-org1.txt` and replace the text `INSERT_ORG1_CA_CERT` in the .json file. It should now look something like this (must be a single line in the profile file as shown)
 
 ```
-"pem": "-----BEGIN CERTIFICATE-----\nMIICNTCCAdygAwIBAgIRAMNvmQpnXi7uM19BLdha3MwwCgYIKoZIzj0EAwIwbDEL\nMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\ncmFuY2lzY28xFDASBgNVBAoTC2V4YW1wbGUuY29tMRowGAYDVQQDExF0bHNjYS5l\neGFtcGxlLmNvbTAeFw0xNzA2MjYxMjQ5MjZaFw0yNzA2MjQxMjQ5MjZaMGwxCzAJ\nBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJh\nbmNpc2NvMRQwEgYDVQQKEwtleGFtcGxlLmNvbTEaMBgGA1UEAxMRdGxzY2EuZXhh\nbXBsZS5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASJn3QUVcKCp+s6lSPE\nP5KlWmE9rEG0kpECsAfW28vZQSIg2Ez+Tp1alA9SYN/5BtL1N6lUUoVhG3lz8uvi\n8zhro18wXTAOBgNVHQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMB\nAf8EBTADAQH/MCkGA1UdDgQiBCB7ULYTq3+BQqnzwae1RsnwQgJv/HQ5+je2xcDr\nka4MHTAKBggqhkjOPQQDAgNHADBEAiB2hLiS8B1g4J5Qbxu15dVWAZTAXX9xPAvm\n4l25e1oS+gIgBiU/aBwSxY0uambwMB6xtQz0ZE/D4lyTZZcW9SODlOE=\n-----END CERTIFICATE-----\n"
+jq --arg ORDERER_CA_CERT "$(<crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt)" --arg ORG1_CA_CERT "$(<crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt)" --arg ORG2_CA_CERT "$(<crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt)" '.orderers["orderer.example.com"].tlsCACerts.pem = $ORDERER_CA_CERT | .peers["peer0.org1.example.com"].tlsCACerts.pem = $ORG1_CA_CERT | .peers["peer1.org1.example.com"].tlsCACerts.pem = $ORG1_CA_CERT | .peers["peer0.org2.example.com"].tlsCACerts.pem = $ORG2_CA_CERT | .peers["peer1.org2.example.com"].tlsCACerts.pem = $ORG2_CA_CERT' byfn-network.json | sponge byfn-network.json
 ```
 
-In the same .json file - you need to replace all instances of the text `INSERT_ORG2_CA_CERT` with the CA certificate for the peer nodes for `Org2`:  - use the following command to convert the .pem file to something that can be embedded into the above connection profile.
-
-    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt > /tmp/composer/org2/ca-org2.txt
-
-Copy the contents of the file `/tmp/composer/org2/ca-org2.txt` and replace the text called `INSERT_ORG2_CA_CERT`. Once again, all on the same line.
-
-Replace all instances of the text `INSERT_ORDERER_CA_CERT` with the CA certificate for the orderer node:  use the following command to convert the .pem file to something that can be embedded into the above connection profile json file.
-
-    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt > /tmp/composer/ca-orderer.txt
-
-Copy the contents of the file `/tmp/composer/ca-orderer.txt`  and replace the text `INSERT_ORDERER_CA_CERT`. Once again, all on the same line.
-
-Once done, save this file as  `/tmp/composer/byfn-network.json`.
 
 This connection profile now describes the fabric network setup, all the peers, orderers and certificate authorities that are part of the network, it defines all the organizations that are participating in the network and also defines the channel's on this network. {{site.data.conrefs.composer_full}} can only interact with a single channel so only one channel should be defined.
 
