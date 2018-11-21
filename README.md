@@ -5,7 +5,6 @@
 Hyperledger Composer is an application development framework which simplifies and expedites the creation of [Hyperledger fabric](https://hyperledger-fabric.readthedocs.io/en/latest/) blockchain applications. If you're new to Blockchain, Hyperledger Fabric or Hyperledger Composer, we recommend that you start at the Hyperledger Composer website:
 
 - [Stable release website](https://hyperledger.github.io/composer/)
-- [Next release website](https://hyperledger.github.io/composer/next/)
 
 This site will help you get up and running by developing a sample blockchain application to buy and sell houses and apartments in a digital property business network.
 
