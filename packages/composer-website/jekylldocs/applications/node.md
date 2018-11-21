@@ -83,7 +83,7 @@ let personRegistry = await this.bizNetworkConnection.getParticipantRegistry('net
 await personRegistry.add(owner);
 ```
 
-##Listing assets in a regsitry
+##Listing assets in a registry
 In the sample application this is handled in a different method `list()`.  The same setup as for putting assets is required, so as before we need to get the asset registry but this tile we call the getAll() API. This returns an array of objects.
 
 
