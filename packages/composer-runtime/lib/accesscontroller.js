@@ -94,9 +94,8 @@ class AccessController {
         // enforcement is not enabled.
         let participant = this.participant;
         if (!participant) {
-            LOG.debug(method, 'No participant');
+            LOG.verbose('@PERF ' + method, 'NO PARTICIPANT: Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             LOG.exit(method);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             return Promise.resolve();
         }
 
@@ -107,9 +106,8 @@ class AccessController {
         // enforcement is not enabled.
         let aclManager = this.context.getAclManager();
         if (!aclManager.getAclFile()) {
-            LOG.debug(method, 'No ACL file');
+            LOG.verbose('@PERF ' + method, 'NO ACL FILE: Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             LOG.exit(method);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             return Promise.resolve();
         }
 
