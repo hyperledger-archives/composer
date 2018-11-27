@@ -36,15 +36,13 @@ class NodeUtils {
         const t0 = Date.now();
 
         let results = [];
-        let logResults = [];
         let res = {done: false};
         while (!res.done) {
-            res = await iterator.next();  //TODO: should we catch an error or just let it flow up the stack
+            res = await iterator.next();
             if (res && res.value && res.value.value) {
                 let val = res.value.value.toString('utf8');
                 if (val.length > 0) {
                     results.push(JSON.parse(val));
-                    logResults.push(val);
                 }
             }
             if (res && res.done) {
@@ -57,7 +55,7 @@ class NodeUtils {
                     const warnMsg = 'Failure to close iterator. ' + err;
                     LOG.warn(warnMsg);
                 }
-                LOG.exit(method, logResults);
+                LOG.exit(method);
                 LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return results;
             }
@@ -78,7 +76,6 @@ class NodeUtils {
         const t0 = Date.now();
 
         let results = [];
-        let logResults = [];
         let res = {done: false};
         while (!res.done) {
             res = await iterator.next();  //TODO: should we catch an error or just let it flow up the stack
@@ -96,7 +93,7 @@ class NodeUtils {
                     const warnMsg = 'Failure to close iterator. ' + err;
                     LOG.warn(warnMsg);
                 }
-                LOG.exit(method, logResults);
+                LOG.exit(method);
                 LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return results;
             }
