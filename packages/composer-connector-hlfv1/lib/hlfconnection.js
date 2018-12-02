@@ -629,10 +629,11 @@ class HLFConnection extends Connection {
         });
 
         let ledgerPeerIndex = 0;
+        let targetPeer = ledgerPeers[0];
 
         while (!this.initialized) {
             try {
-                await this.channel.initialize();
+                await this.channel.initialize({ target: targetPeer });
                 this.initialized = true;
             } catch(error) {
                 LOG.warn(method, `error trying to initialize channel. Error returned ${error}`);
@@ -641,10 +642,8 @@ class HLFConnection extends Connection {
                 }
                 ledgerPeerIndex++;
                 const nextPeer = ledgerPeers[ledgerPeerIndex];
-                LOG.info(method, `Moving ${nextPeer.getName()} to top of queue`);
-                const peerIndex = this.channel.getPeers().indexOf(nextPeer);
-                this.channel.getPeers().splice(peerIndex, 1);
-                this.channel.getPeers().unshift(nextPeer);
+                LOG.info(method, `Try next peer ${nextPeer.getName()}`);
+                targetPeer = ledgerPeers[ledgerPeerIndex];
             }
         }
 

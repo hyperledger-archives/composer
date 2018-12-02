@@ -2570,11 +2570,8 @@ describe('HLFConnection', () => {
             mockChannel.initialize.onCall(1).resolves();
             await connection._initializeChannel();
             sinon.assert.calledTwice(mockChannel.initialize);
-            peerArray.length.should.equal(5);
-            const expectedIndexOrder = [3, 1, 2, 4, 5];
-            for (let i = 0; i < peerArray.length; i++) {
-                peerArray[i].index.should.equal(expectedIndexOrder[i]);
-            }
+            sinon.assert.calledWith(mockChannel.initialize, { target: mockPeer1 });
+            sinon.assert.calledWith(mockChannel.initialize, { target: mockPeer3 });
         });
 
         it('should fail if all peers fail', async () => {
@@ -2589,12 +2586,10 @@ describe('HLFConnection', () => {
                 error = _error;
             }
             error.should.match(/connect failed again/);
-            sinon.assert.calledThrice(mockChannel.initialize);
-            const expectedIndexOrder = [4, 3, 1, 2, 5];
-            peerArray.length.should.equal(5);
-            for (let i = 0; i < peerArray.length; i++) {
-                peerArray[i].index.should.equal(expectedIndexOrder[i]);
-            }
+            sinon.assert.callCount(mockChannel.initialize, 3);
+            sinon.assert.calledWith(mockChannel.initialize, { target: mockPeer1 });
+            sinon.assert.calledWith(mockChannel.initialize, { target: mockPeer3 });
+            sinon.assert.calledWith(mockChannel.initialize, { target: mockPeer3 });
         });
     });
 
