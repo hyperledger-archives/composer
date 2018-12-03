@@ -23,6 +23,7 @@ const IdCard = require('composer-common').IdCard;
 const path = require('path');
 const server = require('../../server/server');
 const WebSocket = require('ws');
+const EventEmitter = require('events');
 
 const chai = require('chai');
 const should = chai.should();
@@ -338,6 +339,27 @@ describe('server', () => {
                 sinon.assert.notCalled(wss.clients[1].send);
                 sinon.assert.calledOnce(wss.clients[2].send);
                 sinon.assert.calledWith(wss.clients[2].send, '{"foo":"bar"}');
+            });
+    });
+
+    it('should register an error handler on connection to a websocket and it shoud no nothing when fired', () => {
+        composerConfig.websockets = true;
+        const stubWS = new EventEmitter();
+        const wsOnSpy = sinon.spy(stubWS, 'on');
+
+
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                const wss = result.app.get('wss');
+                wss.should.be.an.instanceOf(WebSocket.Server);
+                wss.emit('connection', stubWS);
+                sinon.assert.calledOnce(wsOnSpy);
+                sinon.assert.calledWith(wsOnSpy, 'error');
+
+                // fire the error event
+                stubWS.emit('error');
             });
     });
 
