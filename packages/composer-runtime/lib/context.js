@@ -24,6 +24,7 @@ const RegistryManager = require('./registrymanager');
 const ResourceManager = require('./resourcemanager');
 const Resolver = require('./resolver');
 const TransactionLogger = require('./transactionlogger');
+const uuid = require('uuid');
 
 const LOG = Logger.getLog('Context');
 
@@ -47,6 +48,7 @@ class Context {
         this.engine = engine;
         this.installedBusinessNetwork = installedBusinessNetwork;
         this.eventNumber = 0;
+        this.contextId = uuid.v4();
     }
 
     /**
@@ -598,6 +600,22 @@ class Context {
      */
     getNativeAPI() {
         throw new Error('abstract function called');
+    }
+
+    /**
+     * return the current context id
+     * @returns {string} the context id
+     */
+    getContextId() {
+        return this.contextId;
+    }
+
+    /**
+     * set the current context id
+     * @param {string} contextId The contextId
+     */
+    setContextId(contextId) {
+        this.contextId = contextId;
     }
 
 }

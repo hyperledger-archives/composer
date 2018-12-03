@@ -318,6 +318,8 @@ class Logger {
         const timeTaken = (Date.now() - startTime).toFixed(2);
         if (txId && txId.getTransactionID) {
             this.intlog('verbose', method, `[${txId.getTransactionID().substring(0, 8)}] ${msg} ${timeTaken}ms`);
+        } else if (txId && txId.length > 0) {
+            this.intlog('verbose', method, `[${txId.substring(0, 8)}] ${msg} ${timeTaken}ms`);
         } else {
             this.intlog('verbose', method, `[NO TXID ] ${msg} ${timeTaken}ms`);
         }
