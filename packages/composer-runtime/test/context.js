@@ -880,4 +880,21 @@ describe('Context', () => {
         });
     });
 
+    describe('#getContextId', () => {
+        it('should return an auto generated contextId', () => {
+            const id = context.getContextId();
+            id.should.be.a('string');
+        });
+    });
+
+
+    describe('#setContextId', () => {
+        it('should return an the given contextId', () => {
+            context.setContextId('myContext');
+            const id = context.getContextId();
+            id.should.equal('myContext');
+        });
+    });
+
+
 });

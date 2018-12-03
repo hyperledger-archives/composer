@@ -40,7 +40,7 @@ class EngineTransactions {
 
         if (args.length !== 1) {
             LOG.error(method, 'Invalid arguments', args);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'submitTransaction', [ 'serializedResource']));
         }
 
@@ -95,7 +95,7 @@ class EngineTransactions {
 
         context.clearTransaction();
         LOG.exit(method, returnValue);
-        LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
         return returnValue;
     }
 
@@ -129,13 +129,13 @@ class EngineTransactions {
         if (totalExecuted === 0) {
             const error = new Error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
             LOG.error(method, error);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
             throw error;
         }
 
         // Handle the return values.
         const returnValue = this._processReturnValues(context, transaction, returnValues);
-        LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
         LOG.exit(method, returnValue);
         return returnValue;
     }
@@ -190,7 +190,7 @@ class EngineTransactions {
         }
 
         LOG.exit(method);
-        LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
         return record;
     }
 
