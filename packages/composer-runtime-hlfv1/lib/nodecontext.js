@@ -43,6 +43,7 @@ class NodeContext extends Context {
         this.stub = stub;
         this.dataService = new NodeDataService(this.stub);
         this.identityService = new NodeIdentityService(this.stub);
+        this.setContextId(stub.getTxID());
         LOG.exit(method);
     }
 

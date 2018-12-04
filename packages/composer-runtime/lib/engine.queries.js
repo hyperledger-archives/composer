@@ -41,7 +41,7 @@ class EngineQueries {
 
         if (args.length !== 3) {
             LOG.error(method, 'Invalid arguments', args);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'executeQuery', ['queryType', 'query', 'parameters']));
         }
 
@@ -95,7 +95,7 @@ class EngineQueries {
             })
             .then((objects) => {
                 LOG.exit(method, objects);
-                LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
                 return objects;
             });
 
