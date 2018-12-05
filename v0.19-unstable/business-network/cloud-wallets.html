@@ -361,14 +361,7 @@
 
 <p>Custom implementations can be written for any given backend database or object store, enabling the specification of a <code>CardStore</code> that is in a non-default file location, a separate docker container, or hosted in a cloud based data store. The store configuration can be completed using either a configuration file, or by using environment variables.</p>
 
-<ul>
-<li><a href="https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-redis">composer-tools/composer-wallet-redis</a>   - provides a backing store using a Redis server</li>
-<li><a href="https://github.com/ampretia/composer-wallet-ibmcos">@ampretia/composer-wallet-ibmcos</a>  - provides a backing store using the IBM Cloud Object Store. This has an S3 compatible API</li>
-</ul>
-
 <p>Multiple cloud wallet implementations can be installed using global npm installs.</p>
-
-<p>For more details of the writing a new cloud wallet implementation, see the following <a href="https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-redis">README</a>.</p>
 
 <h1 id="configuring-a-custom-wallet">Configuring a custom wallet</h1>
 
@@ -383,7 +376,7 @@
 <p>For production deployments, it is more useful to be able to configure the card store outside of the application,
 Hyperledger Composer uses the standard configuration module <code>config</code>. The configuration file is loaded from a sub-directory of the current working directory called <code>config</code>.  The default configuration file is called <code>default.json</code>, the configuration file name can be changed using the <code>NODE_ENV</code> environment variable.</p>
 
-<p>The following configuration file uses the Redis format as an example:</p>
+<p>For example here is a configuration for a cloud wallet implementation called <code>composer-wallet-redis</code></p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
   "composer": {
     "wallet": {
@@ -434,15 +427,14 @@ Hyperledger Composer uses the standard configuration module <code>config</code>.
 <p>The following GitHub repositories contain implementations of cloud custom wallets using Redis and the IBM Cloud Object Store, respectively.</p>
 
 <ul>
-<li><a href="https://github.com/ampretia/composer-wallet-redis">composer-tools/composer-wallet-redis</a> - provides a backing store using a Redis server</li>
-<li><a href="https://github.com/ampretia/composer-wallet-ibmcos">@ampretia/composer-wallet-ibmcos</a> - provides a backing store using the IBM Cloud Object Store. This has an S3 compatible API.</li>
+<li><a href="https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-redis">composer-tools/composer-wallet-redis</a>   - provides a backing store using a Redis server</li>
+<li><a href="https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-ibmcos">composer-tools/composer-wallet-ibmcos</a>  - provides a backing store using the IBM Cloud Object Store. This has an S3 compatible API</li>
+<li><a href="https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-cloudant">composer-tools/composer-wallet-cloudant</a>  - provides a backing store using the IBM Cloudant</li>
 </ul>
 
 <p>Multiple cloud custom wallet implementations can be installed using global npm installs.</p>
 
-<p>For more details of the writing a new cloud based custom wallet implementation, see the following <a href="https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-redis">README</a>.</p>
-
-<p>To migrate to either the Redis or IBM Cloud Object Store cloud custom wallet solutions, refer to the README files of the relevant GitHub repository.</p>
+<p>To migrate to these custom wallet solutions, refer to the README files of the relevant GitHub repository.</p>
 
 <p>In a general sense, migrating to a cloud wallet implementation has three steps.</p>
 
@@ -500,6 +492,10 @@ Hyperledger Composer uses the standard configuration module <code>config</code>.
         <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">(</span><span class="nx">connectionOptions</span><span class="p">);</span>
         <span class="nx">clientConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">(</span><span class="nx">connectionOptions</span><span class="p">);</span>
 </code></pre></div>
+<h1 id="cloud-wallets-and-hyperledger-composer-rest-server">Cloud Wallets and Hyperledger Composer Rest Server</h1>
+
+<p>For convenience, the latest Hyperledger Composer Rest Server docker image will have all the cloud wallets available on the github repository for composer-tools preloaded into the image.</p>
+
             
           </section>
         </div>
