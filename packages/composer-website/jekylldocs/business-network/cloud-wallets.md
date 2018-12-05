@@ -21,12 +21,7 @@ Whenever a `BusinessNetworkConnection` or `AdminConnection` is made, it has an a
 
 Custom implementations can be written for any given backend database or object store, enabling the specification of a `CardStore` that is in a non-default file location, a separate docker container, or hosted in a cloud based data store. The store configuration can be completed using either a configuration file, or by using environment variables.
 
-- [composer-tools/composer-wallet-redis](https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-redis)   - provides a backing store using a Redis server
-- [@ampretia/composer-wallet-ibmcos](https://github.com/ampretia/composer-wallet-ibmcos)  - provides a backing store using the IBM Cloud Object Store. This has an S3 compatible API
-
 Multiple cloud wallet implementations can be installed using global npm installs.
-
-For more details of the writing a new cloud wallet implementation, see the following [README](https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-redis).
 
 # Configuring a custom wallet
 
@@ -39,7 +34,7 @@ There are two ways to define the configuration for a custom wallet: by using a `
 For production deployments, it is more useful to be able to configure the card store outside of the application,
 {{site.data.conrefs.composer_full}} uses the standard configuration module `config`. The configuration file is loaded from a sub-directory of the current working directory called `config`.  The default configuration file is called `default.json`, the configuration file name can be changed using the `NODE_ENV` environment variable.
 
-The following configuration file uses the Redis format as an example:
+For example here is a configuration for a cloud wallet implementation called `composer-wallet-redis`
 
 ```
 {
@@ -94,14 +89,13 @@ The same `.json` snippet may be exported as an environment variable.
 
 The following GitHub repositories contain implementations of cloud custom wallets using Redis and the IBM Cloud Object Store, respectively.
 
-- [composer-tools/composer-wallet-redis](https://github.com/ampretia/composer-wallet-redis) - provides a backing store using a Redis server
-- [@ampretia/composer-wallet-ibmcos](https://github.com/ampretia/composer-wallet-ibmcos) - provides a backing store using the IBM Cloud Object Store. This has an S3 compatible API.
+- [composer-tools/composer-wallet-redis](https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-redis)   - provides a backing store using a Redis server
+- [composer-tools/composer-wallet-ibmcos](https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-ibmcos)  - provides a backing store using the IBM Cloud Object Store. This has an S3 compatible API
+- [composer-tools/composer-wallet-cloudant](https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-cloudant)  - provides a backing store using the IBM Cloudant
 
 Multiple cloud custom wallet implementations can be installed using global npm installs.
 
-For more details of the writing a new cloud based custom wallet implementation, see the following [README](https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-redis).
-
-To migrate to either the Redis or IBM Cloud Object Store cloud custom wallet solutions, refer to the README files of the relevant GitHub repository.
+To migrate to these custom wallet solutions, refer to the README files of the relevant GitHub repository.
 
 In a general sense, migrating to a cloud wallet implementation has three steps.
 
@@ -167,3 +161,6 @@ This has now changed and Card stores must now be specified differently:
         adminConnection = new AdminConnection(connectionOptions);
         clientConnection = new BusinessNetworkConnection(connectionOptions);
 ```
+# Cloud Wallets and Hyperledger Composer Rest Server
+
+For convenience, the latest Hyperledger Composer Rest Server docker image will have all the cloud wallets available on the github repository for composer-tools preloaded into the image.
