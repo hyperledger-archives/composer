@@ -479,14 +479,21 @@ class HLFConnection extends Connection {
             this.fs.writeFileSync(indexFile, JSON.stringify(index));
         });
 
-        // copy over a .npmrc file, should be part of the business network definition.
-        if (installOptions && installOptions.npmrcFile) {
-            try {
-                await this.fs.copy(installOptions.npmrcFile, path.join(installDir, '.npmrc'));
-            } catch(error) {
-                const newError = new Error(`Failed to copy specified npmrc file ${installOptions.npmrcFile} during install. ${error}`);
-                LOG.error(method, newError);
-                throw newError;
+        let chaincodeVersion = businessNetworkDefinition.getVersion();
+        if (installOptions) {
+            if (installOptions.npmrcFile) {
+                try {
+                    // copy over a .npmrc file, should be part of the business network definition.
+                    await this.fs.copy(installOptions.npmrcFile, path.join(installDir, '.npmrc'));
+                } catch(error) {
+                    const newError = new Error(`Failed to copy specified npmrc file ${installOptions.npmrcFile} during install. ${error}`);
+                    LOG.error(method, newError);
+                    throw newError;
+                }
+            }
+            if (installOptions.chaincodeVersion) {
+                chaincodeVersion = installOptions.chaincodeVersion;
+                LOG.info(method, `overriding chaincode version to be ${installOptions.chaincodeVersion}`);
             }
         }
 
@@ -496,7 +503,7 @@ class HLFConnection extends Connection {
             chaincodeType: 'node',
             chaincodePath: installDir,
             metadataPath: installDir,
-            chaincodeVersion: businessNetworkDefinition.getVersion(),
+            chaincodeVersion,
             chaincodeId: businessNetworkDefinition.getName(),
             txId: txId,
             targets: this.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE, FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE])

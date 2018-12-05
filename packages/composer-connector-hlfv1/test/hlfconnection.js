@@ -692,6 +692,42 @@ describe('HLFConnection', () => {
             return connection.install(mockSecurityContext, mockBusinessNetwork, {npmrcFile: '/some/file'})
                 .then(() => {
                     sinon.assert.calledWith(connection.fs.copy, '/some/file', sinon.match(/\/.npmrc$/));
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodeType: 'node',
+                        chaincodePath: sinon.match.string,
+                        metadataPath: sinon.match.string,
+                        chaincodeVersion: mockBusinessNetwork.getVersion(),
+                        chaincodeId: mockBusinessNetwork.getName(),
+                        txId: mockTransactionID,
+                        targets: [mockPeer1]
+                    });
+                });
+        });
+
+        it('should change the chaincode version if requested', () => {
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
+            return connection.install(mockSecurityContext, mockBusinessNetwork, {chaincodeVersion: '123.456'})
+                .then(() => {
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodeType: 'node',
+                        chaincodePath: sinon.match.string,
+                        metadataPath: sinon.match.string,
+                        chaincodeVersion: '123.456',
+                        chaincodeId: mockBusinessNetwork.getName(),
+                        txId: mockTransactionID,
+                        targets: [mockPeer1]
+                    });
                 });
         });
 
