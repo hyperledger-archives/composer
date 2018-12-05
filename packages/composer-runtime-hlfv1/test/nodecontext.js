@@ -22,6 +22,7 @@ const NodeDataService = require('../lib/nodedataservice');
 const NodeEventService = require('../lib/nodeeventservice');
 const NodeHTTPService = require('../lib/nodehttpservice');
 const NodeIdentityService = require('../lib/nodeidentityservice');
+const ChaincodeStub = require('fabric-shim/lib/stub');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -31,6 +32,7 @@ describe('NodeContext', () => {
     let mockNodeContainer;
     let mockEngine;
     let context;
+    let mockStub;
 
     let cert = '-----BEGIN CERTIFICATE-----\
 MIICGjCCAcCgAwIBAgIRANuOnVN+yd/BGyoX7ioEklQwCgYIKoZIzj0EAwIwczEL\
@@ -46,15 +48,11 @@ rRLkwKmqpmSecIaOOr0CF6Mi2J5H4aauMAoGCCqGSM49BAMCA0gAMEUCIQC4sKQ6\
 CEgqbTYe48az95W9/hnZ+7DI5eSnWUwV9vCd/gIgS5K6omNJydoFoEpaEIwM97uS\
 XVMHPa0iyC497vdNURA=\
 -----END CERTIFICATE-----';
-    let mockStub = {
-        creator : cert,
-        getCreator: () => {
-            return mockStub.creator;
-        }
-    };
-
 
     beforeEach(() => {
+        mockStub = sinon.createStubInstance(ChaincodeStub);
+        mockStub.getCreator.returns(cert);
+        mockStub.getTxID.returns('12345abcdefg');
         mockNodeContainer = sinon.createStubInstance(NodeContainer);
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockNodeContainer);

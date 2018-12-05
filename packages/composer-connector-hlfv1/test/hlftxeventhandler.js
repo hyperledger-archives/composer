@@ -165,32 +165,32 @@ describe('HLFTxEventHandler', () => {
     });
 
     describe('#waitForEvents', () => {
-        it('Should do nothing if no events hubs', () => {
+        it('Should do nothing if no events hubs', async () => {
             let evHandler = new HLFTxEventHandler(null, null, null);
-            evHandler.waitForEvents().should.eventually.be.resolved;
+            await evHandler.waitForEvents().should.be.resolved;
             sinon.assert.calledOnce(logWarnSpy);
             evHandler = new HLFTxEventHandler([], '1234', 100);
-            evHandler.waitForEvents().should.eventually.be.resolved;
+            evHandler.waitForEvents().should.be.resolved;
             sinon.assert.calledTwice(logWarnSpy);
         });
 
-        it('Should do wait for 1 event', () => {
+        it('Should do wait for 1 event', async () => {
             sandbox.stub(global, 'setTimeout');
             eventhub1.isconnected.returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1], '1234', 31);
             evHandler.startListening();
             evHandler.listenerPromises[0].should.be.instanceOf(Promise);
             evHandler.listenerPromises[0] = Promise.resolve();
-            evHandler.waitForEvents().should.eventually.be.resolved;
+            await evHandler.waitForEvents().should.be.resolved;
 
             evHandler = new HLFTxEventHandler([eventhub1], '1234', 31);
             evHandler.startListening();
             evHandler.listenerPromises[0].should.be.instanceOf(Promise);
             evHandler.listenerPromises[0] = Promise.reject();
-            evHandler.waitForEvents().should.eventually.be.rejected;
+            await evHandler.waitForEvents().should.be.rejected;
         });
 
-        it('Should do wait more than 1 event', () => {
+        it('Should do wait more than 1 event', async () => {
             sandbox.stub(global, 'setTimeout');
             eventhub1.isconnected.returns(true);
             eventhub2.isconnected.returns(true);
@@ -200,7 +200,7 @@ describe('HLFTxEventHandler', () => {
             evHandler.listenerPromises[0] = Promise.resolve();
             evHandler.listenerPromises[1].should.be.instanceOf(Promise);
             evHandler.listenerPromises[1] = Promise.reject();
-            evHandler.waitForEvents().should.eventually.be.rejected;
+            await evHandler.waitForEvents().should.be.rejected;
         });
 
         it('Should handle timeout for an event', () => {
@@ -209,7 +209,7 @@ describe('HLFTxEventHandler', () => {
             eventhub2.isconnected.returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
             evHandler.startListening();
-            evHandler.waitForEvents().should.eventually.be.rejectedWith(/commit notification/)
+            return evHandler.waitForEvents().should.eventually.be.rejectedWith(/commit notification/)
                 .then(() => {
                     sinon.assert.calledOnce(eventhub1.unregisterTxEvent);
                     sinon.assert.calledWith(eventhub1.unregisterTxEvent, '1234');
@@ -229,7 +229,7 @@ describe('HLFTxEventHandler', () => {
             eventhub2.isconnected.returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
             evHandler.startListening();
-            evHandler.waitForEvents()
+            return evHandler.waitForEvents()
                 .then(() => {
                     sinon.assert.calledOnce(eventhub1.unregisterTxEvent);
                     sinon.assert.calledWith(eventhub1.unregisterTxEvent, '1234');
@@ -253,7 +253,7 @@ describe('HLFTxEventHandler', () => {
             eventhub2.isconnected.returns(true);
             let evHandler = new HLFTxEventHandler([eventhub1, eventhub2], '1234', 31);
             evHandler.startListening();
-            evHandler.waitForEvents().should.eventually.be.rejectedWith(/rejected transaction/)
+            return evHandler.waitForEvents().should.eventually.be.rejectedWith(/rejected transaction/)
                 .then(() => {
                     sinon.assert.calledOnce(eventhub1.unregisterTxEvent);
                     sinon.assert.calledWith(eventhub1.unregisterTxEvent, '1234');

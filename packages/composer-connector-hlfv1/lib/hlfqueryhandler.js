@@ -73,7 +73,7 @@ class HLFQueryHandler {
         if (this.queryPeerIndex !== -1) {
             let peer = this.allQueryPeers[this.queryPeerIndex];
             try {
-                payload = await this.querySinglePeer(peer, txId, functionName, args);
+                payload = await this.connection.querySinglePeer(peer, txId, functionName, args);
                 success = true;
             } catch (error) {
                 allErrors.push(error);
@@ -93,7 +93,7 @@ class HLFQueryHandler {
                 }
                 let peer = this.allQueryPeers[i];
                 try {
-                    payload = await this.querySinglePeer(peer, txId, functionName, args);
+                    payload = await this.connection.querySinglePeer(peer, txId, functionName, args);
                     this.queryPeerIndex = i;
                     success = true;
                     break;
@@ -118,83 +118,6 @@ class HLFQueryHandler {
         LOG.exit(method, payload);
         return payload;
 
-    }
-
-    /**
-     * Send a query
-     * @param {Peer} peer The peer to query
-     * @param {TransactionID} txId the transaction id to use
-     * @param {string} functionName the function name of the query
-     * @param {array} args the arguments to ass
-     * @returns {Buffer} asynchronous response to query
-     */
-    async querySinglePeer(peer, txId, functionName, args) {
-        const method = 'querySinglePeer';
-        LOG.entry(method, peer.getName(), txId, functionName, args);
-        const request = {
-            targets: [peer],
-            chaincodeId: this.connection.businessNetworkIdentifier,
-            txId: txId,
-            fcn: functionName,
-            args: args
-        };
-
-        const t0 = Date.now();
-        let payloads = await this.queryByChaincode(request);
-        LOG.perf(method, `Total duration for queryByChaincode to ${functionName}: `, txId, t0);
-        LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the composer runtime chaincode`);
-        if (!payloads.length) {
-            LOG.error(method, 'No payloads were returned from the query request:' + functionName);
-            throw new Error('No payloads were returned from the query request:' + functionName);
-        }
-        const payload = payloads[0];
-
-        // if it has a code value is 14, means unavailable, so throw that error
-        // code 2 looks like it is a chaincode response that was an error.
-        if (payload instanceof Error && payload.code && (payload.code === 14 || payload.code === 1 || payload.code === 4)) {
-            throw payload;
-        }
-
-        LOG.exit(method, payload);
-        return payload;
-
-    }
-
-    /**
-     * Perform a chaincode query and parse the responses.
-     * @param {object} request the proposal for a query
-     * @return {array} the responses
-     */
-    async queryByChaincode(request) {
-        const method = 'queryByChaincode';
-        LOG.entry(method, request);
-        try {
-            const results = await this.connection.channel.sendTransactionProposal(request);
-            const responses = results[0];
-            if (responses && Array.isArray(responses)) {
-                let results = [];
-                for (let i = 0; i < responses.length; i++) {
-                    let response = responses[i];
-                    if (response instanceof Error) {
-                        results.push(response);
-                    }
-                    else if (response.response && response.response.payload) {
-                        results.push(response.response.payload);
-                    }
-                    else {
-                        results.push(new Error(response));
-                    }
-                }
-                LOG.exit(method);
-                return results;
-            }
-            const err = new Error('Payload results are missing from the chaincode query');
-            LOG.error(method, err);
-            throw err;
-        } catch(err) {
-            LOG.error(method, err);
-            throw err;
-        }
     }
 }
 
