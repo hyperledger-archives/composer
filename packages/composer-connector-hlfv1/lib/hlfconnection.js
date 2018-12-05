@@ -19,7 +19,6 @@ const fs = require('fs-extra');
 const HLFSecurityContext = require('./hlfsecuritycontext');
 const HLFUtil = require('./hlfutil');
 const HLFTxEventHandler = require('./hlftxeventhandler');
-const HLFQueryHandler = require('./hlfqueryhandler');
 const Logger = require('composer-common').Logger;
 const path = require('path');
 const temp = require('temp').track();
@@ -44,6 +43,7 @@ const installDependencies = {
 
 const chaincodePathSection = 'businessnetwork';
 
+let HLFQueryHandler;
 /**
  * Class representing a connection to a business network running on Hyperledger
  * Fabric, using the hfc module.
@@ -67,10 +67,18 @@ class HLFConnection extends Connection {
     /**
      * create a new Query Handler.
      * @param {HLFConnection} connection The connection to be used by the query handler.
+     * @param {string} queryHandlerImpl The query handler to require
      * @return {HLFQueryManager} A new query manager.
      */
-    static createQueryHandler(connection) {
-        return new HLFQueryHandler(connection);
+    static createQueryHandler(connection, queryHandlerImpl) {
+        const method = 'createQueryHandler';
+        if (typeof queryHandlerImpl === 'string') {
+            LOG.info(method, `attemping to load query handler module ${queryHandlerImpl}`);
+            HLFQueryHandler = require(queryHandlerImpl);
+            return new HLFQueryHandler(connection);
+        } else {
+            return new queryHandlerImpl(connection);
+        }
     }
 
     /**
@@ -128,7 +136,14 @@ class HLFConnection extends Connection {
         this.caClient = caClient;
         this.initialized = false;
         this.commitTimeout = connectOptions['x-commitTimeout'] ? connectOptions['x-commitTimeout'] * 1000 : 300 * 1000;
-        this.queryHandler = HLFConnection.createQueryHandler(this);
+
+        let queryHandlerImpl = './hlfqueryhandler';
+        if (process.env.COMPOSER_QUERY_HANDLER && process.env.COMPOSER_QUERY_HANDLER.length !== 0) {
+            queryHandlerImpl = process.env.COMPOSER_QUERY_HANDLER;
+        } else if (connectOptions.queryHandler && connectOptions.queryHandler.length !== 0) {
+            queryHandlerImpl = connectOptions.queryHandler;
+        }
+        this.queryHandler = HLFConnection.createQueryHandler(this, queryHandlerImpl);
         LOG.debug(method, `commit timeout set to ${this.commitTimeout}`);
 
         // We create promisified versions of these APIs.
@@ -479,14 +494,21 @@ class HLFConnection extends Connection {
             this.fs.writeFileSync(indexFile, JSON.stringify(index));
         });
 
-        // copy over a .npmrc file, should be part of the business network definition.
-        if (installOptions && installOptions.npmrcFile) {
-            try {
-                await this.fs.copy(installOptions.npmrcFile, path.join(installDir, '.npmrc'));
-            } catch(error) {
-                const newError = new Error(`Failed to copy specified npmrc file ${installOptions.npmrcFile} during install. ${error}`);
-                LOG.error(method, newError);
-                throw newError;
+        let chaincodeVersion = businessNetworkDefinition.getVersion();
+        if (installOptions) {
+            if (installOptions.npmrcFile) {
+                try {
+                    // copy over a .npmrc file, should be part of the business network definition.
+                    await this.fs.copy(installOptions.npmrcFile, path.join(installDir, '.npmrc'));
+                } catch(error) {
+                    const newError = new Error(`Failed to copy specified npmrc file ${installOptions.npmrcFile} during install. ${error}`);
+                    LOG.error(method, newError);
+                    throw newError;
+                }
+            }
+            if (installOptions.chaincodeVersion) {
+                chaincodeVersion = installOptions.chaincodeVersion;
+                LOG.info(method, `overriding chaincode version to be ${installOptions.chaincodeVersion}`);
             }
         }
 
@@ -496,7 +518,7 @@ class HLFConnection extends Connection {
             chaincodeType: 'node',
             chaincodePath: installDir,
             metadataPath: installDir,
-            chaincodeVersion: businessNetworkDefinition.getVersion(),
+            chaincodeVersion,
             chaincodeId: businessNetworkDefinition.getName(),
             txId: txId,
             targets: this.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE, FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE])
@@ -1298,6 +1320,83 @@ class HLFConnection extends Connection {
             txId = this.client.newTransactionID();
         }
         return txId;
+    }
+
+    /**
+     * Send a query
+     * @param {Peer} peer The peer to query
+     * @param {TransactionID} txId the transaction id to use
+     * @param {string} functionName the function name of the query
+     * @param {array} args the arguments to ass
+     * @returns {Buffer} asynchronous response to query
+     */
+    async querySinglePeer(peer, txId, functionName, args) {
+        const method = 'querySinglePeer';
+        LOG.entry(method, peer.getName(), txId, functionName, args);
+        const request = {
+            targets: [peer],
+            chaincodeId: this.businessNetworkIdentifier,
+            txId: txId,
+            fcn: functionName,
+            args: args
+        };
+
+        const t0 = Date.now();
+        let payloads = await this.queryByChaincode(request);
+        LOG.perf(method, `Total duration for queryByChaincode to ${functionName}: `, txId, t0);
+        LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the composer runtime chaincode`);
+        if (!payloads.length) {
+            LOG.error(method, 'No payloads were returned from the query request:' + functionName);
+            throw new Error('No payloads were returned from the query request:' + functionName);
+        }
+        const payload = payloads[0];
+
+        // if it has a code value is 14, means unavailable, so throw that error
+        // code 2 looks like it is a chaincode response that was an error.
+        if (payload instanceof Error && payload.code && (payload.code === 14 || payload.code === 1 || payload.code === 4)) {
+            throw payload;
+        }
+
+        LOG.exit(method, payload);
+        return payload;
+
+    }
+
+    /**
+     * Perform a chaincode query and parse the responses.
+     * @param {object} request the proposal for a query
+     * @return {array} the responses
+     */
+    async queryByChaincode(request) {
+        const method = 'queryByChaincode';
+        LOG.entry(method, request);
+        try {
+            const results = await this.channel.sendTransactionProposal(request);
+            const responses = results[0];
+            if (responses && Array.isArray(responses)) {
+                let results = [];
+                for (let i = 0; i < responses.length; i++) {
+                    let response = responses[i];
+                    if (response instanceof Error) {
+                        results.push(response);
+                    }
+                    else if (response.response && response.response.payload) {
+                        results.push(response.response.payload);
+                    }
+                    else {
+                        results.push(new Error(response));
+                    }
+                }
+                LOG.exit(method);
+                return results;
+            }
+            const err = new Error('Payload results are missing from the chaincode query');
+            LOG.error(method, err);
+            throw err;
+        } catch(err) {
+            LOG.error(method, err);
+            throw err;
+        }
     }
 
 }

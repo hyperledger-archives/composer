@@ -1004,7 +1004,6 @@ describe('HLFConnectionManager', () => {
             sandbox.stub(path, 'join').returns('/mypath/to/stuff');
             return connectionManager.removeIdentity('connprof1', {cardName: 'theuser'}, 'anid')
                 .then((deleted) => {
-                    //console.log(x);
                     sinon.assert.calledOnce(fs.stat);
                     sinon.assert.calledOnce(fsextra.remove);
                     sinon.assert.calledWith(fsextra.remove, '/mypath/to/stuff');

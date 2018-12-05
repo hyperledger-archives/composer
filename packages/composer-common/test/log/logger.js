@@ -282,13 +282,20 @@ describe('Logger', () => {
             sinon.assert.calledWith(logger.intlog, 'verbose', 'Method','Message','Data');
         });
 
-        it('perf method should call verbose level, no args', () => {
+        it('perf method should call verbose level, handling a transaction id object', () => {
             logger.perf('Method', 'Perf message', {getTransactionID: () => {return 'txid';}}, new Date());
             sinon.assert.calledOnce(logger.intlog);
             sinon.assert.calledWith(logger.intlog, 'verbose', 'Method', sinon.match.string);
         });
 
-        it('perf method should call verbose level and work without a txid, no args', () => {
+        it('perf method should call verbose level, handling a transaction id string', () => {
+            logger.perf('Method', 'Perf message', 'A-TxId-value', new Date());
+            sinon.assert.calledOnce(logger.intlog);
+            sinon.assert.calledWith(logger.intlog, 'verbose', 'Method', sinon.match.string);
+        });
+
+
+        it('perf method should call verbose level and work without a txid', () => {
             logger.perf('Method', 'Perf message', null, new Date());
             sinon.assert.calledOnce(logger.intlog);
             sinon.assert.calledWith(logger.intlog, 'verbose', 'Method', sinon.match.string);
