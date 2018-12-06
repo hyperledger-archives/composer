@@ -91,7 +91,8 @@
     "request-promise-any": "1.0.5",
     "semver": "5.3.0",
     "sha.js": "2.4.8",
-    "source-map": "0.5.6"
+    "source-map": "0.5.6",
+    "uuid": "3.0.1"
   },
   "nyc": {
     "exclude": [

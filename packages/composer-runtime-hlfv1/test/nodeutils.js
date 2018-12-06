@@ -36,6 +36,7 @@ describe('NodeUtils', () => {
         mockIterator = sinon.createStubInstance(StateQueryIterator);
         mockIterator.close.resolves();
         mockStub = sinon.createStubInstance(ChaincodeStub);
+        mockStub.getTxID.returns('abcdefg135845');
         const LOG = Logger.getLog('NodeUtils');
         logWarnSpy = sandbox.spy(LOG, 'warn');
 
@@ -48,7 +49,7 @@ describe('NodeUtils', () => {
     describe('#getAllResults', () => {
         it('should handle empty iterator', async () => {
             mockIterator.next.onFirstCall().resolves({done: true});
-            let results = await NodeUtils.getAllResults(mockIterator);
+            let results = await NodeUtils.getAllResults(mockIterator, mockStub);
             sinon.assert.calledOnce(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
             results.length.should.equal(0);
@@ -63,7 +64,7 @@ describe('NodeUtils', () => {
             };
             mockIterator.next.onFirstCall().resolves(data);
             mockIterator.next.onSecondCall().resolves({done: true});
-            let results = await NodeUtils.getAllResults(mockIterator);
+            let results = await NodeUtils.getAllResults(mockIterator, mockStub);
             sinon.assert.calledTwice(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
             results.should.deep.equal([JSON.parse(data.value.value)]);
@@ -77,7 +78,7 @@ describe('NodeUtils', () => {
                 done: true
             };
             mockIterator.next.onFirstCall().resolves(data);
-            let results = await NodeUtils.getAllResults(mockIterator);
+            let results = await NodeUtils.getAllResults(mockIterator, mockStub);
             sinon.assert.calledOnce(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
             results.should.deep.equal([JSON.parse(data.value.value)]);
@@ -99,7 +100,7 @@ describe('NodeUtils', () => {
 
             mockIterator.next.onFirstCall().resolves(data1);
             mockIterator.next.onSecondCall().resolves(data2);
-            let results = await NodeUtils.getAllResults(mockIterator);
+            let results = await NodeUtils.getAllResults(mockIterator, mockStub);
             sinon.assert.calledTwice(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
             results.should.deep.equal([JSON.parse(data1.value.value), JSON.parse(data2.value.value)]);
@@ -122,7 +123,7 @@ describe('NodeUtils', () => {
             mockIterator.next.onFirstCall().resolves(data1);
             mockIterator.next.onSecondCall().resolves(data2);
             mockIterator.next.onThirdCall().resolves({done: true});
-            let results = await NodeUtils.getAllResults(mockIterator);
+            let results = await NodeUtils.getAllResults(mockIterator, mockStub);
             sinon.assert.calledThrice(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
             results.should.deep.equal([JSON.parse(data1.value.value), JSON.parse(data2.value.value)]);
@@ -136,7 +137,7 @@ describe('NodeUtils', () => {
                 done: true
             };
             mockIterator.next.onFirstCall().resolves(data);
-            let results = await NodeUtils.getAllResults(mockIterator);
+            let results = await NodeUtils.getAllResults(mockIterator, mockStub);
             sinon.assert.calledOnce(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
             results.length.should.equal(0);
@@ -144,7 +145,7 @@ describe('NodeUtils', () => {
 
         it('should handle next throwing an error', async () => {
             mockIterator.next.onFirstCall().rejects(new Error('NextError'));
-            await NodeUtils.getAllResults(mockIterator)
+            await NodeUtils.getAllResults(mockIterator, mockStub)
                 .should.be.rejectedWith(/NextError/);
         });
 
@@ -157,7 +158,7 @@ describe('NodeUtils', () => {
             };
             mockIterator.next.onFirstCall().resolves(data);
             mockIterator.close.rejects(new Error('CloseError'));
-            let results = await NodeUtils.getAllResults(mockIterator);
+            let results = await NodeUtils.getAllResults(mockIterator, mockStub);
             sinon.assert.calledOnce(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
             results.should.deep.equal([{data: 'some-value'}]);
