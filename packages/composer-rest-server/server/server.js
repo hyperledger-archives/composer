@@ -192,6 +192,14 @@ module.exports = function (composer) {
                 clientTracking: true
             });
 
+            // Add a dummy error handler for a ws connection so bad websocket client
+            // doesn't kill the rest server
+            wss.on('connection', (ws) => {
+                ws.on('error', () => {
+                    // do nothing
+                });
+            });
+
             // Add a broadcast method that sends data to all connected clients.
             wss.broadcast = (data) => {
                 wss.clients.forEach((client) => {
