@@ -1,6 +1,6 @@
 {
   "name": "composer-report",
-  "version": "0.19.19",
+  "version": "0.19.20",
   "description": "Hyperledger Composer diagnostics",
   "bin": "bin/cmd.js",
   "main": "lib/report.js",
