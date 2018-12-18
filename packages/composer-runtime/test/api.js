@@ -296,46 +296,38 @@ describe('Api', () => {
             });
         });
 
-        it('should perform a query using a named query', () => {
-            return api.query(queryID)
-                .should.eventually.be.deep.equal(resources)
-                .then(() => {
-                    sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
-                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryID);
-                    sinon.assert.callCount(mockAccessController.check, 5);
-                });
+        it('should perform a query using a named query', async () => {
+            const result = await api.query(queryID);
+            result.should.deep.equal(resources);
+            sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
+            sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryID);
+            sinon.assert.callCount(mockAccessController.check, 5);
         });
 
-        it('should perform a query using a named query and parameters', () => {
-            return api.query(queryID, queryParams)
-                .should.eventually.be.deep.equal(resources)
-                .then(() => {
-                    sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
-                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryID, queryParams);
-                    sinon.assert.callCount(mockAccessController.check, 5);
-                });
+        it('should perform a query using a named query and parameters', async () => {
+            const result = await api.query(queryID, queryParams);
+            result.should.deep.equal(resources);
+            sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
+            sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryID, queryParams);
+            sinon.assert.callCount(mockAccessController.check, 5);
         });
 
-        it('should perform a query using a built query', () => {
+        it('should perform a query using a built query', async () => {
             const query = new Query(queryHash);
-            return api.query(query)
-                .should.eventually.be.deep.equal(resources)
-                .then(() => {
-                    sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
-                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryHash);
-                    sinon.assert.callCount(mockAccessController.check, 5);
-                });
+            const result = await api.query(query);
+            result.should.deep.equal(resources);
+            sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
+            sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryHash);
+            sinon.assert.callCount(mockAccessController.check, 5);
         });
 
-        it('should perform a query using a built query and parameters', () => {
+        it('should perform a query using a built query and parameters', async () => {
             const query = new Query(queryHash);
-            return api.query(query, queryParams)
-                .should.eventually.be.deep.equal(resources)
-                .then(() => {
-                    sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
-                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryHash, queryParams);
-                    sinon.assert.callCount(mockAccessController.check, 5);
-                });
+            const result = await api.query(query, queryParams);
+            result.should.deep.equal(resources);
+            sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
+            sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryHash, queryParams);
+            sinon.assert.callCount(mockAccessController.check, 5);
         });
 
     });

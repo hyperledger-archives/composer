@@ -243,7 +243,7 @@ describe('EngineTransactions', () => {
             sinon.assert.calledOnce(mockTransactionRegistry.add);
             sinon.assert.calledWith(mockTransactionRegistry.add, sinon.match(transaction => transaction.getFullyQualifiedIdentifier() === 'org.acme.MyTransaction#TX_1'), { noTest: true });
             sinon.assert.calledOnce(mockHistorian.add);
-            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true });
+            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true, validate: false });
         });
 
         it('should execute a transaction that does not return a value and write to historian if explicitly requested', async () => {
@@ -306,7 +306,7 @@ describe('EngineTransactions', () => {
             sinon.assert.calledOnce(mockTransactionRegistry.add);
             sinon.assert.calledWith(mockTransactionRegistry.add, sinon.match(transaction => transaction.getFullyQualifiedIdentifier() === 'org.acme.MyTransactionThatReturnsString#TX_1'), { noTest: true });
             sinon.assert.calledOnce(mockHistorian.add);
-            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true });
+            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true, validate: false });
         });
 
         it('should throw if the transaction cannot be added to the transaction registry', async () => {

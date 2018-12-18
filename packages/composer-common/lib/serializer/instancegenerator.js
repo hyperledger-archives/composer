@@ -17,7 +17,6 @@
 const ClassDeclaration = require('../introspect/classdeclaration');
 const EnumDeclaration = require('../introspect/enumdeclaration');
 const Field = require('../introspect/field');
-// const leftPad = require('left-pad');
 const padStart = require('lodash.padstart');
 const ModelUtil = require('../modelutil');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
@@ -63,7 +62,8 @@ class InstanceGenerator {
     visitClassDeclaration(classDeclaration, parameters) {
         const obj = parameters.stack.pop();
         const properties = classDeclaration.getProperties();
-        for (const property of properties) {
+        for (const index in properties) {
+            const property = properties[index];
             if (!parameters.includeOptionalFields && property.isOptional()) {
                 continue;
             }

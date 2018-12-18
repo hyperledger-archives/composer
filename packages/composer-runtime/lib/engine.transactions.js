@@ -97,7 +97,7 @@ class EngineTransactions {
 
             // Store the historian record in the historian registry.
             LOG.debug(method, 'Storing Historian record in Historian registry');
-            await historian.add(historianRecord, {noTest: true});
+            await historian.add(historianRecord, {noTest: true, validate: false});
         }
 
         context.clearTransaction();
@@ -213,7 +213,7 @@ class EngineTransactions {
         const eventService = context.getEventService();
         record.eventsEmitted = [];
         eventService.getEvents().forEach((element) => {
-            const r = context.getSerializer().fromJSON(element);
+            const r = context.getSerializer().fromJSON(element, {validate: false});
             record.eventsEmitted.push(r);
         } );
 

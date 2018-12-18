@@ -68,6 +68,22 @@ class Serializer {
         this.defaultOptions = Object.assign({}, baseDefaultOptions, newDefaultOptions);
     }
 
+
+    /**
+     * Generate validation parameters for a Resource
+     * @private
+     * @param {Resource} resource - The instance being worked
+     * @returns {Object} parameters used for validation
+     */
+    validationParameters(resource){
+        const parameters = {};
+        parameters.stack = new TypedStack(resource);
+        parameters.modelManager = this.modelManager;
+        parameters.seenResources = new Set();
+        parameters.dedupeResources = new Set();
+        return parameters;
+    }
+
     /**
      * <p>
      * Convert a {@link Resource} to a JavaScript object suitable for long-term
@@ -94,15 +110,27 @@ class Serializer {
             throw new Error(Globalize.formatMessage('serializer-tojson-notcobject'));
         }
 
-        const parameters = {};
-        parameters.stack = new TypedStack(resource);
-        parameters.modelManager = this.modelManager;
-        parameters.seenResources = new Set();
-        parameters.dedupeResources = new Set();
+        // Assign options
+        options = options ? Object.assign({}, this.defaultOptions, options) : this.defaultOptions;
+
+        if (resource.$original && !resource.$isDirty && (!options || (!options.permitResourcesForRelationships && !options.deduplicateResources))) {
+            //conditional validation
+            if (options.validate && !resource.$validated){
+                const parameters = this.validationParameters(resource);
+                const classDeclaration = this.modelManager.getType( resource.getFullyQualifiedType() );
+                const validator = new ResourceValidator(options);
+                classDeclaration.accept(validator, parameters);
+            }
+
+            const result = resource.$original;
+            delete resource.$original;
+            return result;
+        }
+
+        const parameters = this.validationParameters(resource);
         const classDeclaration = this.modelManager.getType( resource.getFullyQualifiedType() );
 
-        // validate the resource against the model
-        options = options ? Object.assign({}, this.defaultOptions, options) : this.defaultOptions;
+        // conditionally validate the resource against the model
         if(options.validate) {
             const validator = new ResourceValidator(options);
             classDeclaration.accept(validator, parameters);
@@ -120,6 +148,7 @@ class Serializer {
         // this performs the conversion of the resouce into a standard JSON object
         let result = classDeclaration.accept(generator, parameters);
         return result;
+
     }
 
     /**
@@ -182,9 +211,53 @@ class Serializer {
         // validate the resource against the model
         if(options.validate) {
             resource.validate();
+            resource.$validated = true;
+            Object.defineProperty(resource, '$validated', { enumerable: false });
         }
 
-        return resource;
+        // Store the original JSON object to enable retrieval later
+        delete jsonObject.$networkId;
+        resource.$original = jsonObject;
+        resource.$isDirty = false;
+
+        Object.defineProperty(resource, '$original', { enumerable: false });
+        Object.defineProperty(resource, '$isDirty', { enumerable: false });
+
+        // Create a proxy object to return here as we want to monitor for resource changes
+        const validator = function (parent) {
+            this.apply = function (target, property, receiver){
+                return Reflect.apply(target, property, receiver);
+            };
+            this.get = function (target, property, receiver){
+                const targetProp = target[property];
+                // If a function is being called on something, it will also come thorugh as a get
+                if (targetProp instanceof Function && targetProp !== null) {
+                    if(target instanceof Array){
+                        return function(...args){
+                            return targetProp.apply(this, args);
+                        };
+                    } else {
+                        return targetProp.bind(target);
+                    }
+                } else if (typeof target[property] === 'object' && target[property] !== null) {
+                    return new Proxy(target[property], new validator(parent));
+                } else {
+                    return target[property];
+                }
+            };
+            this.set = function (target, property, receiver){
+                parent.$isDirty = true;
+                return Reflect.set(target, property, receiver);
+            };
+            this.deleteProperty = function (target, property, receiver){
+                parent.$isDirty = true;
+                return Reflect.deleteProperty(target, property, receiver);
+            };
+        };
+
+        const proxy = new Proxy(resource, new validator(resource));
+
+        return proxy;
     }
 }
 

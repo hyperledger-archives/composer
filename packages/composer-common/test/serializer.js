@@ -49,6 +49,8 @@ describe('Serializer', () => {
         o String participantId
         o String firstName
         o String lastName
+        o ConceptArray[] conceptArray optional
+        o DateTime theDate optional
         }
 
         transaction SampleTransaction {
@@ -64,6 +66,21 @@ describe('Serializer', () => {
         event SampleEvent{
         --> SampleAsset asset
         o String newValue
+        }
+
+        enum SampleEnum {
+            o EMPEROR
+            o KING
+            o CHINSTRAP
+            o GENTOO
+          }
+
+        concept ConceptArray {
+            o NestedConcept nestedConcept
+        }
+
+        concept NestedConcept {
+            o String value
         }
 
         `);
@@ -195,6 +212,94 @@ describe('Serializer', () => {
                 stringValue: ''
             });
         });
+
+        it('should shortcut the retun if $original is present', () => {
+            const resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+            resource.stringValue = '';
+            resource.$original = 'penguin';
+
+            const json = serializer.toJSON(resource);
+            json.should.equal('penguin');
+
+        });
+
+        it('should not shortcut the retun if $original is present but is marked with $isDirty', () => {
+            const resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+            resource.stringValue = '';
+            resource.$original = 'penguin';
+            resource.$isDirty = true;
+
+            const json = serializer.toJSON(resource);
+            json.should.deep.equal({
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com',
+                stringValue: ''
+            });
+        });
+
+        it('should shortcut the return if $original is present and convertResourcesToRelationships is passed as an option', () => {
+            const resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+            resource.stringValue = '';
+            resource.$original = 'penguin';
+
+            const json = serializer.toJSON(resource, {
+                convertResourcesToRelationships: true
+            });
+            json.should.equal('penguin');
+        });
+
+        it('should not shortcut the return if $original is present but permitResourcesForRelationships is passed as an option', () => {
+            const resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+            resource.stringValue = '';
+            resource.$original = 'penguin';
+
+            const json = serializer.toJSON(resource, {
+                permitResourcesForRelationships: true
+            });
+            json.should.deep.equal({
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com',
+                stringValue: ''
+            });
+        });
+
+        it('should not shortcut the return if $original is present but deduplicateResources is passed as an option', () => {
+            const resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+            resource.stringValue = '';
+            resource.$original = 'penguin';
+
+            const json = serializer.toJSON(resource, {
+                deduplicateResources: true
+            });
+            json.should.deep.equal({
+                $class: 'org.acme.sample.SampleAsset',
+                $id: 'resource:org.acme.sample.SampleAsset#1',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com',
+                stringValue: ''
+            });
+        });
+
+        it('should not validate the resource if validation option is passed, but the original resource is unmodified and was validated upon generation', () => {
+            const resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+            resource.stringValue = '';
+            resource.$original = 'penguin';
+            resource.$validated = true;
+
+            const validationSpy = sandbox.spy(serializer, 'validationParameters');
+
+            const json = serializer.toJSON(resource);
+            json.should.equal('penguin');
+            validationSpy.should.not.have.been.called;
+        });
     });
 
     describe('#fromJSON', () => {
@@ -213,6 +318,15 @@ describe('Serializer', () => {
             (() => {
                 serializer.fromJSON(mockResource);
             }).should.throw(TypeNotFoundException, /NoSuchAsset/);
+        });
+
+        it('should throw if the class declaration is an instance of Enum', () => {
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.$class = 'org.acme.sample.SampleEnum';
+            let serializer = new Serializer(factory, modelManager);
+            (() => {
+                serializer.fromJSON(mockResource);
+            }).should.throw(Error, /Attempting to create an ENUM declaration is not supported/);
         });
 
         it('should deserialize a valid asset', () => {
@@ -352,6 +466,157 @@ describe('Serializer', () => {
             };
             const result = serializer.fromJSON(json);
             result.should.be.an.instanceOf(Resource);
+        });
+
+        it('should create a proxy object that has a $isDirty flag', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined
+            };
+            const result = serializer.fromJSON(json);
+            result.should.be.an.instanceOf(Resource);
+            result.$isDirty.should.be.equal(false);
+        });
+
+        it('should create a proxy object that changes the $isDirty flag when a property is modified', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined
+            };
+            const result = serializer.fromJSON(json);
+            result.$isDirty.should.be.equal(false);
+            result.firstName = 'Blocky';
+            result.$isDirty.should.be.equal(true);
+        });
+
+        it('should create a proxy object that changes the $isDirty flag when a property is added', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined
+            };
+            const result = serializer.fromJSON(json);
+            result.$isDirty.should.be.equal(false);
+            result.newProperty = 'shiny';
+            result.$isDirty.should.be.equal(true);
+        });
+
+        it('should create a proxy object that changes the $isDirty flag when a property is deleted', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined
+            };
+            const result = serializer.fromJSON(json);
+            result.$isDirty.should.be.equal(false);
+            delete result.firstName;
+            result.$isDirty.should.be.equal(true);
+        });
+
+        it('should create a proxy object that changes the $isDirty flag when an array element is modified', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined,
+                conceptArray: [
+                    { nestedConcept: { value : 'tiger'}},
+                    { nestedConcept: { value : 'leopard'}},
+                    { nestedConcept: { value : 'puma'}}
+                ]
+            };
+            const result = serializer.fromJSON(json);
+            result.$isDirty.should.be.equal(false);
+            result.conceptArray[1] = { nestedConcept: { value : 'kitten'}};
+            result.conceptArray[1].nestedConcept.value.should.equal('kitten');
+            result.$isDirty.should.be.equal(true);
+        });
+
+        it('should create a proxy object that changes the $isDirty flag when a nested concept is modified', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined,
+                conceptArray: [
+                    { nestedConcept: { value : 'tiger'}},
+                    { nestedConcept: { value : 'leopard'}},
+                    { nestedConcept: { value : 'puma'}}
+                ]
+            };
+            const result = serializer.fromJSON(json);
+            result.$isDirty.should.be.equal(false);
+            result.conceptArray[1].nestedConcept.value = 'kitten';
+            result.$isDirty.should.be.equal(true);
+        });
+
+        it('should create a proxy object that changes the $isDirty flag when a nested concept array item is deleted', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined,
+                conceptArray: [
+                    { nestedConcept: { value : 'tiger'}},
+                    { nestedConcept: { value : 'leopard'}},
+                    { nestedConcept: { value : 'puma'}}
+                ]
+            };
+            const result = serializer.fromJSON(json);
+            result.$isDirty.should.be.equal(false);
+            result.conceptArray.length.should.be.equal(3);
+            result.conceptArray.pop();
+            result.conceptArray.length.should.be.equal(2);
+            result.$isDirty.should.be.equal(true);
+        });
+
+        it('should create a proxy object that changes the $isDirty flag when a nested concept array item is appended', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined,
+                conceptArray: [
+                    { nestedConcept: { value : 'tiger'}},
+                    { nestedConcept: { value : 'leopard'}},
+                    { nestedConcept: { value : 'puma'}}
+                ]
+            };
+            const result = serializer.fromJSON(json);
+            result.$isDirty.should.be.equal(false);
+            result.conceptArray.length.should.be.equal(3);
+            result.conceptArray.push({ nestedConcept: { value : 'lynx'}});
+            result.conceptArray.length.should.be.equal(4);
+            result.$isDirty.should.be.equal(true);
+        });
+
+        it('should create a proxy object that enables functions to be called on properties', () => {
+            const myDate = new Date();
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined,
+                theDate: myDate.toISOString()
+            };
+            const result = serializer.fromJSON(json);
+            result.theDate.toISOString().should.equal(myDate.toISOString());
+
         });
     });
 
