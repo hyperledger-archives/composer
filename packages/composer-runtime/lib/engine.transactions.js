@@ -97,7 +97,7 @@ class EngineTransactions {
 
             // Store the historian record in the historian registry.
             LOG.debug(method, 'Storing Historian record in Historian registry');
-            await historian.add(historianRecord, {noTest: true});
+            await historian.add(historianRecord, {noTest: true, validate: false});
         }
 
         context.clearTransaction();
@@ -213,7 +213,7 @@ class EngineTransactions {
         const eventService = context.getEventService();
         record.eventsEmitted = [];
         eventService.getEvents().forEach((element) => {
-            const r = context.getSerializer().fromJSON(element);
+            const r = context.getSerializer().fromJSON(element, {validate: false});
             record.eventsEmitted.push(r);
         } );
 
@@ -231,8 +231,7 @@ class EngineTransactions {
         LOG.entry(method, context, transaction, returnValues);
 
         // Determine whether or not a result was expected.
-        const transactionDeclaration = transaction.getClassDeclaration();
-        const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        const returnsDecorator = transaction.getClassDeclaration().getDecorator('returns');
         if (!returnsDecorator) {
             LOG.exit(method, undefined);
             return undefined;
@@ -287,6 +286,8 @@ class EngineTransactions {
         // Get the type and resolved type.
         const transactionDeclaration = transaction.getClassDeclaration();
         const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        const readOnlyDecorator = transactionDeclaration.getDecorator('readonly');
+        const readOnly = readOnlyDecorator ? readOnlyDecorator.getValue() : false;
         const returnValueType = returnsDecorator.getType();
         const returnValueResolvedType = returnsDecorator.getResolvedType();
         const isArray = returnsDecorator.isArray();
@@ -304,7 +305,7 @@ class EngineTransactions {
                 LOG.error(method, error);
                 throw error;
             }
-            return context.getSerializer().toJSON(actualReturnValue, { convertResourcesToRelationships: true, permitResourcesForRelationships: false });
+            return context.getSerializer().toJSON(actualReturnValue, { convertResourcesToRelationships: true, permitResourcesForRelationships: false, useOriginal: readOnly });
         };
 
         // Handle the non-array case - a single return value.

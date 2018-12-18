@@ -293,7 +293,7 @@ class RegistryManager extends EventEmitter {
             // go to the sysregistries datacollection and get the 'resource' for the registry we are interested in
             const json = await this.sysregistries.get(collectionID);
             // do we have permission to be looking at this??
-            const resource = this.serializer.fromJSON(json);
+            const resource = this.serializer.fromJSON(json, {validate: false});
             await this.accessController.check(resource, 'READ');
             // if we got here then, we the accessController.check was OK, get the dataCollection with the actual information
             // for the require registry
@@ -330,7 +330,7 @@ class RegistryManager extends EventEmitter {
                     return this.sysregistries.get(collectionID)
                         .then((result) => {
                             // do we REALLY have permission to be looking at this??
-                            resource = this.serializer.fromJSON(result);
+                            resource = this.serializer.fromJSON(result, {validate: false});
                             return this.accessController.check(resource, 'READ');
                         })
                         .then(() => {

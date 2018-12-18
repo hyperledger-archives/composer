@@ -39,21 +39,25 @@ function isSystemProperty(name) {
  * @private
  */
 function getAssignableProperties(resourceData) {
-    return Object.keys(resourceData).filter((property) => {
-        return !isSystemProperty(property) && !Util.isNull(resourceData[property]);
-    });
+    const assignable = [];
+    for (const property in resourceData){
+        if(!isSystemProperty(property) && !Util.isNull(resourceData[property])){
+            assignable.push(property);
+        }
+    }
+    return assignable;
 }
 
 /**
  * Assert that all resource properties exist in a given class declaration.
- * @param {Array} properties Property names.
+ * @param {Array} propertyNames Property names.
  * @param {ClassDeclaration} classDeclaration class declaration.
  * @throws {ValidationException} if any properties are not defined by the class declaration.
  * @private
  */
-function validateProperties(properties, classDeclaration) {
+function validateProperties(propertyNames, classDeclaration) {
     const expectedProperties = classDeclaration.getProperties().map((property) => property.getName());
-    const invalidProperties = properties.filter((property) => !expectedProperties.includes(property));
+    const invalidProperties = propertyNames.filter((property) => !expectedProperties.includes(property));
     if (invalidProperties.length > 0) {
         const errorText = `Unexpected properties for type ${classDeclaration.getFullyQualifiedName()}: ` +
             invalidProperties.join(', ');
@@ -117,12 +121,12 @@ class JSONPopulator {
         const properties = getAssignableProperties(jsonObj);
         validateProperties(properties, classDeclaration);
 
-        properties.forEach((property) => {
+        for (const property of properties) {
             const value = jsonObj[property];
             parameters.jsonStack.push(value);
             const classProperty = classDeclaration.getProperty(property);
-            resourceObj[property] = classProperty.accept(this,parameters);
-        });
+            resourceObj[property] = classProperty.accept(this, parameters);
+        }
 
         return resourceObj;
     }
@@ -194,7 +198,7 @@ class JSONPopulator {
             classDeclaration.accept(this, parameters);
         }
         else {
-            result = this.convertToObject(field,jsonItem);
+            result = this.convertToObject(field, jsonItem);
         }
 
         return result;
