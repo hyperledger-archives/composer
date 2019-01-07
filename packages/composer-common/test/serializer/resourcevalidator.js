@@ -470,6 +470,43 @@ describe('ResourceValidator', function () {
             }).should.throw(/Model violation in instance identifier field propName/);
         });
 
+        it('should throw if type of data is not a number for a numeric field', () => {
+            let mockField = sinon.createStubInstance(Field);
+            mockField.getName.returns('propName');
+            mockField.getType.returns('Integer');
+            mockField.isPrimitive.returns(true);
+            (() => {
+                resourceValidator.checkItem('fred', mockField, {rootResourceIdentifier: 'identifier'});
+            }).should.throw(/Model violation in instance identifier field propName.*fred.*string.*Integer/);
+        });
+
+        it('should throw if number is actually NaN', () => {
+            let mockField = sinon.createStubInstance(Field);
+            mockField.getName.returns('propName');
+            mockField.getType.returns('Integer');
+            mockField.isPrimitive.returns(true);
+            (() => {
+                resourceValidator.checkItem(parseInt('fred') /* creates NaN object*/, mockField, {rootResourceIdentifier: 'identifier'});
+            }).should.throw(/Model violation in instance identifier field propName.*Non-numeric.*unknown.*Integer/);
+
+            mockField = sinon.createStubInstance(Field);
+            mockField.getName.returns('propName');
+            mockField.getType.returns('Double');
+            mockField.isPrimitive.returns(true);
+            (() => {
+                resourceValidator.checkItem(parseInt('fred') /* creates NaN object*/, mockField, {rootResourceIdentifier: 'identifier'});
+            }).should.throw(/Model violation in instance identifier field propName.*Non-numeric.*unknown.*Double/);
+
+            mockField = sinon.createStubInstance(Field);
+            mockField.getName.returns('propName');
+            mockField.getType.returns('Long');
+            mockField.isPrimitive.returns(true);
+            (() => {
+                resourceValidator.checkItem(parseInt('fred') /* creates NaN object*/, mockField, {rootResourceIdentifier: 'identifier'});
+            }).should.throw(/Model violation in instance identifier field propName.*Non-numeric.*unknown.*Long/);
+
+        });
+
         it('should throw if class declaration is not found', () => {
             let mockField = sinon.createStubInstance(Field);
             mockField.isPrimitive.returns(false);

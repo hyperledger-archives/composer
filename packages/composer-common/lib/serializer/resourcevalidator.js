@@ -301,7 +301,7 @@ class ResourceValidator {
             case 'Double':
             case 'Long':
             case 'Integer':
-                if(dataType !== 'number') {
+                if(dataType !== 'number' || isNaN(obj)) {
                     invalid = true;
                 }
                 break;
@@ -425,6 +425,9 @@ class ResourceValidator {
                 catch(err) {
                     value = value.toString();
                 }
+            } else if (typeOfValue === 'number' && isNaN(value)) {
+                value = 'Non-numeric';
+                typeOfValue = 'unknown';
             }
         }
 
