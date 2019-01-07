@@ -94,9 +94,8 @@ class AccessController {
         // enforcement is not enabled.
         let participant = this.participant;
         if (!participant) {
-            LOG.debug(method, 'No participant');
+            LOG.perf(method, 'NO PARTICIPANT: Total (ms) duration: ', this.context.getContextId(), t0);
             LOG.exit(method);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             return Promise.resolve();
         }
 
@@ -107,9 +106,8 @@ class AccessController {
         // enforcement is not enabled.
         let aclManager = this.context.getAclManager();
         if (!aclManager.getAclFile()) {
-            LOG.debug(method, 'No ACL file');
+            LOG.perf(method, 'NO ACL FILE: Total (ms) duration: ', this.context.getContextId(), t0);
             LOG.exit(method);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             return Promise.resolve();
         }
 
@@ -138,7 +136,7 @@ class AccessController {
                 // If a ACL rule permitted the action, return.
                 if (result) {
                     LOG.exit(method);
-                    LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                    LOG.perf(method, 'Total (ms) duration: ', this.context.getContextId(), t0);
                     return;
                 }
 
@@ -148,7 +146,7 @@ class AccessController {
             })
             .catch((error) => {
                 LOG.error(method, error);
-                LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                LOG.perf(method, 'Total (ms) duration: ', this.context.getContextId(), t0);
                 throw error;
             });
     }

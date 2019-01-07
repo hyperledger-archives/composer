@@ -122,7 +122,7 @@ describe('HLFConnection', () => {
 
     describe('#createQueryHandler', () => {
 
-        it('should create a new query handler', () => {
+        it('should create a new query handler from a string definition', () => {
             // restore the createQueryHandler implementation as by default it is mocked out.
             sandbox.restore();
             sandbox = sinon.sandbox.create();
@@ -130,7 +130,19 @@ describe('HLFConnection', () => {
             mockConnection.getChannelPeersInOrg.returns([]);
             mockConnection.channel = mockChannel;
             mockChannel.getPeers.returns([]);
-            let queryHandler = HLFConnection.createQueryHandler(mockConnection);
+            let queryHandler = HLFConnection.createQueryHandler(mockConnection, '../lib/hlfqueryhandler');
+            queryHandler.should.be.an.instanceOf(HLFQueryHandler);
+        });
+
+        it('should create a new query handler from an already loaded module', () => {
+            // restore the createQueryHandler implementation as by default it is mocked out.
+            sandbox.restore();
+            sandbox = sinon.sandbox.create();
+            let mockConnection = sinon.createStubInstance(HLFConnection);
+            mockConnection.getChannelPeersInOrg.returns([]);
+            mockConnection.channel = mockChannel;
+            mockChannel.getPeers.returns([]);
+            let queryHandler = HLFConnection.createQueryHandler(mockConnection, HLFQueryHandler);
             queryHandler.should.be.an.instanceOf(HLFQueryHandler);
         });
 
@@ -205,6 +217,30 @@ describe('HLFConnection', () => {
             logInfoSpy = sandbox.spy(LOG, 'info');
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'test-business-network', {'x-requiredEventHubs': 'fred'}, mockClient, mockChannel, mockCAClient);
             sinon.assert.calledWith(logInfoSpy, 'constructor', sinon.match(/test-business-network/));
+        });
+
+        it('should default to the built in query handler if no override specified', () => {
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {}, mockClient, mockChannel, mockCAClient);
+            sinon.assert.calledWith(HLFConnection.createQueryHandler, connection, './hlfqueryhandler');
+        });
+
+        it('should use the connection options for query handler to load if specified', () => {
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {queryHandler: 'myHandler'}, mockClient, mockChannel, mockCAClient);
+            sinon.assert.calledWith(HLFConnection.createQueryHandler, connection, 'myHandler');
+        });
+
+        it('should use the environment variable for query handler if set', () => {
+            process.env.COMPOSER_QUERY_HANDLER = 'anotherHandler';
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {}, mockClient, mockChannel, mockCAClient);
+            sinon.assert.calledWith(HLFConnection.createQueryHandler, connection, 'anotherHandler');
+            delete process.env.COMPOSER_QUERY_HANDLER;
+        });
+
+        it('should prioritise env var defined query handler over code defined query handler', () => {
+            process.env.COMPOSER_QUERY_HANDLER = 'priorityHandler';
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {queryHandler: 'myHandler'}, mockClient, mockChannel, mockCAClient);
+            sinon.assert.calledWith(HLFConnection.createQueryHandler, connection, 'priorityHandler');
+            delete process.env.COMPOSER_QUERY_HANDLER;
         });
     });
 
@@ -873,6 +909,42 @@ describe('HLFConnection', () => {
             return connection.install(mockSecurityContext, mockBusinessNetwork, {npmrcFile: '/some/file'})
                 .then(() => {
                     sinon.assert.calledWith(connection.fs.copy, '/some/file', sinon.match(/\/.npmrc$/));
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodeType: 'node',
+                        chaincodePath: sinon.match.string,
+                        metadataPath: sinon.match.string,
+                        chaincodeVersion: mockBusinessNetwork.getVersion(),
+                        chaincodeId: mockBusinessNetwork.getName(),
+                        txId: mockTransactionID,
+                        channelNames: mockChannel.getName()
+                    });
+                });
+        });
+
+        it('should change the chaincode version if requested', () => {
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
+            return connection.install(mockSecurityContext, mockBusinessNetwork, {chaincodeVersion: '123.456'})
+                .then(() => {
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodeType: 'node',
+                        chaincodePath: sinon.match.string,
+                        metadataPath: sinon.match.string,
+                        chaincodeVersion: '123.456',
+                        chaincodeId: mockBusinessNetwork.getName(),
+                        txId: mockTransactionID,
+                        channelNames: mockChannel.getName()
+                    });
                 });
         });
 
@@ -2570,11 +2642,8 @@ describe('HLFConnection', () => {
             mockChannel.initialize.onCall(1).resolves();
             await connection._initializeChannel();
             sinon.assert.calledTwice(mockChannel.initialize);
-            peerArray.length.should.equal(5);
-            const expectedIndexOrder = [3, 1, 2, 4, 5];
-            for (let i = 0; i < peerArray.length; i++) {
-                peerArray[i].index.should.equal(expectedIndexOrder[i]);
-            }
+            sinon.assert.calledWith(mockChannel.initialize, { target: mockPeer1 });
+            sinon.assert.calledWith(mockChannel.initialize, { target: mockPeer3 });
         });
 
         it('should fail if all peers fail', async () => {
@@ -2589,12 +2658,10 @@ describe('HLFConnection', () => {
                 error = _error;
             }
             error.should.match(/connect failed again/);
-            sinon.assert.calledThrice(mockChannel.initialize);
-            const expectedIndexOrder = [4, 3, 1, 2, 5];
-            peerArray.length.should.equal(5);
-            for (let i = 0; i < peerArray.length; i++) {
-                peerArray[i].index.should.equal(expectedIndexOrder[i]);
-            }
+            sinon.assert.callCount(mockChannel.initialize, 3);
+            sinon.assert.calledWith(mockChannel.initialize, { target: mockPeer1 });
+            sinon.assert.calledWith(mockChannel.initialize, { target: mockPeer3 });
+            sinon.assert.calledWith(mockChannel.initialize, { target: mockPeer3 });
         });
     });
 
@@ -2681,6 +2748,197 @@ describe('HLFConnection', () => {
             connection.getNativeAPI().should.equal(mockClient);
         });
 
+    });
+
+    describe('#querySinglePeer', () => {
+
+        it('should query a single peer', async () => {
+            const response = Buffer.from('hello world');
+            sandbox.stub(connection, 'queryByChaincode').resolves([response]);
+            let result = await connection.querySinglePeer(mockPeer2, mockTransactionID, 'myfunc', ['arg1', 'arg2']);
+            sinon.assert.calledOnce(connection.queryByChaincode);
+            sinon.assert.calledWith(connection.queryByChaincode, {
+                chaincodeId: 'org-acme-biznet',
+                txId: mockTransactionID,
+                fcn: 'myfunc',
+                args: ['arg1', 'arg2'],
+                targets: [mockPeer2]
+            });
+            result.equals(response).should.be.true;
+
+        });
+
+        it('should throw if no responses are returned', () => {
+            sandbox.stub(connection, 'queryByChaincode').resolves([]);
+            return connection.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/No payloads were returned from the query request/);
+        });
+
+        it('should return any responses that are errors and not UNAVAILABLE', async () => {
+            const response = new Error('such error');
+            sandbox.stub(connection, 'queryByChaincode').resolves([response]);
+            let result = await connection.querySinglePeer(mockPeer2, mockTransactionID, 'myfunc', ['arg1', 'arg2']);
+            sinon.assert.calledOnce(connection.queryByChaincode);
+            sinon.assert.calledWith(connection.queryByChaincode, {
+                chaincodeId: 'org-acme-biznet',
+                txId: mockTransactionID,
+                fcn: 'myfunc',
+                args: ['arg1', 'arg2'],
+                targets: [mockPeer2]
+            });
+            result.should.be.instanceOf(Error);
+            result.message.should.equal('such error');
+        });
+
+        it('should throw any responses that are errors and code 14 being unavailable.', () => {
+            const response = new Error('14 UNAVAILABLE: Connect Failed');
+            response.code = 14;
+            sandbox.stub(connection, 'queryByChaincode').resolves([response]);
+            return connection.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/Connect Failed/);
+        });
+
+        it('should throw any responses that are errors and code 1 being unavailable.', () => {
+            const response = new Error('1 UNAVAILABLE: Connect Failed');
+            response.code = 1;
+            sandbox.stub(connection, 'queryByChaincode').resolves([response]);
+            return connection.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/Connect Failed/);
+        });
+
+        it('should throw any responses that are errors and code 4 being unavailable.', () => {
+            const response = new Error('4 UNAVAILABLE: Connect Failed');
+            response.code = 4;
+            sandbox.stub(connection, 'queryByChaincode').resolves([response]);
+            return connection.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/Connect Failed/);
+        });
+
+        it('should throw if query request fails', () => {
+            sandbox.stub(connection, 'queryByChaincode').rejects(new Error('Query Failed'));
+            return connection.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/Query Failed/);
+        });
+    });
+
+    describe('#queryByChaincode', () => {
+        it('should handle single good response', async () => {
+            const request = {
+                id: 1
+            };
+            const results = [
+                [{
+                    response: {
+                        payload: 'some payload'
+                    }
+                }]
+            ];
+            mockChannel.sendTransactionProposal.resolves(results);
+            const responses = await connection.queryByChaincode(request);
+            sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+            sinon.assert.calledWith(mockChannel.sendTransactionProposal, request);
+            responses.length.should.equal(1);
+            responses[0].should.equal('some payload');
+        });
+
+        it('should handle multiple good responses', async () => {
+            const request = {
+                id: 1
+            };
+            const results = [[
+                {
+                    response: {
+                        payload: 'some payload'
+                    }
+                },
+                {
+                    response: {
+                        payload: 'another payload'
+                    }
+                },
+                {
+                    response: {
+                        payload: 'final payload'
+                    }
+                }
+            ]];
+            mockChannel.sendTransactionProposal.resolves(results);
+            const responses = await connection.queryByChaincode(request);
+            sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+            sinon.assert.calledWith(mockChannel.sendTransactionProposal, request);
+            responses.length.should.equal(3);
+            responses[0].should.equal('some payload');
+            responses[1].should.equal('another payload');
+            responses[2].should.equal('final payload');
+        });
+
+        it('should handle single error response', async () => {
+            const request = {
+                id: 1
+            };
+            const results = [
+                [ new Error('some error') ]
+            ];
+            mockChannel.sendTransactionProposal.resolves(results);
+            const responses = await connection.queryByChaincode(request);
+            sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+            sinon.assert.calledWith(mockChannel.sendTransactionProposal, request);
+            responses.length.should.equal(1);
+            responses[0].should.be.instanceOf(Error);
+            responses[0].message.should.equal('some error');
+        });
+
+        it('should handle multiple different response types', async () => {
+            const request = {
+                id: 1
+            };
+            const results = [[
+
+                new Error('some error'),
+
+                {
+                    response: {
+                        payload: 'another payload'
+                    }
+                },
+                {
+                    response: 'a strange error'
+                },
+                {
+                    data: 'I am not just an android'
+                }
+            ]];
+            mockChannel.sendTransactionProposal.resolves(results);
+            const responses = await connection.queryByChaincode(request);
+            sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+            sinon.assert.calledWith(mockChannel.sendTransactionProposal, request);
+            responses.length.should.equal(4);
+            responses[0].should.be.instanceOf(Error);
+            responses[0].message.should.equal('some error');
+            responses[1].should.equal('another payload');
+            responses[2].should.be.instanceOf(Error);
+            responses[3].should.be.instanceOf(Error);
+        });
+
+        it('should handle no responses', async () => {
+            const request = {
+                id: 1
+            };
+            let results = [];
+            mockChannel.sendTransactionProposal.resolves(results);
+            await connection.queryByChaincode(request).should.be.rejectedWith(/Payload results are missing/);
+            results = ['not an array'];
+            mockChannel.sendTransactionProposal.resolves(results);
+            await connection.queryByChaincode(request).should.be.rejectedWith(/Payload results are missing/);
+        });
+
+        it('should handle error from sendTransactionProposal', async () => {
+            const request = {
+                id: 1
+            };
+            mockChannel.sendTransactionProposal.rejects(new Error('sendTxProp error'));
+            await connection.queryByChaincode(request).should.be.rejectedWith(/sendTxProp error/);
+        });
     });
 
 });

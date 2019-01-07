@@ -40,7 +40,7 @@ class EngineResources {
 
         if (args.length !== 2) {
             LOG.error(method, 'Invalid arguments', args);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getAllResourcesInRegistry', ['registryType', 'registryId']));
         }
         let registryType = args[0];
@@ -56,7 +56,7 @@ class EngineResources {
             })
             .then((result) => {
                 LOG.exit(method, result);
-                LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
                 return result;
             });
     }
@@ -75,7 +75,7 @@ class EngineResources {
 
         if (args.length !== 3) {
             LOG.error(method, 'Invalid arguments', args);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getResourceInRegistry', ['registryType', 'registryId', 'resourceId']));
         }
         let registryType = args[0];
@@ -90,7 +90,7 @@ class EngineResources {
             })
             .then((result) => {
                 LOG.exit(method, result);
-                LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
                 return result;
             });
     }
@@ -109,7 +109,7 @@ class EngineResources {
 
         if (args.length !== 3) {
             LOG.error(method, 'Invalid arguments', args);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'existsResourceInRegistry', ['registryType', 'registryId', 'resourceId']));
         }
         let registryType = args[0];
@@ -121,7 +121,7 @@ class EngineResources {
             })
             .then((result) => {
                 LOG.exit(method, result);
-                LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
                 return result;
             });
     }
@@ -141,7 +141,7 @@ class EngineResources {
 
         if (args.length !== 2) {
             LOG.error(method, 'Invalid arguments', args);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'resolveAllResourcesInRegistry', ['registryType', 'registryId']));
         }
         let registryType = args[0];
@@ -170,7 +170,7 @@ class EngineResources {
             })
             .then((result) => {
                 LOG.exit(method, result);
-                LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
                 return result;
             });
     }
@@ -190,7 +190,7 @@ class EngineResources {
 
         if (args.length !== 3) {
             LOG.error(method, 'Invalid arguments', args);
-            LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'resolveResourceInRegistry', ['registryType', 'registryId', 'resourceId']));
         }
         let registryType = args[0];
@@ -210,7 +210,7 @@ class EngineResources {
             })
             .then((result) => {
                 LOG.exit(method, result);
-                LOG.verbose('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                LOG.perf(method, 'Total (ms) duration: ', context.getContextId(), t0);
                 return result;
             });
     }

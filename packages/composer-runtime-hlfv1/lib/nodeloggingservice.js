@@ -17,6 +17,13 @@
 const LoggingService = require('composer-runtime').LoggingService;
 const LOGLEVEL_KEY = 'ComposerLogCfg';
 const Logger = require('composer-common').Logger;
+
+Logger.setCallBack(function(logLevel) {
+    const timestamp = new Date().toISOString();
+    return `${timestamp} ${logLevel.toUpperCase().padEnd(8)} `;
+});
+
+
 /**
  * Base class representing the logging service provided by a {@link Container}.
  * @protected
@@ -29,6 +36,7 @@ class NodeLoggingService extends LoggingService {
     constructor() {
         super();
         this.stub = null;
+        this.loggerInitialized = false;
     }
 
     /**
@@ -41,15 +49,19 @@ class NodeLoggingService extends LoggingService {
     async initLogging(stub) {
         this.stub = stub;
 
-        let logCFG = await this.getLoggerCfg();
-        Logger.setLoggerCfg(logCFG, true);
-
-        Logger.setCallBack(function(logLevel) {
-            const timestamp = new Date().toISOString();
-            const shortTxId = stub.getTxID().substring(0, 8);
-            return `${timestamp} [${shortTxId}] ${logLevel.toUpperCase().padEnd(8)} `;
-        });
-
+        // we only want to do this once for the first request that comes
+        // in so we can look at the initial state of the logger and set it
+        // appropriately. Any change to the logger state is handled so doesn't
+        // need to be checked at initLogging. The theory is that as this is
+        // called constantly in interleaved requests it stops some log points
+        // being logged.
+        if (!this.loggerInitialized) {
+            // set the initialized flag first to stop another interleaved request
+            // coming in trying to do the same thing.
+            this.loggerInitialized = true;
+            let logCFG = await this.getLoggerCfg();
+            Logger.setLoggerCfg(logCFG, true);
+        }
     }
 
     /**
@@ -66,14 +78,14 @@ class NodeLoggingService extends LoggingService {
      *
      * @returns {Object} configuration
      */
-    async getLoggerCfg(){
+    async getLoggerCfg() {
         let result = await this.stub.getState(LOGLEVEL_KEY);
         if (result.length === 0) {
             let defCfg = this.getDefaultCfg();
             return defCfg;
         } else {
             let json = JSON.parse(result.toString());
-            if( json.origin && json.origin==='default-logger-module'){
+            if( json.origin && json.origin === 'default-logger-module'){
                 json = this.getDefaultCfg();
             }
             return json;
@@ -83,7 +95,7 @@ class NodeLoggingService extends LoggingService {
     /**
      * @return {Object} the default cfg
      */
-    getDefaultCfg(){
+    getDefaultCfg() {
 
         let envVariable = process.env.CORE_CHAINCODE_LOGGING_LEVEL;
         let debugString = this.mapFabricDebug(envVariable);
@@ -97,7 +109,7 @@ class NodeLoggingService extends LoggingService {
             },
             'debug' : debugString,
             'logger': './consolelogger.js',
-            'origin':'default-runtime-hlfv1'
+            'origin': 'default-runtime-hlfv1'
         };
     }
 
@@ -109,7 +121,7 @@ class NodeLoggingService extends LoggingService {
      * @param {String} string input value to process
      * @return {String} clean string that can be used for setting up logging.
      */
-    mapCfg(string){
+    mapCfg(string) {
         let DEFAULT = 'composer[warn]:*';
         // first split it up into elements based on ,
         let details = string.split(/[\s,]+/);

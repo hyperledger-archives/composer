@@ -125,26 +125,18 @@ describe('NodeLoggingService', () => {
 
     describe('#initLogging', async  () => {
 
-        it('should set the logging state to the current logger config', async () => {
+        it('should set the logging state to the current logger config, on first call only', async () => {
             sandbox.stub(Logger, 'setLoggerCfg');
             sandbox.stub(loggingService, 'getLoggerCfg').returns('some config');
             await loggingService.initLogging(mockStub);
             sinon.assert.calledOnce(Logger.setLoggerCfg);
             sinon.assert.calledWith(Logger.setLoggerCfg, 'some config', true);
-        });
 
-        it('should register a callback to supplement the logging output', async () => {
-            sandbox.stub(Logger, 'setLoggerCfg');
-            sandbox.stub(Logger, 'setCallBack').callsArgWith(0, 'debug');
-            sandbox.stub(loggingService, 'getLoggerCfg').returns('some config');
+            // call it again
             await loggingService.initLogging(mockStub);
-            sinon.assert.calledOnce(Logger.setCallBack);
-            sinon.assert.calledWith(Logger.setCallBack, sinon.match.func);
-            sinon.assert.calledOnce(mockStub.getTxID);
+            sinon.assert.calledOnce(Logger.setLoggerCfg);
+            sinon.assert.calledWith(Logger.setLoggerCfg, 'some config', true);
         });
-
-
-
     });
 
     describe('#mapCfg', async ()=>{
