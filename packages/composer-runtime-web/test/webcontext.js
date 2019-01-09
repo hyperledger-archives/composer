@@ -16,6 +16,8 @@
 
 const Context = require('composer-runtime').Context;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const BusinessNetworkMetadata = require('composer-common').BusinessNetworkMetadata;
+const InstalledBusinessNetwork = require('composer-runtime').InstalledBusinessNetwork;
 const Engine = require('composer-runtime').Engine;
 const Serializer = require('composer-common').Serializer;
 const WebContainer = require('..').WebContainer;
@@ -42,7 +44,6 @@ describe('WebContext', () => {
     let mockSerializer;
     let mockEngine;
     let context;
-    let mockInstalledBusinessNetwork;
 
     beforeEach(() => {
         mockWebContainer = sinon.createStubInstance(WebContainer);
@@ -50,7 +51,13 @@ describe('WebContext', () => {
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockWebContainer);
         mockSerializer = sinon.createStubInstance(Serializer);
-        mockInstalledBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+
+        const mockInstalledBusinessNetwork = sinon.createStubInstance(InstalledBusinessNetwork);
+        const mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        mockInstalledBusinessNetwork.getDefinition.returns(mockBusinessNetworkDefinition);
+        const mockBusinessNetworkMetadata = sinon.createStubInstance(BusinessNetworkMetadata);
+        mockBusinessNetworkDefinition.getMetadata.returns(mockBusinessNetworkMetadata);
+        mockBusinessNetworkMetadata.getPackageJson.returns({});
         context = new WebContext(mockEngine, mockInstalledBusinessNetwork, identity);
     });
 

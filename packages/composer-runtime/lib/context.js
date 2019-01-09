@@ -41,6 +41,7 @@ class Context {
      * @param {InstalledBusinessNetwork} installedBusinessNetwork Information associated with the installed business network
      */
     constructor(engine, installedBusinessNetwork) {
+        const method = 'constructor';
         if (!installedBusinessNetwork) {
             throw new Error('No business network specified');
         }
@@ -49,6 +50,11 @@ class Context {
         this.installedBusinessNetwork = installedBusinessNetwork;
         this.eventNumber = 0;
         this.contextId = uuid.v4();
+        this.historianEnabled = true;
+        if (installedBusinessNetwork.getDefinition().getMetadata().getPackageJson().disableHistorian === true) {
+            LOG.debug(method, 'Historian disabled');
+            this.historianEnabled = false;
+        }
     }
 
     /**

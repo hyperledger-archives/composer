@@ -14,7 +14,7 @@
 
 'use strict';
 
-const { BusinessNetworkDefinition, Certificate, Connection, ConnectionManager } = require('composer-common');
+const { BusinessNetworkDefinition, BusinessNetworkMetadata, Certificate, Connection, ConnectionManager } = require('composer-common');
 const { Context, DataCollection, DataService, Engine, LoggingService, InstalledBusinessNetwork } = require('composer-runtime');
 const EmbeddedContainer = require('composer-runtime-embedded').EmbeddedContainer;
 const EmbeddedConnection = require('../lib/embeddedconnection');
@@ -260,6 +260,11 @@ describe('EmbeddedConnection', () => {
 
             const mockInstalledBusinessNetwork = sinon.createStubInstance(InstalledBusinessNetwork);
             sandbox.stub(InstalledBusinessNetwork, 'newInstance').resolves(mockInstalledBusinessNetwork);
+            const mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            mockInstalledBusinessNetwork.getDefinition.returns(mockBusinessNetworkDefinition);
+            const mockBusinessNetworkMetadata = sinon.createStubInstance(BusinessNetworkMetadata);
+            mockBusinessNetworkDefinition.getMetadata.returns(mockBusinessNetworkMetadata);
+            mockBusinessNetworkMetadata.getPackageJson.returns({});
 
             // put something weird for installedBusinessNetwork so we can detect it has changed.
             EmbeddedConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine, 'orgInstalledBusinessNetwork');

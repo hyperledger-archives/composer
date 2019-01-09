@@ -225,7 +225,7 @@ describe('EngineTransactions', () => {
                 .should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "submitTransaction", expecting "\["serializedResource"\]"/);
         });
 
-        it('should execute a transaction that does not return a value', async () => {
+        it('should execute a transaction that does not return a value and write to historian if flag undefined', async () => {
             mockRegistryManager.get.withArgs('Transaction', 'org.acme.MyTransaction').resolves(mockTransactionRegistry);
             const resolvedTransaction = factory.newTransaction('org.acme', 'MyTransaction');
             mockResolver.resolve.resolves(resolvedTransaction);
@@ -244,6 +244,48 @@ describe('EngineTransactions', () => {
             sinon.assert.calledWith(mockTransactionRegistry.add, sinon.match(transaction => transaction.getFullyQualifiedIdentifier() === 'org.acme.MyTransaction#TX_1'), { noTest: true });
             sinon.assert.calledOnce(mockHistorian.add);
             sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true });
+        });
+
+        it('should execute a transaction that does not return a value and write to historian if explicitly requested', async () => {
+            mockContext.historianEnabled = true;
+            mockRegistryManager.get.withArgs('Transaction', 'org.acme.MyTransaction').resolves(mockTransactionRegistry);
+            const resolvedTransaction = factory.newTransaction('org.acme', 'MyTransaction');
+            mockResolver.resolve.resolves(resolvedTransaction);
+            const result = await engine.invoke(mockContext, 'submitTransaction', [JSON.stringify({
+                $class: 'org.acme.MyTransaction',
+                transactionId: 'TX_1',
+                timestamp: new Date(0).toISOString(),
+                value: 'hello world'
+            })]);
+            should.equal(result, undefined);
+            sinon.assert.calledOnce(mockTransactionRegistry.testAdd);
+            sinon.assert.calledWith(mockTransactionRegistry.testAdd, sinon.match(transaction => transaction.getFullyQualifiedIdentifier() === 'org.acme.MyTransaction#TX_1'));
+            sinon.assert.calledOnce(mockHistorian.testAdd);
+            sinon.assert.calledWith(mockHistorian.testAdd, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'));
+            sinon.assert.calledOnce(mockTransactionRegistry.add);
+            sinon.assert.calledWith(mockTransactionRegistry.add, sinon.match(transaction => transaction.getFullyQualifiedIdentifier() === 'org.acme.MyTransaction#TX_1'), { noTest: true });
+            sinon.assert.calledOnce(mockHistorian.add);
+            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true });
+        });
+
+        it('should not write to historian if disabled', async () => {
+            mockContext.historianEnabled = false;
+            mockRegistryManager.get.withArgs('Transaction', 'org.acme.MyTransaction').resolves(mockTransactionRegistry);
+            const resolvedTransaction = factory.newTransaction('org.acme', 'MyTransaction');
+            mockResolver.resolve.resolves(resolvedTransaction);
+            const result = await engine.invoke(mockContext, 'submitTransaction', [JSON.stringify({
+                $class: 'org.acme.MyTransaction',
+                transactionId: 'TX_1',
+                timestamp: new Date(0).toISOString(),
+                value: 'hello world'
+            })]);
+            should.equal(result, undefined);
+            sinon.assert.calledOnce(mockTransactionRegistry.testAdd);
+            sinon.assert.calledWith(mockTransactionRegistry.testAdd, sinon.match(transaction => transaction.getFullyQualifiedIdentifier() === 'org.acme.MyTransaction#TX_1'));
+            sinon.assert.notCalled(mockHistorian.testAdd);
+            sinon.assert.calledOnce(mockTransactionRegistry.add);
+            sinon.assert.calledWith(mockTransactionRegistry.add, sinon.match(transaction => transaction.getFullyQualifiedIdentifier() === 'org.acme.MyTransaction#TX_1'), { noTest: true });
+            sinon.assert.notCalled(mockHistorian.add);
         });
 
         it('should execute a transaction that returns a value', async () => {
