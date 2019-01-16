@@ -16,6 +16,8 @@
 
 const Serializer = require('composer-common').Serializer;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const BusinessNetworkMetadata = require('composer-common').BusinessNetworkMetadata;
+const InstalledBusinessNetwork = require('composer-runtime').InstalledBusinessNetwork;
 const Context = require('composer-runtime').Context;
 const Engine = require('composer-runtime').Engine;
 const EmbeddedContainer = require('..').EmbeddedContainer;
@@ -43,17 +45,22 @@ describe('EmbeddedContext', () => {
     let mockSerializer;
     let mockEngine;
     let mockEventSink;
-    let mockInstalledBusinessNetwork;
     let context;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         mockEmbeddedContainer = sinon.createStubInstance(EmbeddedContainer);
         mockEmbeddedContainer.getUUID.returns('d8f08eba-2746-4801-8318-3a7611aed45e');
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockEmbeddedContainer);
         mockSerializer = sinon.createStubInstance(Serializer);
         mockEventSink = {};
-        mockInstalledBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+
+        const mockInstalledBusinessNetwork = sinon.createStubInstance(InstalledBusinessNetwork);
+        const mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        mockInstalledBusinessNetwork.getDefinition.returns(mockBusinessNetworkDefinition);
+        const mockBusinessNetworkMetadata = sinon.createStubInstance(BusinessNetworkMetadata);
+        mockBusinessNetworkDefinition.getMetadata.returns(mockBusinessNetworkMetadata);
+        mockBusinessNetworkMetadata.getPackageJson.returns({});
         context = new EmbeddedContext(mockEngine, identity, mockEventSink, mockInstalledBusinessNetwork);
     });
 

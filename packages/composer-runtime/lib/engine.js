@@ -173,7 +173,7 @@ class Engine {
             }
 
             // This step executes the start business network transaction. This is a no-op, but records
-            // the event into the transaction registry and historian.
+            // the event into the transaction registry and optionally historian.
             LOG.debug(method, 'Executing start business network transaction');
             await this.submitTransaction(context, [JSON.stringify(transactionData)]);
 
