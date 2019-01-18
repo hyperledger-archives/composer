@@ -17,6 +17,9 @@
 const AclCompiler = require('./aclcompiler');
 const QueryCompiler = require('./querycompiler');
 const ScriptCompiler = require('./scriptcompiler');
+const Logger = require('composer-common').Logger;
+
+const LOG = Logger.getLog('InstalledBusinessNetwork');
 
 /**
  * Data associated with the currently installed business network, used by Context.
@@ -53,11 +56,17 @@ class InstalledBusinessNetwork {
      * @private
      */
     constructor(networkInfo) {
+        const method = 'constructor';
         this.definition = networkInfo.definition;
         this.compiledScriptBundle = networkInfo.compiledScriptBundle;
         this.compiledQueryBundle = networkInfo.compiledQueryBundle;
         this.compiledAclBundle = networkInfo.compiledAclBundle;
         this.archive = networkInfo.archive;
+        this.historianEnabled = true;
+        if (this.definition.getMetadata().getPackageJson().disableHistorian === true) {
+            LOG.debug(method, 'Historian disabled');
+            this.historianEnabled = false;
+        }
     }
 
     /**
