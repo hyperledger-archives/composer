@@ -512,6 +512,12 @@
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Generate $id for resources and if a resources appears multiple times in the object graph only the first instance is serialized in full, subsequent instances are replaced with a reference to the $id</td>
 </tr>
+<tr>
+<td style="text-align: left"><strong>options.useOriginal</strong></td>
+<td style="text-align: left">boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">shortcut the generation of the JSON structure from the resource and directly return the $original if present from the creation of the resource through the fromJSON method</td>
+</tr>
 </tbody></table>
 
 <h2 id="fromjson">fromJSON</h2>
