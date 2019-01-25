@@ -53,7 +53,7 @@ describe('Property', function () {
             const field = person.getProperty('owner');
             // stub the getType method to return null
             sinon.stub(field, 'getParent', function(){return null;});
-
+            field.fullyQualifiedTypeName = null;
             (function () {
                 field.getFullyQualifiedTypeName();
             }).should.throw(/Property owner does not have a parent./);
@@ -63,7 +63,7 @@ describe('Property', function () {
             const field = person.getProperty('owner');
             // stub the getType method to return null
             sinon.stub(person, 'getModelFile', function(){return null;});
-
+            field.fullyQualifiedTypeName = null;
             (function () {
                 field.getFullyQualifiedTypeName();
             }).should.throw(/Parent of property owner does not have a ModelFile!/);
@@ -73,7 +73,7 @@ describe('Property', function () {
             const field = person.getProperty('owner');
             // stub the getType method to return null
             sinon.stub(person.getModelFile(), 'getFullyQualifiedTypeName', function(){return null;});
-
+            field.fullyQualifiedTypeName = null;
             (function () {
                 field.getFullyQualifiedTypeName();
             }).should.throw(/Failed to find fully qualified type name for property owner with type Person/);
@@ -83,5 +83,6 @@ describe('Property', function () {
             const field = person.getProperty('owner');
             field.toString().should.equal('RelationshipDeclaration {name=owner, type=org.acme.l1.Person, array=false, optional=false}');
         });
+
     });
 });

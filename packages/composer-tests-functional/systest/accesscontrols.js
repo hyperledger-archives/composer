@@ -173,18 +173,11 @@ describe('Access control system tests', function() {
     });
 
 
-    it('should be able to enforce read access permissions on an asset registry via client getAll', () => {
-        return Promise.resolve()
-            .then(() => {
-                // Alice should only be able to read Alice's car.
-                return aliceAssetRegistry.getAll()
-                    .should.eventually.be.deep.equal([aliceCar]);
-            })
-            .then(() => {
-                // Bob should only be able to read Bob's car.
-                return bobAssetRegistry.getAll()
-                    .should.eventually.be.deep.equal([bobCar]);
-            });
+    it('should be able to enforce read access permissions on an asset registry via client getAll', async () => {
+        const aliceCars = await aliceAssetRegistry.getAll();
+        aliceCars.should.deep.equal([aliceCar]);
+        const bobCars = await bobAssetRegistry.getAll();
+        bobCars.should.deep.equal([bobCar]);
     });
 
     it('should be able to enforce read access permissions on an asset registry via client get', () => {

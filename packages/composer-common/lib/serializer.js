@@ -68,6 +68,22 @@ class Serializer {
         this.defaultOptions = Object.assign({}, baseDefaultOptions, newDefaultOptions);
     }
 
+
+    /**
+     * Generate validation parameters for a Resource
+     * @private
+     * @param {Resource} resource - The instance being worked
+     * @returns {Object} parameters used for validation
+     */
+    validationParameters(resource){
+        const parameters = {};
+        parameters.stack = new TypedStack(resource);
+        parameters.modelManager = this.modelManager;
+        parameters.seenResources = new Set();
+        parameters.dedupeResources = new Set();
+        return parameters;
+    }
+
     /**
      * <p>
      * Convert a {@link Resource} to a JavaScript object suitable for long-term
@@ -84,6 +100,9 @@ class Serializer {
      * @param {boolean} [options.deduplicateResources] - Generate $id for resources and
      * if a resources appears multiple times in the object graph only the first instance is
      * serialized in full, subsequent instances are replaced with a reference to the $id
+     * @param {boolean} [options.useOriginal] - shortcut the generation of the JSON structure from
+     * the resource and directly return the $original if present from the creation of the resource
+     * through the fromJSON method
      * @return {Object} - The Javascript Object that represents the resource
      * @throws {Error} - throws an exception if resource is not an instance of
      * Resource or fails validation.
@@ -94,15 +113,18 @@ class Serializer {
             throw new Error(Globalize.formatMessage('serializer-tojson-notcobject'));
         }
 
-        const parameters = {};
-        parameters.stack = new TypedStack(resource);
-        parameters.modelManager = this.modelManager;
-        parameters.seenResources = new Set();
-        parameters.dedupeResources = new Set();
+        // Assign options
+        options = options ? Object.assign({}, this.defaultOptions, options) : this.defaultOptions;
+
+        // Enable shortcut retrieval of original JSON stored during serializer.fromJSON() method call
+        if (resource.$original && options.useOriginal) {
+            return resource.$original;
+        }
+
+        const parameters = this.validationParameters(resource);
         const classDeclaration = this.modelManager.getType( resource.getFullyQualifiedType() );
 
-        // validate the resource against the model
-        options = options ? Object.assign({}, this.defaultOptions, options) : this.defaultOptions;
+        // conditionally validate the resource against the model
         if(options.validate) {
             const validator = new ResourceValidator(options);
             classDeclaration.accept(validator, parameters);
@@ -120,6 +142,7 @@ class Serializer {
         // this performs the conversion of the resouce into a standard JSON object
         let result = classDeclaration.accept(generator, parameters);
         return result;
+
     }
 
     /**
@@ -183,6 +206,11 @@ class Serializer {
         if(options.validate) {
             resource.validate();
         }
+
+        // Store the original JSON object to enable consditional retrieval later
+        delete jsonObject.$networkId;
+        resource.$original = jsonObject;
+        Object.defineProperty(resource, '$original', { enumerable: false });
 
         return resource;
     }

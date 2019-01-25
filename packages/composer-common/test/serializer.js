@@ -49,6 +49,8 @@ describe('Serializer', () => {
         o String participantId
         o String firstName
         o String lastName
+        o ConceptArray[] conceptArray optional
+        o DateTime theDate optional
         }
 
         transaction SampleTransaction {
@@ -64,6 +66,21 @@ describe('Serializer', () => {
         event SampleEvent{
         --> SampleAsset asset
         o String newValue
+        }
+
+        enum SampleEnum {
+            o EMPEROR
+            o KING
+            o CHINSTRAP
+            o GENTOO
+          }
+
+        concept ConceptArray {
+            o NestedConcept nestedConcept
+        }
+
+        concept NestedConcept {
+            o String value
         }
 
         `);
@@ -195,6 +212,17 @@ describe('Serializer', () => {
                 stringValue: ''
             });
         });
+
+        it('should shortcut the retun if $original is present and useOriginal flag is passed', () => {
+            const resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+            resource.stringValue = '';
+            resource.$original = 'penguin';
+
+            const json = serializer.toJSON(resource, {useOriginal : true});
+            json.should.equal('penguin');
+
+        });
     });
 
     describe('#fromJSON', () => {
@@ -213,6 +241,15 @@ describe('Serializer', () => {
             (() => {
                 serializer.fromJSON(mockResource);
             }).should.throw(TypeNotFoundException, /NoSuchAsset/);
+        });
+
+        it('should throw if the class declaration is an instance of Enum', () => {
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.$class = 'org.acme.sample.SampleEnum';
+            let serializer = new Serializer(factory, modelManager);
+            (() => {
+                serializer.fromJSON(mockResource);
+            }).should.throw(Error, /Attempting to create an ENUM declaration is not supported/);
         });
 
         it('should deserialize a valid asset', () => {

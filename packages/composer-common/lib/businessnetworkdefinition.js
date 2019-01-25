@@ -27,6 +27,7 @@ const minimatch = require('minimatch');
 const ModelManager = require('./modelmanager');
 const QueryFile = require('./query/queryfile');
 const QueryManager = require('./querymanager');
+const ReadOnlyDecoratorFactory = require('./readonlydecoratorfactory');
 const ReturnsDecoratorFactory = require('./returnsdecoratorfactory');
 const ScriptManager = require('./scriptmanager');
 const semver = require('semver');
@@ -117,6 +118,7 @@ class BusinessNetworkDefinition {
 
         this.modelManager = new ModelManager();
         this.modelManager.addDecoratorFactory(new CommitDecoratorFactory());
+        this.modelManager.addDecoratorFactory(new ReadOnlyDecoratorFactory());
         this.modelManager.addDecoratorFactory(new ReturnsDecoratorFactory());
         this.factory = this.modelManager.getFactory();
         this.serializer = this.modelManager.getSerializer();
