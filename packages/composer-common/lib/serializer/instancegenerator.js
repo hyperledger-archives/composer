@@ -17,7 +17,6 @@
 const ClassDeclaration = require('../introspect/classdeclaration');
 const EnumDeclaration = require('../introspect/enumdeclaration');
 const Field = require('../introspect/field');
-// const leftPad = require('left-pad');
 const padStart = require('lodash.padstart');
 const ModelUtil = require('../modelutil');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');

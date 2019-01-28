@@ -20,7 +20,7 @@ const Context = require('../lib/context');
 const Engine = require('../lib/engine');
 const LoggingService = require('../lib/loggingservice');
 const EventService = require('../lib/eventservice');
-const { ModelManager, ReturnsDecoratorFactory, ScriptManager } = require('composer-common');
+const { ModelManager, ReturnsDecoratorFactory, ReadOnlyDecoratorFactory, ScriptManager } = require('composer-common');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resolver = require('../lib/resolver');
@@ -54,6 +54,7 @@ describe('EngineTransactions', () => {
     beforeEach(() => {
         modelManager = new ModelManager();
         modelManager.addDecoratorFactory(new ReturnsDecoratorFactory());
+        modelManager.addDecoratorFactory(new ReadOnlyDecoratorFactory());
         modelManager.addModelFile(`
         namespace org.acme
         asset MyAsset identified by assetId {
@@ -82,6 +83,16 @@ describe('EngineTransactions', () => {
         }
         event MyEvent {
 
+        }
+        @returns(MyAsset)
+        @readonly(true)
+        transaction MyTransactionThatReturnsAsset {
+            o String value
+        }
+        @returns(MyAsset[])
+        @readonly(false)
+        transaction MyTransactionThatReturnsAssetArray {
+            o String value
         }
         @returns(MyConcept)
         transaction MyTransactionThatReturnsConcept {
@@ -243,7 +254,7 @@ describe('EngineTransactions', () => {
             sinon.assert.calledOnce(mockTransactionRegistry.add);
             sinon.assert.calledWith(mockTransactionRegistry.add, sinon.match(transaction => transaction.getFullyQualifiedIdentifier() === 'org.acme.MyTransaction#TX_1'), { noTest: true });
             sinon.assert.calledOnce(mockHistorian.add);
-            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true });
+            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true, validate: false });
         });
 
         it('should execute a transaction that does not return a value and write to historian if explicitly requested', async () => {
@@ -265,7 +276,7 @@ describe('EngineTransactions', () => {
             sinon.assert.calledOnce(mockTransactionRegistry.add);
             sinon.assert.calledWith(mockTransactionRegistry.add, sinon.match(transaction => transaction.getFullyQualifiedIdentifier() === 'org.acme.MyTransaction#TX_1'), { noTest: true });
             sinon.assert.calledOnce(mockHistorian.add);
-            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true });
+            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true, validate: false });
         });
 
         it('should not write to historian if disabled', async () => {
@@ -306,7 +317,7 @@ describe('EngineTransactions', () => {
             sinon.assert.calledOnce(mockTransactionRegistry.add);
             sinon.assert.calledWith(mockTransactionRegistry.add, sinon.match(transaction => transaction.getFullyQualifiedIdentifier() === 'org.acme.MyTransactionThatReturnsString#TX_1'), { noTest: true });
             sinon.assert.calledOnce(mockHistorian.add);
-            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true });
+            sinon.assert.calledWith(mockHistorian.add, sinon.match(historianRecord => historianRecord.getFullyQualifiedIdentifier() === 'org.hyperledger.composer.system.HistorianRecord#TX_1'), { noTest: true, validate: false });
         });
 
         it('should throw if the transaction cannot be added to the transaction registry', async () => {
@@ -654,6 +665,31 @@ describe('EngineTransactions', () => {
             }, {
                 $class: 'org.acme.MyConcept',
                 value: 'purple mushroom'
+            }]);
+        });
+
+        it('should handle a readonly(true) Asset return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsAsset');
+            const asset = factory.newResource('org.acme', 'MyAsset','001');
+            asset.value = 'hello world';
+            asset.$original = 'penguin';
+            engine._processComplexReturnValue(mockContext, transaction, asset).should.equal('penguin');
+        });
+
+        it('should handle a readonly(false) Asset[] return value', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsAssetArray');
+            const asset1 = factory.newResource('org.acme', 'MyAsset','001');
+            asset1.value = 'hello world';
+            const asset2 = factory.newResource('org.acme', 'MyAsset','002');
+            asset2.value = 'hello again world';
+            engine._processComplexReturnValue(mockContext, transaction, [asset1, asset2]).should.deep.equal([{
+                $class: 'org.acme.MyAsset',
+                assetId: '001',
+                value: 'hello world'
+            }, {
+                $class: 'org.acme.MyAsset',
+                assetId: '002',
+                value: 'hello again world'
             }]);
         });
 

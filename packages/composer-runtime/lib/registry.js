@@ -131,7 +131,7 @@ class Registry extends EventEmitter {
             let object = await this.dataCollection.get(id);
             object = Registry.removeInternalProperties(object);
             try {
-                const resource = this.serializer.fromJSON(object);
+                const resource = this.serializer.fromJSON(object, {validate: false});
                 await this.accessController.check(resource, 'READ');
                 this.objectMap.set(id, object);
                 return true;

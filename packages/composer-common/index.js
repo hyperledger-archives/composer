@@ -92,6 +92,7 @@ module.exports.Query = require('./lib/query/query');
 module.exports.QueryAnalyzer = require('./lib/query/queryanalyzer.js');
 module.exports.QueryFile = require('./lib/query/queryfile');
 module.exports.QueryManager = require('./lib/querymanager');
+module.exports.ReadOnlyDecoratorFactory = require('./lib/readonlydecoratorfactory');
 module.exports.Relationship = require('./lib/model/relationship');
 module.exports.RelationshipDeclaration = require('./lib/introspect/relationshipdeclaration');
 module.exports.Resource = require('./lib/model/resource');
