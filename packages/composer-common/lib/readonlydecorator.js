@@ -40,22 +40,9 @@ class ReadOnlyDecorator extends Decorator {
     process() {
         super.process();
         const args = this.getArguments();
-        if (args.length !== 1) {
-            throw new IllegalModelException(`@readonly decorator expects 1 argument, but ${args.length} arguments were specified.`, this.parent.getModelFile(), this.ast.location);
+        if (args.length !== 0) {
+            throw new IllegalModelException(`@readonly decorator expects 0 arguments, but ${args.length} arguments were specified.`, this.parent.getModelFile(), this.ast.location);
         }
-        const arg = args[0];
-        if (typeof arg !== 'boolean') {
-            throw new IllegalModelException(`@readonly decorator expects a boolean argument, but an argument of type ${typeof arg} was specified.`, this.parent.getModelFile(), this.ast.location);
-        }
-        this.value = arg;
-    }
-
-    /**
-     * Get the value of this commit decorator.
-     * @return {boolean} The value of this commit decorator.
-     */
-    getValue() {
-        return this.value;
     }
 
 }

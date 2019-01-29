@@ -522,7 +522,7 @@ describe('BusinessNetworkDefinition', () => {
             const modelManager = bnd.getModelManager();
             modelManager.addModelFile(`
             namespace org.acme
-            @readonly(true)
+            @readonly
             transaction T{ }`);
             const transactionDeclaration = modelManager.getType('org.acme.T');
             const decorator = transactionDeclaration.getDecorator('readonly');

@@ -260,7 +260,6 @@ class ModelManager {
 }
 class ReadOnlyDecorator extends Decorator {
    + void constructor(Object) throws IllegalModelException
-   + boolean getValue() 
 }
 class ReadOnlyDecoratorFactory extends DecoratorFactory {
    + Decorator newDecorator(Object) 

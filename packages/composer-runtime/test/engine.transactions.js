@@ -85,12 +85,12 @@ describe('EngineTransactions', () => {
 
         }
         @returns(MyAsset)
-        @readonly(true)
+        @readonly
         transaction MyTransactionThatReturnsAsset {
             o String value
         }
         @returns(MyAsset[])
-        @readonly(false)
+        @readonly
         transaction MyTransactionThatReturnsAssetArray {
             o String value
         }
@@ -340,6 +340,17 @@ describe('EngineTransactions', () => {
                 timestamp: new Date(0).toISOString(),
                 value: 'hello world'
             })]).should.be.rejectedWith(/such error/);
+        });
+
+        it('should correctly identify a readonly decorator', () => {
+            let transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConcept');
+            let result = transaction.getClassDeclaration().getDecorator('readonly');
+            should.not.exist(result);
+
+            transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsAsset');
+            result = transaction.getClassDeclaration().getDecorator('readonly');
+            should.exist(result);
+            result.name.should.equal('readonly');
         });
 
     });
@@ -668,7 +679,18 @@ describe('EngineTransactions', () => {
             }]);
         });
 
-        it('should handle a readonly(true) Asset return value', () => {
+        it('should handle a concept return value that is not readonly but contains a $original component', () => {
+            const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsConcept');
+            const concept = factory.newConcept('org.acme', 'MyConcept');
+            concept.value = 'hello world';
+            concept.$original = 'not to be seen';
+            engine._processComplexReturnValue(mockContext, transaction, concept).should.deep.equal({
+                $class: 'org.acme.MyConcept',
+                value: 'hello world'
+            });
+        });
+
+        it('should handle a readonly Asset return value', () => {
             const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsAsset');
             const asset = factory.newResource('org.acme', 'MyAsset','001');
             asset.value = 'hello world';
@@ -676,21 +698,15 @@ describe('EngineTransactions', () => {
             engine._processComplexReturnValue(mockContext, transaction, asset).should.equal('penguin');
         });
 
-        it('should handle a readonly(false) Asset[] return value', () => {
+        it('should handle a readonly Asset[] return value', () => {
             const transaction = factory.newTransaction('org.acme', 'MyTransactionThatReturnsAssetArray');
             const asset1 = factory.newResource('org.acme', 'MyAsset','001');
             asset1.value = 'hello world';
+            asset1.$original = 'penguin';
             const asset2 = factory.newResource('org.acme', 'MyAsset','002');
             asset2.value = 'hello again world';
-            engine._processComplexReturnValue(mockContext, transaction, [asset1, asset2]).should.deep.equal([{
-                $class: 'org.acme.MyAsset',
-                assetId: '001',
-                value: 'hello world'
-            }, {
-                $class: 'org.acme.MyAsset',
-                assetId: '002',
-                value: 'hello again world'
-            }]);
+            asset2.$original = 'power';
+            engine._processComplexReturnValue(mockContext, transaction, [asset1, asset2]).should.deep.equal(['penguin', 'power']);
         });
 
         it('should throw for an invalid (wrong type) concept return value', () => {

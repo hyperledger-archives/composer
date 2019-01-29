@@ -20,7 +20,7 @@ const ModelManager = require('../lib/modelmanager');
 
 require('chai').should();
 
-describe('RaedOnlyDecorator', () => {
+describe('ReadOnlyDecorator', () => {
 
     let modelManager;
     let transactionDeclaration;
@@ -37,38 +37,12 @@ describe('RaedOnlyDecorator', () => {
 
     describe('#process', () => {
 
-        it('should throw if no arguments are specified', () => {
-            (() => {
-                new ReadOnlyDecorator(transactionDeclaration, { location: { start: { offset: 0, line: 1, column: 1 }, end: { offset: 22, line: 1, column: 23 } }, name: 'readonly', arguments: { list: [] } });
-            }).should.throw(/@readonly decorator expects 1 argument, but 0 arguments were specified. Line 1 column 1, to line 1 column 23./);
-        });
-
-        it('should throw if two arguments are specified', () => {
+        it('should throw if arguments are specified', () => {
             (() => {
                 new ReadOnlyDecorator(transactionDeclaration, { location: { start: { offset: 0, line: 1, column: 1 }, end: { offset: 22, line: 1, column: 23 } }, name: 'readonly', arguments: { list: [ { value: true }, { value: false } ] } });
-            }).should.throw(/@readonly decorator expects 1 argument, but 2 arguments were specified. Line 1 column 1, to line 1 column 23./);
+            }).should.throw(/@readonly decorator expects 0 arguments, but 2 arguments were specified. Line 1 column 1, to line 1 column 23./);
         });
-
-        it('should throw if a an incorrectly typed argument is specified', () => {
-            (() => {
-                new ReadOnlyDecorator(transactionDeclaration, { location: { start: { offset: 0, line: 1, column: 1 }, end: { offset: 22, line: 1, column: 23 } }, name: 'readonly', arguments: { list: [ { value: 'hello world' } ] } });
-            }).should.throw(/@readonly decorator expects a boolean argument, but an argument of type string was specified. Line 1 column 1, to line 1 column 23./);
-        });
-
     });
 
-    describe('#getValue', () => {
-
-        it('should return true if the argument is true', () => {
-            const decorator = new ReadOnlyDecorator(transactionDeclaration, { location: { start: { offset: 0, line: 1, column: 1 }, end: { offset: 22, line: 1, column: 23 } }, name: 'readonly', arguments: { list: [ { value: true } ] } });
-            decorator.getValue().should.be.true;
-        });
-
-        it('should return false if the argument is false', () => {
-            const decorator = new ReadOnlyDecorator(transactionDeclaration, { location: { start: { offset: 0, line: 1, column: 1 }, end: { offset: 22, line: 1, column: 23 } }, name: 'readonly', arguments: { list: [ { value: false } ] } });
-            decorator.getValue().should.be.false;
-        });
-
-    });
 
 });
