@@ -286,8 +286,7 @@ class EngineTransactions {
         // Get the type and resolved type.
         const transactionDeclaration = transaction.getClassDeclaration();
         const returnsDecorator = transactionDeclaration.getDecorator('returns');
-        const readOnlyDecorator = transactionDeclaration.getDecorator('readonly');
-        const readOnly = readOnlyDecorator ? readOnlyDecorator.getValue() : false;
+        const readOnly = transactionDeclaration.getDecorator('readonly') ? true : false;
         const returnValueType = returnsDecorator.getType();
         const returnValueResolvedType = returnsDecorator.getResolvedType();
         const isArray = returnsDecorator.isArray();
