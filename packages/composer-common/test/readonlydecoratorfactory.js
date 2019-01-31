@@ -43,7 +43,7 @@ describe('ReadOnlyDecoratorDecoratorFactory', () => {
         });
 
         it('should return a readonly decorator instance for a @readonly decorator', () => {
-            const decorator = factory.newDecorator(transactionDeclaration, { name: 'readonly', arguments: { list: [ { value: false } ] } });
+            const decorator = factory.newDecorator(transactionDeclaration, { name: 'readonly' });
             decorator.should.be.an.instanceOf(ReadOnlyDecorator);
         });
 
