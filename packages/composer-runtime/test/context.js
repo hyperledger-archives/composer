@@ -19,7 +19,6 @@ const AccessController = require('../lib/accesscontroller');
 const AclManager = require('composer-common').AclManager;
 const Api = require('../lib/api');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const BusinessNetworkMetadata = require('composer-common').BusinessNetworkMetadata;
 const CompiledAclBundle = require('../lib/compiledaclbundle');
 const CompiledQueryBundle = require('../lib/compiledquerybundle');
 const CompiledScriptBundle = require('../lib/compiledscriptbundle');
@@ -77,39 +76,16 @@ describe('Context', () => {
             }).should.throw(/No business network/i);
         });
 
-        it('should enable historian if no request to disable is present', () => {
-            context.historianEnabled.should.be.true;
-        });
-
-        it('should disable historian if disableHistorian set to true', () => {
+        it('should disable historian if InstalledBusinessNetwork says disabled', () => {
             const mockInstalledBusinessNetwork = sinon.createStubInstance(InstalledBusinessNetwork);
-            const mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            mockInstalledBusinessNetwork.getDefinition.returns(mockBusinessNetworkDefinition);
-            const mockBusinessNetworkMetadata = sinon.createStubInstance(BusinessNetworkMetadata);
-            mockBusinessNetworkDefinition.getMetadata.returns(mockBusinessNetworkMetadata);
-            mockBusinessNetworkMetadata.getPackageJson.returns({'disableHistorian': true});
+            mockInstalledBusinessNetwork.historianEnabled = false;
             context = new Context(mockEngine, mockInstalledBusinessNetwork);
             context.historianEnabled.should.be.false;
         });
 
-        it('should enable historian if disableHistorian set to false', () => {
+        it('should enable historian if InstalledBusinessNetwork says enabled', () => {
             const mockInstalledBusinessNetwork = sinon.createStubInstance(InstalledBusinessNetwork);
-            const mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            mockInstalledBusinessNetwork.getDefinition.returns(mockBusinessNetworkDefinition);
-            const mockBusinessNetworkMetadata = sinon.createStubInstance(BusinessNetworkMetadata);
-            mockBusinessNetworkDefinition.getMetadata.returns(mockBusinessNetworkMetadata);
-            mockBusinessNetworkMetadata.getPackageJson.returns({'disableHistorian': false});
-            context = new Context(mockEngine, mockInstalledBusinessNetwork);
-            context.historianEnabled.should.be.true;
-        });
-
-        it('should disable historian if disableHistorian set to a non boolean', () => {
-            const mockInstalledBusinessNetwork = sinon.createStubInstance(InstalledBusinessNetwork);
-            const mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            mockInstalledBusinessNetwork.getDefinition.returns(mockBusinessNetworkDefinition);
-            const mockBusinessNetworkMetadata = sinon.createStubInstance(BusinessNetworkMetadata);
-            mockBusinessNetworkDefinition.getMetadata.returns(mockBusinessNetworkMetadata);
-            mockBusinessNetworkMetadata.getPackageJson.returns({'disableHistorian': 1});
+            mockInstalledBusinessNetwork.historianEnabled = true;
             context = new Context(mockEngine, mockInstalledBusinessNetwork);
             context.historianEnabled.should.be.true;
         });
