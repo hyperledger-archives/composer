@@ -116,7 +116,6 @@ class Util {
         if (transaction instanceof Resource){
             transaction.setIdentifier(txId.idStr);
             json = serializer.toJSON(transaction);
-
         } else {
             transaction.transactionId = txId.idStr;
             json=transaction;

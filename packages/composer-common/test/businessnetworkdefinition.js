@@ -23,6 +23,7 @@ const moxios = require('moxios');
 const nodeUtil = require('util');
 const os = require('os');
 const path = require('path');
+const ReadOnlyDecorator = require('../lib/readonlydecorator');
 const ReturnsDecorator = require('../lib/returnsdecorator');
 const rimraf = nodeUtil.promisify(require('rimraf'));
 
@@ -514,6 +515,18 @@ describe('BusinessNetworkDefinition', () => {
             const conceptDeclaration = modelManager.getType('org.acme.C');
             const decorator = conceptDeclaration.getDecorator('returns');
             decorator.should.be.an.instanceOf(ReturnsDecorator);
+        });
+
+        it('should install the decorator processor for @readonly', () => {
+            const bnd = new BusinessNetworkDefinition('id@1.0.0', 'description', null, 'readme');
+            const modelManager = bnd.getModelManager();
+            modelManager.addModelFile(`
+            namespace org.acme
+            @readonly
+            transaction T{ }`);
+            const transactionDeclaration = modelManager.getType('org.acme.T');
+            const decorator = transactionDeclaration.getDecorator('readonly');
+            decorator.should.be.an.instanceOf(ReadOnlyDecorator);
         });
 
     });

@@ -24,6 +24,12 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.19.20 {308d962120667e982b2600107d0b8b13} 2019-01-29
+- Modify readonly decorator to be parameterless
+
+Version 0.19.20 {5ff216eab17b2d990c43636c51a585b5} 2018-12-18
+- Add readonly decorator factory
+
 Version 0.19.11 {765772c9b73656c289a15398bccc76fd} 2018-06-29
 - Add decorator factories
 - Add returns decorator factory

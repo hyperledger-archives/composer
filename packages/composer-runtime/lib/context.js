@@ -49,6 +49,7 @@ class Context {
         this.installedBusinessNetwork = installedBusinessNetwork;
         this.eventNumber = 0;
         this.contextId = uuid.v4();
+        this.historianEnabled = installedBusinessNetwork.historianEnabled;
     }
 
     /**

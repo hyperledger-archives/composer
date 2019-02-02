@@ -258,6 +258,12 @@ class ModelManager {
    + DecoratorFactory[] getDecoratorFactories() 
    + void addDecoratorFactory(DecoratorFactory) 
 }
+class ReadOnlyDecorator extends Decorator {
+   + void constructor(Object) throws IllegalModelException
+}
+class ReadOnlyDecoratorFactory extends DecoratorFactory {
+   + Decorator newDecorator(Object) 
+}
 class ReturnsDecorator extends Decorator {
    + void constructor(Object) throws IllegalModelException
    + string getType() 
@@ -272,7 +278,7 @@ class ReturnsDecoratorFactory extends DecoratorFactory {
 class Serializer {
    + void constructor(Factory,ModelManager) 
    + void setDefaultOptions(Object) 
-   + Object toJSON(Resource,Object,boolean,boolean,boolean,boolean) throws Error
+   + Object toJSON(Resource,Object,boolean,boolean,boolean,boolean,boolean) throws Error
    + Resource fromJSON(Object,Object,boolean,boolean) 
 }
 class Wallet {

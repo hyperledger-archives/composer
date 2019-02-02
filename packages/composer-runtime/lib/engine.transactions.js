@@ -64,16 +64,21 @@ class EngineTransactions {
         LOG.debug(method, 'Getting default transaction registry for ' + transactionFQT);
         const txRegistry = await registryManager.get('Transaction', transactionFQT);
 
-        LOG.debug(method, 'Getting historian registry');
-        const historian = await registryManager.get('Asset', 'org.hyperledger.composer.system.HistorianRecord');
+        let historian;
+        let historianRecord;
+        let canHistorianAdd = null;  // this means it's good otherwise it will contain an error object
+        if (context.historianEnabled === undefined || context.historianEnabled) {
+            LOG.debug(method, 'Getting historian registry');
+            historian = await registryManager.get('Asset', 'org.hyperledger.composer.system.HistorianRecord');
 
-        // Form the historian record
-        const record = this._createHistorianRecord(context, transaction);
+            // Form the historian record
+            historianRecord = this._createHistorianRecord(context, transaction);
+            canHistorianAdd = await historian.testAdd(historianRecord);
+        }
 
-        // check that we can add to both these registries ahead of time
-        LOG.debug(method, 'Validating ability to create in Transaction and Historian registries');
+            // check that we can add to both these registries ahead of time
+        LOG.debug(method, 'Validating ability to create in Transaction and optionally Historian registries');
         let canTxAdd = await txRegistry.testAdd(transaction);
-        let canHistorianAdd = await historian.testAdd(record);
 
         if (canTxAdd || canHistorianAdd){
             throw canTxAdd ? canTxAdd : canHistorianAdd;
@@ -86,12 +91,14 @@ class EngineTransactions {
         LOG.debug(method, 'Storing executed transaction in Transaction registry');
         await txRegistry.add(transaction, {noTest: true});
 
-        // Update the historian record before we store it.
-        this._updateHistorianRecord(context, record);
+        if (context.historianEnabled === undefined || context.historianEnabled) {
+            // Update the historian record before we store it.
+            this._updateHistorianRecord(context, historianRecord);
 
-        // Store the historian record in the historian registry.
-        LOG.debug(method, 'Storing Historian record in Historian registry');
-        await historian.add(record, {noTest: true});
+            // Store the historian record in the historian registry.
+            LOG.debug(method, 'Storing Historian record in Historian registry');
+            await historian.add(historianRecord, {noTest: true, validate: false});
+        }
 
         context.clearTransaction();
         LOG.exit(method, returnValue);
@@ -206,7 +213,7 @@ class EngineTransactions {
         const eventService = context.getEventService();
         record.eventsEmitted = [];
         eventService.getEvents().forEach((element) => {
-            const r = context.getSerializer().fromJSON(element);
+            const r = context.getSerializer().fromJSON(element, {validate: false});
             record.eventsEmitted.push(r);
         } );
 
@@ -224,8 +231,7 @@ class EngineTransactions {
         LOG.entry(method, context, transaction, returnValues);
 
         // Determine whether or not a result was expected.
-        const transactionDeclaration = transaction.getClassDeclaration();
-        const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        const returnsDecorator = transaction.getClassDeclaration().getDecorator('returns');
         if (!returnsDecorator) {
             LOG.exit(method, undefined);
             return undefined;
@@ -280,6 +286,7 @@ class EngineTransactions {
         // Get the type and resolved type.
         const transactionDeclaration = transaction.getClassDeclaration();
         const returnsDecorator = transactionDeclaration.getDecorator('returns');
+        const readOnly = transactionDeclaration.getDecorator('readonly') ? true : false;
         const returnValueType = returnsDecorator.getType();
         const returnValueResolvedType = returnsDecorator.getResolvedType();
         const isArray = returnsDecorator.isArray();
@@ -297,7 +304,7 @@ class EngineTransactions {
                 LOG.error(method, error);
                 throw error;
             }
-            return context.getSerializer().toJSON(actualReturnValue, { convertResourcesToRelationships: true, permitResourcesForRelationships: false });
+            return context.getSerializer().toJSON(actualReturnValue, { convertResourcesToRelationships: true, permitResourcesForRelationships: false, useOriginal: readOnly });
         };
 
         // Handle the non-array case - a single return value.
