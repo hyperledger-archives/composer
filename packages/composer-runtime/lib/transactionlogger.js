@@ -66,11 +66,13 @@ class TransactionLogger {
 
         // Serialize both the old and new resources.
         let oldJSON = this.serializer.toJSON(event.oldResource, {
-            convertResourcesToRelationships: true
+            convertResourcesToRelationships: true,
+            validate: false
         });
         LOG.debug(method, 'Serialized old resource');
         let newJSON = this.serializer.toJSON(event.newResource, {
-            convertResourcesToRelationships: true
+            convertResourcesToRelationships: true,
+            validate: false
         });
         LOG.debug(method, 'Serialized new resource');
 

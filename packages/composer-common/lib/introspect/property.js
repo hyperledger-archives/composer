@@ -124,25 +124,35 @@ class Property extends Decorated {
      * @return {string} the fully qualified type of this property
      */
     getFullyQualifiedTypeName() {
+
         if(this.isPrimitive()) {
             return this.type;
         }
 
-        const parent = this.getParent();
-        if(!parent) {
-            throw new Error('Property ' + this.name + ' does not have a parent.');
-        }
-        const modelFile = parent.getModelFile();
-        if(!modelFile) {
-            throw new Error('Parent of property ' + this.name + ' does not have a ModelFile!');
+        if (this.fullyQualifiedTypeName){
+            return this.fullyQualifiedTypeName;
+        } else {
+            const parent = this.getParent();
+            if(!parent) {
+                throw new Error('Property ' + this.name + ' does not have a parent.');
+            }
+            const modelFile = parent.getModelFile();
+            if(!modelFile) {
+                throw new Error('Parent of property ' + this.name + ' does not have a ModelFile!');
+            }
+
+            const result = modelFile.getFullyQualifiedTypeName(this.type);
+
+            if(!result) {
+                throw new Error('Failed to find fully qualified type name for property ' + this.name + ' with type ' + this.type );
+            }
+
+            this.fullyQualifiedTypeName = result;
+            Object.defineProperty(this, 'fullyQualifiedTypeName', { enumerable: false });
+
+            return result;
         }
 
-        const result = modelFile.getFullyQualifiedTypeName(this.type);
-        if(!result) {
-            throw new Error('Failed to find fully qualified type name for property ' + this.name + ' with type ' + this.type );
-        }
-
-        return result;
     }
 
     /**

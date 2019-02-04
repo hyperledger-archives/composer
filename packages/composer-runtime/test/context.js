@@ -75,6 +75,20 @@ describe('Context', () => {
                 new Context(mockEngine);
             }).should.throw(/No business network/i);
         });
+
+        it('should disable historian if InstalledBusinessNetwork says disabled', () => {
+            const mockInstalledBusinessNetwork = sinon.createStubInstance(InstalledBusinessNetwork);
+            mockInstalledBusinessNetwork.historianEnabled = false;
+            context = new Context(mockEngine, mockInstalledBusinessNetwork);
+            context.historianEnabled.should.be.false;
+        });
+
+        it('should enable historian if InstalledBusinessNetwork says enabled', () => {
+            const mockInstalledBusinessNetwork = sinon.createStubInstance(InstalledBusinessNetwork);
+            mockInstalledBusinessNetwork.historianEnabled = true;
+            context = new Context(mockEngine, mockInstalledBusinessNetwork);
+            context.historianEnabled.should.be.true;
+        });
     });
 
     describe('#getFunction', () => {
