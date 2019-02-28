@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "fabric-ca-client": "1.2.1",
-    "fabric-client": "1.2.1",
+    "fabric-client": "1.4.0",
     "fs-extra": "1.0.0",
     "jsrsasign": "8.0.3",
     "lodash": "4.17.11",
