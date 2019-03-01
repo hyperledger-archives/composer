@@ -1,6 +1,6 @@
 {
   "name": "composer-rest-server",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "Hyperledger Composer REST server that uses the Hyperledger Composer LoopBack connector",
   "engines": {
     "node": ">=8",

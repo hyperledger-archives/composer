@@ -1,6 +1,6 @@
 {
   "name": "composer-tests-integration",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "Integration tests for Hyperledger Composer",
   "main": "index.js",
   "scripts": {

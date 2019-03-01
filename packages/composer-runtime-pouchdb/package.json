@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-pouchdb",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "Common PouchDB based runtime container code for Hyperledger Composer",
   "engines": {
     "node": ">=8",

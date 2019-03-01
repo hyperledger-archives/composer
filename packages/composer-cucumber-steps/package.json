@@ -1,6 +1,6 @@
 {
   "name": "composer-cucumber-steps",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "A library of Cucumber steps for testing Hyperledger Composer",
   "main": "index.js",
   "scripts": {

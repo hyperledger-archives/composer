@@ -1,6 +1,6 @@
 {
   "name": "composer-documentation",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "Generates documentation packages for Hyperlegder Composer Business Networks",
   "bin": {
     "opus": "bin/opus"

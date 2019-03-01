@@ -1,6 +1,6 @@
 {
   "name": "composer-playground-api",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "The REST API for the Hyperledger Composer Playground",
   "engines": {
     "node": ">=8",

@@ -1,6 +1,6 @@
 {
   "name": "composer-cli",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "Hyperledger Composer command line interfaces (CLIs)",
   "engines": {
     "node": ">=8",

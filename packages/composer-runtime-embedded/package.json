@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-embedded",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "The embedded runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=8",
