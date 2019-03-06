@@ -233,17 +233,21 @@ describe('Engine', () => {
             sinon.assert.calledOnce(mockContext.transactionEnd);
         });
 
-        it('should throw error if upgrade not allowed', async () => {
+        it('should NOT throw error if upgrading from a much older version', async () => {
             const sysdata = sinon.createStubInstance(DataCollection);
             mockContainer.getVersion.returns('0.21.0');
+            await engine.upgrade(mockContext, '', sysdata, {runtimeVersion:'0.20.0'});
+            sinon.assert.calledOnce(sysdata.update);
+            sinon.assert.calledWith(sysdata.update, 'metanetwork', {
+                '$class': 'org.hyperledger.composer.system.Network',
+                'networkId': 'test-network@1.0.0',
+                'runtimeVersion': '0.21.0'
+            });
+            sinon.assert.calledOnce(mockRegistryManager.createDefaults);
+            sinon.assert.calledOnce(mockContext.transactionPrepare);
+            sinon.assert.calledOnce(mockContext.transactionCommit);
+            sinon.assert.calledOnce(mockContext.transactionEnd);
 
-            try {
-                await engine.upgrade(mockContext, '', sysdata, {runtimeVersion:'0.20.0'});
-                should.fail('Expected error to be thrown');
-            } catch(err) {
-                err.message.should.match(/Cannot upgrade/);
-                sinon.assert.notCalled(sysdata.update);
-            }
         });
 
         it('should rollback if sysdata update fails', async () => {
