@@ -15,7 +15,6 @@
 'use strict';
 
 const Logger = require('composer-common').Logger;
-const semver = require('semver');
 const util = require('util');
 
 const LOG = Logger.getLog('Engine');
@@ -208,12 +207,6 @@ class Engine {
         LOG.debug(method, 'Updating metanetwork in $sysdata collection');
 
         const newRuntimeVersion = this.container.getVersion();
-        // Check our new version should be greater than or equal but only a micro version change.
-        const range =  `^${metanetwork.runtimeVersion}`;
-        if (!semver.satisfies(newRuntimeVersion, range)) {
-            throw new Error(`Cannot upgrade business network. New composer runtime version of (${newRuntimeVersion}) is not compatible with (${metanetwork.runtimeVersion}). Composer runtime has changed major or minor version and cannot be upgraded.`);
-        }
-
         try {
             // update the metanetwork with new identifier and version
             const networkId = context.getBusinessNetworkDefinition().getIdentifier();
