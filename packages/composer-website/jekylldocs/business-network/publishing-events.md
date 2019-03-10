@@ -38,7 +38,7 @@ Before you begin adding events to your business network, you should have a good 
             emit(basicEvent);
         }
 
-This transaction creates and emits an event of the `BasicEvent` type as defined in the business network's model file. For more information on the getFactory function, see the [{{site.data.conrefs.composer_short}} API documentation](../jsdoc/module-composer-runtime.html#getFactory).
+This transaction creates and emits an event of the `BasicEvent` type as defined in the business network's model file. For more information on the getFactory function, see the [{{site.data.conrefs.composer_short}} API documentation](../api/runtime-api#getfactory).
 
 ## What next?
 
