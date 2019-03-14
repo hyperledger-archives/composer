@@ -19,7 +19,7 @@ const NodeDataService = require('./nodedataservice');
 const NodeIdentityService = require('./nodeidentityservice');
 const NodeEventService = require('./nodeeventservice');
 const NodeHTTPService = require('./nodehttpservice');
-//const NodeScriptCompiler = require('./nodescriptcompiler');
+const ClientIdentity = require('fabric-shim').ClientIdentity;
 
 const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('NodeContext');
@@ -109,6 +109,7 @@ class NodeContext extends Context {
     getNativeAPI() {
         const method = 'getNativeAPI';
         LOG.entry(method);
+        this.stub._clientIdentityClass = ClientIdentity;
         LOG.exit(method, this.stub);
         return this.stub;
     }
