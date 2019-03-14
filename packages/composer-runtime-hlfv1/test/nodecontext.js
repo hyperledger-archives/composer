@@ -23,6 +23,7 @@ const NodeEventService = require('../lib/nodeeventservice');
 const NodeHTTPService = require('../lib/nodehttpservice');
 const NodeIdentityService = require('../lib/nodeidentityservice');
 const ChaincodeStub = require('fabric-shim/lib/stub');
+const ClientIdentity = require('fabric-shim').ClientIdentity;
 
 require('chai').should();
 const sinon = require('sinon');
@@ -51,7 +52,18 @@ XVMHPa0iyC497vdNURA=\
 
     beforeEach(() => {
         mockStub = sinon.createStubInstance(ChaincodeStub);
-        mockStub.getCreator.returns(cert);
+        mockStub.getCreator.returns({
+            getMspid: () => {
+                return 'mspid';
+            },
+            getIdBytes: () => {
+                return {
+                    toBuffer: () => {
+                        return cert;
+                    }
+                };
+            }
+        });
         mockStub.getTxID.returns('12345abcdefg');
         mockNodeContainer = sinon.createStubInstance(NodeContainer);
         mockEngine = sinon.createStubInstance(Engine);
@@ -115,7 +127,10 @@ XVMHPa0iyC497vdNURA=\
 
     describe('#getNativeAPI', () => {
         it('should return the native api', () => {
-            context.getNativeAPI().should.equal(mockStub);
+            const api = context.getNativeAPI();
+            api.should.equal(mockStub);
+            const clientIdentity = new api._clientIdentityClass(api);
+            clientIdentity.should.be.instanceOf(ClientIdentity);
         });
     });
 });
