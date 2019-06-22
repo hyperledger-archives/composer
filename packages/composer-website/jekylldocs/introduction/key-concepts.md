@@ -32,7 +32,7 @@ All transactions submitted through a business network are stored on the blockcha
 
 ### Connection Profiles
 
-{{site.data.conrefs.composer_full}} uses _Connection Profiles_ to define the system to connect to. A connection profile is a JSON document the is part of a business network card. These profiles are usually provided by the creator of the system they refer to and should be used to create business network cards in order to be able to connect to that system.
+{{site.data.conrefs.composer_full}} uses _Connection Profiles_ to define the system to connect to. A connection profile is a JSON document that is part of a business network card. These profiles are usually provided by the creator of the system they refer to and should be used to create business network cards in order to be able to connect to that system.
 
 ---
 
