@@ -59,9 +59,6 @@ function exists() {
 npm config set registry https://registry.npmjs.org/
 npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
 
-# Ensure all the NPM modules are deprecated
-nohup ./.travis/deprecate.sh < /dev/null > /dev/null 2>&1 &
-
 # Set the GitHub deploy key we will use to publish.
 set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
            --iv "$encrypted_17b59ce72ad7_iv" \
