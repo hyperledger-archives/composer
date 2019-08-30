@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -373,14 +378,14 @@ Options:
 <p>In order to perform an installation of a business network, a card with the <code>PeerAdmin</code> role is used. To perform a start or upgrade of the business network a card with the <code>ChannelAdmin</code> role is used.</p>
 
 <h2 id="javascript-api-example">Javascript API Example</h2>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">CardCreate</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-cli'</span><span class="p">).</span><span class="nx">Card</span><span class="p">.</span><span class="nx">Create</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">CardCreate</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">composer-cli</span><span class="dl">'</span><span class="p">).</span><span class="nx">Card</span><span class="p">.</span><span class="nx">Create</span><span class="p">;</span>
 
 <span class="kd">let</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="na">file</span><span class="p">:</span> <span class="s1">'conga.card'</span><span class="p">,</span>
-  <span class="na">businessNetworkName</span><span class="p">:</span> <span class="s1">'penguin-network'</span><span class="p">,</span>
-  <span class="na">connectionProfileFile</span><span class="p">:</span> <span class="s1">'connection.json'</span><span class="p">,</span>
-  <span class="na">user</span><span class="p">:</span> <span class="s1">'conga'</span><span class="p">,</span>
-  <span class="na">enrollSecret</span><span class="p">:</span> <span class="s1">'supersecret'</span>
+  <span class="na">file</span><span class="p">:</span> <span class="dl">'</span><span class="s1">conga.card</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">businessNetworkName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">penguin-network</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">connectionProfileFile</span><span class="p">:</span> <span class="dl">'</span><span class="s1">connection.json</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">user</span><span class="p">:</span> <span class="dl">'</span><span class="s1">conga</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">enrollSecret</span><span class="p">:</span> <span class="dl">'</span><span class="s1">supersecret</span><span class="dl">'</span>
 <span class="p">};</span>
 
 <span class="nx">CardCreate</span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>

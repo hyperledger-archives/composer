@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -496,7 +501,7 @@ properties or internal methods which could be accessed or misused.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Vehicle</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Call methods on the vehicle asset registry.</span>
   <span class="p">})</span>
@@ -534,7 +539,7 @@ properties or internal methods which could be accessed or misused.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driverParticipantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Call methods on the driver participant registry.</span>
   <span class="p">})</span>
@@ -560,14 +565,14 @@ properties or internal methods which could be accessed or misused.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the current participant.</span>
 <span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
 <span class="c1">// Check to see if the current participant is a driver.</span>
-<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.example.Driver'</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">// Throw an error as the current participant is not a driver.</span>
-  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Current participant is not a driver'</span><span class="p">);</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Current participant is not a driver</span><span class="dl">'</span><span class="p">);</span>
 <span class="p">}</span>
 <span class="c1">// Check to see if the current participant is the first driver.</span>
-<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.example.Driver#DRIVER_1'</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="dl">'</span><span class="s1">org.example.Driver#DRIVER_1</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">// Throw an error as the current participant is not a driver.</span>
-  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Current participant is not the first driver'</span><span class="p">);</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Current participant is not the first driver</span><span class="dl">'</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="getcurrentidentity">getCurrentIdentity</h2>
@@ -685,9 +690,9 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Build a query.</span>
-<span class="kd">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">buildQuery</span><span class="p">(</span><span class="s1">'SELECT org.example.sample.SampleAsset WHERE (value == _$inputValue)'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">buildQuery</span><span class="p">(</span><span class="dl">'</span><span class="s1">SELECT org.example.sample.SampleAsset WHERE (value == _$inputValue)</span><span class="dl">'</span><span class="p">);</span>
 <span class="c1">// Execute the query.</span>
-<span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="nx">q</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
+<span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="nx">q</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">blue</span><span class="dl">'</span> <span class="p">})</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assets</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">assets</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">asset</span><span class="p">)</span> <span class="p">{</span>
       <span class="c1">// Process each asset.</span>
@@ -734,7 +739,7 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Execute the query.</span>
-<span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="s1">'Q1'</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
+<span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="dl">'</span><span class="s1">Q1</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">blue</span><span class="dl">'</span> <span class="p">})</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assets</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">assets</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">asset</span><span class="p">)</span> <span class="p">{</span>
       <span class="c1">// Process each asset.</span>

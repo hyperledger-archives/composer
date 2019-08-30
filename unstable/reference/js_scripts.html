@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -417,13 +422,13 @@ transaction SampleTransaction {
     <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
 
     <span class="c1">// Get the asset registry for the asset.</span>
-    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.basic.SampleAsset'</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.basic.SampleAsset</span><span class="dl">'</span><span class="p">);</span>
 
     <span class="c1">// Update the asset in the asset registry.</span>
-    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">);</span>
+    <span class="k">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">);</span>
 
     <span class="c1">// Emit an event for the modified asset.</span>
-    <span class="kd">let</span> <span class="nx">event</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">().</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.example.basic'</span><span class="p">,</span> <span class="s1">'SampleEvent'</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">event</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">().</span><span class="nx">newEvent</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.basic</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">SampleEvent</span><span class="dl">'</span><span class="p">);</span>
     <span class="nx">event</span><span class="p">.</span><span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
     <span class="nx">event</span><span class="p">.</span><span class="nx">oldValue</span> <span class="o">=</span> <span class="nx">oldValue</span><span class="p">;</span>
     <span class="nx">event</span><span class="p">.</span><span class="nx">newValue</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
@@ -440,7 +445,7 @@ transaction SampleTransaction {
  */</span>
 <span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Do something.</span>
-    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'example error'</span><span class="p">);</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">example error</span><span class="dl">'</span><span class="p">);</span>
     <span class="c1">// Execution stops at this point; the transaction fails and rolls back.</span>
     <span class="c1">// Any updates made by the transaction processor function are discarded.</span>
     <span class="c1">// Transaction processor functions are atomic; all changes are committed,</span>
@@ -512,8 +517,8 @@ more concise than using promise chains. This is the recommended style.</p>
  * @transaction
  */</span>
 <span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(...);</span>
-    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(...);</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(...);</span>
+    <span class="k">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(...);</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>however if you so wish you can still use old style promise chains</p>
@@ -574,12 +579,12 @@ transaction SampleTransaction {
     <span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
     <span class="c1">// Get the asset registry that stores the assets. Note that</span>
     <span class="c1">// getAssetRegistry() returns a promise, so we have to await for it.</span>
-    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.basic.SampleAsset'</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.basic.SampleAsset</span><span class="dl">'</span><span class="p">);</span>
 
     <span class="c1">// Update the asset in the asset registry. Again, note</span>
     <span class="c1">// that update() returns a promise, so so we have to return</span>
     <span class="c1">// the promise so that Composer waits for it to be resolved.</span>
-    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
+    <span class="k">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="calling-hyperledger-fabric-apis-in-transaction-processor-functions">Calling Hyperledger Fabric APIs in transaction processor functions</h3>
@@ -595,15 +600,15 @@ transaction SampleTransaction {
     <span class="kd">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">assetId</span><span class="p">;</span>
     <span class="kd">const</span> <span class="nx">nativeSupport</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">nativeSupport</span><span class="p">;</span>
 
-    <span class="kd">const</span> <span class="nx">nativeKey</span> <span class="o">=</span> <span class="nx">getNativeAPI</span><span class="p">().</span><span class="nx">createCompositeKey</span><span class="p">(</span><span class="s1">'Asset:systest.transactions.SimpleStringAsset'</span><span class="p">,</span> <span class="p">[</span><span class="nx">id</span><span class="p">]);</span>
-    <span class="kd">const</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getNativeAPI</span><span class="p">().</span><span class="nx">getHistoryForKey</span><span class="p">(</span><span class="nx">nativeKey</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">nativeKey</span> <span class="o">=</span> <span class="nx">getNativeAPI</span><span class="p">().</span><span class="nx">createCompositeKey</span><span class="p">(</span><span class="dl">'</span><span class="s1">Asset:systest.transactions.SimpleStringAsset</span><span class="dl">'</span><span class="p">,</span> <span class="p">[</span><span class="nx">id</span><span class="p">]);</span>
+    <span class="kd">const</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getNativeAPI</span><span class="p">().</span><span class="nx">getHistoryForKey</span><span class="p">(</span><span class="nx">nativeKey</span><span class="p">);</span>
     <span class="kd">let</span> <span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
     <span class="kd">let</span> <span class="nx">res</span> <span class="o">=</span> <span class="p">{</span><span class="na">done</span> <span class="p">:</span> <span class="kc">false</span><span class="p">};</span>
     <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">iterator</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+        <span class="nx">res</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">iterator</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nx">res</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-            <span class="kd">let</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="s1">'utf8'</span><span class="p">);</span>
+            <span class="kd">let</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="dl">'</span><span class="s1">utf8</span><span class="dl">'</span><span class="p">);</span>
             <span class="k">if</span> <span class="p">(</span><span class="nx">val</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
                 <span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">val</span><span class="p">));</span>
             <span class="p">}</span>
@@ -639,7 +644,7 @@ transaction MyTransaction {
 }
 </code></pre></div>
 <p>Transaction processor function:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="cd">/**
  * Handle a transaction that returns a string.
  * @param {org.sample.MyTransaction} transaction The transaction.
  * @returns [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string) The string.
@@ -668,7 +673,7 @@ transaction MyTransaction {
 }
 </code></pre></div>
 <p>Transaction processor function:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="cd">/**
  * Handle a transaction that returns an array of integers.
  * @param {org.sample.MyTransaction} transaction The transaction.
  * @returns {number[]} The array of integers.
@@ -705,7 +710,7 @@ transaction MyTransaction {
 }
 </code></pre></div>
 <p>Transaction processor function:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="cd">/**
  * Handle a transaction that returns a concept.
  * @param {org.sample.MyTransaction} transaction The transaction.
  * @returns {org.sample.MyConcept} The concept.
@@ -741,7 +746,7 @@ transaction MyTransaction {
 }
 </code></pre></div>
 <p>Transaction processor function:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="cd">/**
  * Handle a transaction that returns an array of concepts.
  * @param {org.sample.MyTransaction} transaction The transaction.
  * @returns {org.sample.MyConcept[]} The array of concepts.
@@ -786,7 +791,7 @@ transaction MyTransaction {
 }
 </code></pre></div>
 <p>Transaction processor function:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="cd">/**
  * Handle a transaction that returns an enumeration.
  * @param {org.sample.MyTransaction} transaction The transaction.
  * @returns {org.sample.MyEnum} The enumeration.
@@ -820,7 +825,7 @@ transaction MyTransaction {
 }
 </code></pre></div>
 <p>Transaction processor function:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="cd">/**
  * Handle a transaction that returns an array of enumerations.
  * @param {org.sample.MyTransaction} transaction The transaction.
  * @returns {org.sample.MyEnum[]} The array of enumerations.
@@ -863,7 +868,7 @@ transaction MyTransaction {
 }
 </code></pre></div>
 <p>Transaction processor function:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="cd">/**
  * Handle a transaction that returns an array of assets.
  * @param {org.sample.MyTransaction} transaction The transaction.
  * @returns {org.sample.MyAsset[]} All the assets.

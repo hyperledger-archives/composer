@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -382,7 +387,7 @@ in your /home/user1/config directory:</p>
 <h3 id="admin-api">Admin API</h3>
 
 <p>You can supply the name of the file as part of the AdminConnection api on the install method by specifying the <code>npmrcFile</code> property on the <code>installOptions</code> object. For example to pass the name of the npm configuration options file to be provided on install:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">AdminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">,</span> <span class="p">{</span><span class="na">npmrcFile</span><span class="p">:</span> <span class="s1">'/tmp/npmrc'</span><span class="p">});</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">await</span> <span class="nx">AdminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">,</span> <span class="p">{</span><span class="na">npmrcFile</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/tmp/npmrc</span><span class="dl">'</span><span class="p">});</span>
 </code></pre></div>
 <h2 id="hyperledger-fabric-endorsement-policies">Hyperledger Fabric Endorsement Policies</h2>
 
@@ -420,7 +425,7 @@ in your /home/user1/config directory:</p>
 <h3 id="admin-api">Admin API</h3>
 
 <p>To send an endorsement policy via the Admin API, the endorsement policy file must be included as part of the <code>startOptions</code> or <code>deployOptions</code> objects when calling start or deploy respectively. To pass an endorsement policy file it must be specified in the object property <code>endorsementPolicyFile</code>. To supply the policy as a JSON object, the <code>endorsementPolicy</code> object property must be specified.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="s1">'tutorial-network'</span><span class="p">,</span> <span class="s1">'0.0.1'</span><span class="p">,</span> <span class="p">{</span> <span class="na">networkAdmins</span><span class="p">:</span> <span class="nx">networkAdmins</span><span class="p">,</span>  <span class="na">endorsementPolicyFile</span><span class="p">:</span> <span class="s1">'endorsement-policy.json'</span><span class="p">}</span> <span class="p">);</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="dl">'</span><span class="s1">tutorial-network</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">0.0.1</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">networkAdmins</span><span class="p">:</span> <span class="nx">networkAdmins</span><span class="p">,</span>  <span class="na">endorsementPolicyFile</span><span class="p">:</span> <span class="dl">'</span><span class="s1">endorsement-policy.json</span><span class="dl">'</span><span class="p">}</span> <span class="p">);</span>
 </code></pre></div>
 <h2 id="identity-issue">Identity Issue</h2>
 
@@ -438,10 +443,10 @@ in your /home/user1/config directory:</p>
 
 <p>To specify the issuer property you set it in an object and pass this object as part of the <code>issueOptions</code> on <code>issueIdentity</code>.
 For example to issue an identity that has issuer authority</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">issueIdentity</span><span class="p">(</span><span class="nx">participantId</span><span class="p">,</span> <span class="nx">newUserId</span><span class="p">,</span> <span class="p">{</span><span class="na">issuer</span><span class="p">:</span> <span class="kc">true</span><span class="p">});</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">issueIdentity</span><span class="p">(</span><span class="nx">participantId</span><span class="p">,</span> <span class="nx">newUserId</span><span class="p">,</span> <span class="p">{</span><span class="na">issuer</span><span class="p">:</span> <span class="kc">true</span><span class="p">});</span>
 </code></pre></div>
 <p>To specify the affiliation property</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">issueIdentity</span><span class="p">(</span><span class="nx">participantId</span><span class="p">,</span> <span class="nx">newUserId</span><span class="p">,</span> <span class="p">{</span><span class="na">affiliation</span><span class="p">:</span> <span class="s1">'org.department1'</span><span class="p">});</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">issueIdentity</span><span class="p">(</span><span class="nx">participantId</span><span class="p">,</span> <span class="nx">newUserId</span><span class="p">,</span> <span class="p">{</span><span class="na">affiliation</span><span class="p">:</span> <span class="dl">'</span><span class="s1">org.department1</span><span class="dl">'</span><span class="p">});</span>
 </code></pre></div>
 <h2 id="next-steps">Next steps</h2>
 

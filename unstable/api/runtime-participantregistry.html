@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -435,7 +440,7 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get all of the drivers in the driver participant registry.</span>
     <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
@@ -480,10 +485,10 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the specific driver from the driver participant registry.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'VEHICLE_1'</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">VEHICLE_1</span><span class="dl">'</span><span class="p">);</span>
   <span class="p">})</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driver</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Process the the driver object.</span>
@@ -523,14 +528,14 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Determine if the specific driver exists in the driver participant registry.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">exists</span><span class="p">(</span><span class="s1">'VEHICLE_1'</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">exists</span><span class="p">(</span><span class="dl">'</span><span class="s1">VEHICLE_1</span><span class="dl">'</span><span class="p">);</span>
   <span class="p">})</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">exists</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Process the the boolean result.</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Driver exists'</span><span class="p">,</span> <span class="nx">exists</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Driver exists</span><span class="dl">'</span><span class="p">,</span> <span class="nx">exists</span><span class="p">);</span>
   <span class="p">})</span>
   <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Add optional error handling here.</span>
@@ -566,16 +571,16 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
     <span class="c1">// Create the first driver.</span>
-    <span class="kd">var</span> <span class="nx">driver1</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
-    <span class="nx">driver1</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'Southampton'</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">driver1</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Driver</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">VEHICLE_1</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">driver1</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Southampton</span><span class="dl">'</span><span class="p">;</span>
     <span class="c1">// Create the second driver.</span>
-    <span class="kd">var</span> <span class="nx">driver2</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_2'</span><span class="p">);</span>
-    <span class="nx">driver2</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'GREEN'</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">driver2</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Driver</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">VEHICLE_2</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">driver2</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">GREEN</span><span class="dl">'</span><span class="p">;</span>
     <span class="c1">// Add the drivers to the driver participant registry.</span>
     <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">driver1</span><span class="p">,</span> <span class="nx">driver2</span><span class="p">]);</span>
   <span class="p">})</span>
@@ -613,13 +618,13 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
     <span class="c1">// Create the driver.</span>
-    <span class="kd">var</span> <span class="nx">driver</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
-    <span class="nx">driver</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'Southampton'</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">driver</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Driver</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">VEHICLE_1</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">driver</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Southampton</span><span class="dl">'</span><span class="p">;</span>
     <span class="c1">// Add the driver to the driver participant registry.</span>
     <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">driver</span><span class="p">);</span>
   <span class="p">})</span>
@@ -660,14 +665,14 @@ method instead.</p>
 <span class="kd">var</span> <span class="nx">driver1</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">driver2</span><span class="p">;</span>
 <span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
     <span class="c1">// Modify the properties of the first driver.</span>
-    <span class="nx">driver1</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'Hursley'</span><span class="p">;</span>
+    <span class="nx">driver1</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Hursley</span><span class="dl">'</span><span class="p">;</span>
     <span class="c1">// Modify the properties of the second driver.</span>
-    <span class="nx">driver2</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'London'</span><span class="p">;</span>
+    <span class="nx">driver2</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">London</span><span class="dl">'</span><span class="p">;</span>
     <span class="c1">// Update the drivers in the driver participant registry.</span>
     <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">updateAll</span><span class="p">([</span><span class="nx">driver1</span><span class="p">,</span> <span class="nx">driver2</span><span class="p">]);</span>
   <span class="p">})</span>
@@ -707,12 +712,12 @@ method instead.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing driver that has come from elsewhere.</span>
 <span class="kd">var</span> <span class="nx">driver</span><span class="p">;</span>
 <span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
     <span class="c1">// Modify the properties of the driver.</span>
-    <span class="nx">driver</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'Hursley'</span><span class="p">;</span>
+    <span class="nx">driver</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Hursley</span><span class="dl">'</span><span class="p">;</span>
     <span class="c1">// Update the driver in the driver participant registry.</span>
     <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">driver</span><span class="p">);</span>
   <span class="p">})</span>
@@ -752,14 +757,14 @@ method instead.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing drivers that have come from elsewhere.</span>
 <span class="kd">var</span> <span class="nx">driver1</span><span class="p">;</span>
 <span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
     <span class="c1">// Remove the drivers from the driver participant registry. Note that</span>
     <span class="c1">// one driver is specified as a driver instance, and the other</span>
     <span class="c1">// driver is specified by the ID of the driver.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">removeAll</span><span class="p">([</span><span class="nx">driver1</span><span class="p">,</span> <span class="s1">'VEHICLE_2'</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">removeAll</span><span class="p">([</span><span class="nx">driver1</span><span class="p">,</span> <span class="dl">'</span><span class="s1">VEHICLE_2</span><span class="dl">'</span><span class="p">]);</span>
   <span class="p">})</span>
   <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Add optional error handling here.</span>
@@ -797,7 +802,7 @@ method instead.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing driver that has come from elsewhere.</span>
 <span class="kd">var</span> <span class="nx">driver</span><span class="p">;</span>
 <span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>

@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -378,11 +383,11 @@ The serialized JSON representation of the participant to add to the participant 
 <p>Example: <code>&#39;{&quot;$class&quot;:&quot;net.biz.digitalPropertyNetwork.Person&quot;,&quot;personId&quot;:&quot;mae@biznet.org&quot;,&quot;firstName&quot;:&quot;Mae&quot;,&quot;lastName&quot;:&quot;Smith&quot;}&#39;</code></p>
 
 <h2 id="javascript-api-example">Javascript API Example</h2>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">ParticipantAdd</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-cli'</span><span class="p">).</span><span class="nx">Participant</span><span class="p">.</span><span class="nx">Add</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">ParticipantAdd</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">composer-cli</span><span class="dl">'</span><span class="p">).</span><span class="nx">Participant</span><span class="p">.</span><span class="nx">Add</span><span class="p">;</span>
 
 <span class="kd">let</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="na">card</span><span class="p">:</span> <span class="s1">'admin@tutorial-network'</span><span class="p">,</span>
-  <span class="na">data</span><span class="p">:</span> <span class="s1">'{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'</span>
+  <span class="na">card</span><span class="p">:</span> <span class="dl">'</span><span class="s1">admin@tutorial-network</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">data</span><span class="p">:</span> <span class="dl">'</span><span class="s1">{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}</span><span class="dl">'</span>
 <span class="p">};</span>
 
 <span class="nx">ParticipantAdd</span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>

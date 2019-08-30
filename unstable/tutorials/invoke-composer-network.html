@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -395,7 +400,7 @@ export FABRIC_VERSION=hlfv12
 <li><p>The transaction logic needs to be updated in network A and to query an asset in business network B and then update the quantity property of an asset in business network A.</p>
 
 <p>Replace the contents of the <code>logic.js</code> script file to update the transaction processor function to be the following.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">        <span class="sd">/**
+<div class="highlight"><pre><code class="language-" data-lang="">        <span class="cd">/**
          * Track the trade of a commodity from one trader to another
          * @param {org.example.mynetwork.Trade} trade - the trade to be processed
          * @transaction

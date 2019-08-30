@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -396,7 +401,7 @@
 <p>The established APIs for querying and working with resources and relationship are applicable. The historian is a registry containing assets (HistorianRecords) so can be queried.</p>
 
 <p>For example to get all the <code>HistorianRecord</code> assets a typical promise chain would be as follows.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">    <span class="kd">let</span> <span class="nx">historian</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getHistorian</span><span class="p">();</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">    <span class="kd">let</span> <span class="nx">historian</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getHistorian</span><span class="p">();</span>
     <span class="kd">let</span> <span class="nx">historianRecords</span> <span class="o">=</span> <span class="nx">historian</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">prettyoutput</span><span class="p">(</span><span class="nx">historianRecords</span><span class="p">));</span>
 </code></pre></div>
@@ -404,10 +409,10 @@
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kd">let</span> <span class="nx">now</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
   <span class="nx">now</span><span class="p">.</span><span class="nx">setMinutes</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>  <span class="c1">// set the date to be time you want to query from</span>
 
-  <span class="kd">let</span> <span class="nx">q1</span> <span class="o">=</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">buildQuery</span><span class="p">(</span><span class="s1">'SELECT org.hyperledger.composer.system.HistorianRecord '</span> <span class="o">+</span>
-                                                <span class="s1">'WHERE (transactionTimestamp &gt; _$justnow)'</span><span class="p">);</span>   
+  <span class="kd">let</span> <span class="nx">q1</span> <span class="o">=</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">buildQuery</span><span class="p">(</span><span class="dl">'</span><span class="s1">SELECT org.hyperledger.composer.system.HistorianRecord </span><span class="dl">'</span> <span class="o">+</span>
+                                                <span class="dl">'</span><span class="s1">WHERE (transactionTimestamp &gt; _$justnow)</span><span class="dl">'</span><span class="p">);</span>   
 
-  <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">q1</span><span class="p">,{</span><span class="na">justnow</span><span class="p">:</span><span class="nx">now</span><span class="p">});</span>
+  <span class="k">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">q1</span><span class="p">,{</span><span class="na">justnow</span><span class="p">:</span><span class="nx">now</span><span class="p">});</span>
 </code></pre></div>
 <p>More advanced queries can be used; for example, the following query selects and returns the Add, Update, and Remove asset system transactions.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// build the special query for historian records</span>
@@ -416,7 +421,7 @@
           WHERE (transactionType == 'AddAsset' OR transactionType == 'UpdateAsset' OR transactionType == 'RemoveAsset')`</span>
   <span class="p">);</span>      
 
-  <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">q1</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">q1</span><span class="p">);</span>
 
 </code></pre></div>
 <h2 id="what-next">What next?</h2>

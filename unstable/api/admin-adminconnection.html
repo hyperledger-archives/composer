@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -679,7 +684,7 @@ The connection profile must exist in the profile store.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Connect to Hyperledger Fabric</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="k">try</span> <span class="p">{</span>
-  <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
+  <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">userCard@network</span><span class="dl">'</span><span class="p">)</span>
   <span class="c1">// Connected.</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
     <span class="c1">// Add optional error handling here.</span>
@@ -703,9 +708,9 @@ The connection profile must exist in the profile store.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Disconnect from a Business Network</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="k">try</span> <span class="p">{</span>
-  <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
+  <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">userCard@network</span><span class="dl">'</span><span class="p">)</span>
   <span class="c1">// Connected</span>
-  <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">()</span>
+  <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">()</span>
   <span class="c1">// and now disconnected.</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
     <span class="c1">// Add optional error handling here.</span>
@@ -751,8 +756,8 @@ The connection must be connected for this method to succeed.</p>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
 <span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'adminCard@hlfv1'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">);</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">adminCard@hlfv1</span><span class="dl">'</span><span class="p">)</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">);</span>
    <span class="c1">// Business network installed</span>
 <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Add optional error handling here.</span>
@@ -802,10 +807,10 @@ The connection must be connected for this method to succeed.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Start a Business Network Definition</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="k">try</span> <span class="p">{</span>
-    <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-    <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">networkName</span><span class="p">,</span> <span class="nx">networkVersion</span><span class="p">,</span>
+    <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">userCard@network</span><span class="dl">'</span><span class="p">)</span>
+    <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">networkName</span><span class="p">,</span> <span class="nx">networkVersion</span><span class="p">,</span>
              <span class="p">{</span> <span class="na">networkAdmins</span><span class="p">:</span>
-                 <span class="p">[</span> <span class="p">{</span><span class="na">userName</span> <span class="p">:</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="na">enrollmentSecret</span><span class="p">:</span><span class="s1">'adminpw'</span><span class="p">}</span> <span class="p">]</span>
+                 <span class="p">[</span> <span class="p">{</span><span class="na">userName</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">admin</span><span class="dl">'</span><span class="p">,</span> <span class="na">enrollmentSecret</span><span class="p">:</span><span class="dl">'</span><span class="s1">adminpw</span><span class="dl">'</span><span class="p">}</span> <span class="p">]</span>
              <span class="p">}</span>
 
     <span class="c1">// Business network definition is started</span>
@@ -848,8 +853,8 @@ IMPORTANT: Never use this api on a production or shared business network. It sho
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
 <span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">reset</span><span class="p">(</span><span class="s1">'network-name'</span><span class="p">)</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">userCard@network</span><span class="dl">'</span><span class="p">)</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">reset</span><span class="p">(</span><span class="dl">'</span><span class="s1">network-name</span><span class="dl">'</span><span class="p">)</span>
    <span class="c1">// Business network data removed</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
     <span class="c1">// Add error handling here.</span>
@@ -899,8 +904,8 @@ IMPORTANT: Never use this api on a production or shared business network. It sho
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Upgrade the Hyperledger Composer runtime</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'PeerAdmin@hlfv1'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">upgrade</span><span class="p">(</span><span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'2.0.0'</span><span class="p">);</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">PeerAdmin@hlfv1</span><span class="dl">'</span><span class="p">)</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">upgrade</span><span class="p">(</span><span class="dl">'</span><span class="s1">digitalproperty-network</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">2.0.0</span><span class="dl">'</span><span class="p">);</span>
 
    <span class="c1">// Business network definition upgraded</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
@@ -953,8 +958,8 @@ IMPORTANT: Never use this api on a production or shared business network. It sho
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Test the connection to the runtime</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">);</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">ping</span><span class="p">();</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">userCard@network</span><span class="dl">'</span><span class="p">);</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">ping</span><span class="p">();</span>
     <span class="c1">// Connection has been tested</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
     <span class="c1">// Add error handling here.</span>
@@ -992,9 +997,9 @@ IMPORTANT: Never use this api on a production or shared business network. It sho
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Set the logging level of a business network.</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">setLogLevel</span><span class="p">(</span><span class="s1">'DEBUG'</span><span class="p">)</span>
-   <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'log level set to DEBUG'</span><span class="p">);</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">userCard@network</span><span class="dl">'</span><span class="p">)</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">setLogLevel</span><span class="p">(</span><span class="dl">'</span><span class="s1">DEBUG</span><span class="dl">'</span><span class="p">)</span>
+   <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">log level set to DEBUG</span><span class="dl">'</span><span class="p">);</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
     <span class="c1">// Add error handling here.</span>
 <span class="p">}</span>
@@ -1017,9 +1022,9 @@ IMPORTANT: Never use this api on a production or shared business network. It sho
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the current logging level of a business network.</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">);</span>
-   <span class="kd">let</span> <span class="nx">currentLogLevel</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">getLogLevel</span><span class="p">();</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'current log level is '</span> <span class="o">+</span> <span class="nx">currentLogLevel</span><span class="p">);</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">userCard@network</span><span class="dl">'</span><span class="p">);</span>
+   <span class="kd">let</span> <span class="nx">currentLogLevel</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">getLogLevel</span><span class="p">();</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">current log level is </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">currentLogLevel</span><span class="p">);</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
     <span class="c1">// Add error handling here.</span>
 <span class="p">}</span>
@@ -1042,10 +1047,10 @@ IMPORTANT: Never use this api on a production or shared business network. It sho
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// List all of the deployed business networks.</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">);</span>
-   <span class="kd">let</span> <span class="nx">businessNetworks</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">list</span><span class="p">();</span>
+   <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">userCard@network</span><span class="dl">'</span><span class="p">);</span>
+   <span class="kd">let</span> <span class="nx">businessNetworks</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">list</span><span class="p">();</span>
    <span class="nx">businessNetworks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">businessNetwork</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Deployed business network'</span><span class="p">,</span> <span class="nx">businessNetwork</span><span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Deployed business network</span><span class="dl">'</span><span class="p">,</span> <span class="nx">businessNetwork</span><span class="p">);</span>
    <span class="p">});</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
     <span class="c1">// Add error handling here.</span>

@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -561,7 +566,7 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kd">const</span> <span class="nx">definition</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">definition</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">definition</span> <span class="o">===</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getBusinessNetwork</span><span class="p">());</span>  <span class="c1">// true</span>
 </code></pre></div>
 <h2 id="getallassetregistries">getAllAssetRegistries</h2>
@@ -594,8 +599,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">assetRegistries</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getAllAssetRegistries</span><span class="p">();</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">assetRegistries</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getAllAssetRegistries</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="getassetregistry">getAssetRegistry</h2>
 
@@ -627,8 +632,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">sampleAssetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.SampleAsset'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">sampleAssetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.SampleAsset</span><span class="dl">'</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="assetregistryexists">assetRegistryExists</h2>
 
@@ -660,8 +665,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">exists</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">assetRegistryExists</span><span class="p">(</span><span class="s1">'org.example.SampleAsset'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">assetRegistryExists</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.SampleAsset</span><span class="dl">'</span><span class="p">);</span>
 <span class="k">if</span> <span class="p">(</span><span class="nx">exists</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// logic here...</span>
 <span class="p">}</span>
@@ -702,8 +707,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">addAssetRegistry</span><span class="p">(</span><span class="s1">'registryId'</span><span class="p">,</span> <span class="s1">'registryName'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">addAssetRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">registryId</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">registryName</span><span class="dl">'</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="getallparticipantregistries">getAllParticipantRegistries</h2>
 
@@ -735,8 +740,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">participantRegistries</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getAllParticipantRegistries</span><span class="p">();</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">participantRegistries</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getAllParticipantRegistries</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="getparticipantregistry">getParticipantRegistry</h2>
 
@@ -768,8 +773,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">sampleParticipantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.SampleParticipant'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">sampleParticipantRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.SampleParticipant</span><span class="dl">'</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="participantregistryexists">participantRegistryExists</h2>
 
@@ -801,8 +806,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">exists</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">participantRegistryExists</span><span class="p">(</span><span class="s1">'org.example.SampleParticipant'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">participantRegistryExists</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.SampleParticipant</span><span class="dl">'</span><span class="p">);</span>
 <span class="k">if</span> <span class="p">(</span><span class="nx">exists</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// logic here...</span>
 <span class="p">}</span>
@@ -843,8 +848,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">addParticipantRegistry</span><span class="p">(</span><span class="s1">'registryId'</span><span class="p">,</span> <span class="s1">'registryName'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">addParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">registryId</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">registryName</span><span class="dl">'</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="gettransactionregistry">getTransactionRegistry</h2>
 
@@ -876,8 +881,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">sampleTransactionRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getTransactionRegistry</span><span class="p">(</span><span class="s1">'org.example.SampleTransaction'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">sampleTransactionRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getTransactionRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.SampleTransaction</span><span class="dl">'</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="getalltransactionregistries">getAllTransactionRegistries</h2>
 
@@ -909,8 +914,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">transactionRegistries</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getAllTransactionRegistries</span><span class="p">();</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">transactionRegistries</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getAllTransactionRegistries</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="transactionregistryexists">transactionRegistryExists</h2>
 
@@ -942,8 +947,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">exists</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">transactionRegistryExists</span><span class="p">(</span><span class="s1">'org.example.SampleTransaction'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">transactionRegistryExists</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.SampleTransaction</span><span class="dl">'</span><span class="p">);</span>
 <span class="k">if</span> <span class="p">(</span><span class="nx">exists</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// logic here...</span>
 <span class="p">}</span>
@@ -964,8 +969,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">historian</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getHistorian</span><span class="p">();</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">historian</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getHistorian</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="getidentityregistry">getIdentityRegistry</h2>
 
@@ -983,8 +988,8 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">identityRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getIdentityRegistry</span><span class="p">();</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">identityRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getIdentityRegistry</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="connect">connect</h2>
 
@@ -1022,7 +1027,7 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kd">const</span> <span class="nx">definition</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">definition</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="getregistry">getRegistry</h2>
 
@@ -1054,10 +1059,10 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">sampleAssetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getRegistry</span><span class="p">(</span><span class="s1">'org.example.SampleAsset'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">sampleParticipantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getRegistry</span><span class="p">(</span><span class="s1">'org.example.SampleParticipant'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">sampleTransactionRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getRegistry</span><span class="p">(</span><span class="s1">'org.example.SampleTransaction'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">sampleAssetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.SampleAsset</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">sampleParticipantRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.SampleParticipant</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">sampleTransactionRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">getRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.SampleTransaction</span><span class="dl">'</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="disconnect">disconnect</h2>
 
@@ -1075,9 +1080,9 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
 <span class="c1">// Connected.</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
 <span class="c1">// Disconnected.</span>
 </code></pre></div>
 <h2 id="submittransaction">submitTransaction</h2>
@@ -1116,10 +1121,10 @@ BusinessNetworksDefinitions.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kd">const</span> <span class="nx">definition</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">definition</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
 <span class="kd">const</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">definition</span><span class="p">.</span><span class="nx">getFactory</span><span class="p">();</span>
-<span class="kd">const</span> <span class="nx">transaction</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newTransaction</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'SampleTransaction'</span><span class="p">);</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">submitTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">transaction</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newTransaction</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">SampleTransaction</span><span class="dl">'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">submitTransaction</span><span class="p">(</span><span class="nx">transaction</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="buildquery">buildQuery</h2>
 
@@ -1152,9 +1157,9 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">buildQuery</span><span class="p">(</span><span class="s1">'SELECT org.example.SampleAsset WHERE (value == _$inputValue)'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">assets</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">buildQuery</span><span class="p">(</span><span class="dl">'</span><span class="s1">SELECT org.example.SampleAsset WHERE (value == _$inputValue)</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">assets</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">blue</span><span class="dl">'</span> <span class="p">})</span>
 </code></pre></div>
 <h2 id="query">query</h2>
 
@@ -1193,8 +1198,8 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">assets</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">query</span><span class="p">(</span><span class="s1">'Q1'</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">assets</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">query</span><span class="p">(</span><span class="dl">'</span><span class="s1">Q1</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">blue</span><span class="dl">'</span> <span class="p">})</span>
 </code></pre></div>
 <h2 id="ping">ping</h2>
 
@@ -1212,8 +1217,8 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@network-name'</span><span class="p">);</span>
-<span class="kr">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">ping</span><span class="p">();</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@network-name</span><span class="dl">'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">ping</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="issueidentity">issueIdentity</h2>
 

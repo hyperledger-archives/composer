@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -374,14 +379,14 @@ stored on the Blockchain via server-side Hyperledger Composer APIs.</li>
 As an example, it allows the use of the async/await syntax.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// connect using the 'newUserCard', create an asset, add it to a registry and get all assets.</span>
   <span class="k">try</span><span class="p">{</span>
-    <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'newUserCard'</span><span class="p">);</span>
-    <span class="kd">let</span> <span class="nx">newAsset</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newAsset</span><span class="p">(</span><span class="s1">'org.example.basic'</span><span class="p">,</span><span class="s1">'SampleAsset'</span><span class="p">,</span><span class="s1">'1148'</span><span class="p">);</span>
-    <span class="kr">await</span> <span class="nx">assestRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newAsset</span><span class="p">);</span>
+    <span class="k">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">newUserCard</span><span class="dl">'</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">newAsset</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newAsset</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.basic</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">SampleAsset</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">1148</span><span class="dl">'</span><span class="p">);</span>
+    <span class="k">await</span> <span class="nx">assestRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newAsset</span><span class="p">);</span>
 
-    <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
+    <span class="nx">result</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
     <span class="nx">LOG</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
 
-    <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
+    <span class="k">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
   <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">){</span>
       <span class="c1">// error handling</span>
   <span class="p">}</span>
@@ -391,9 +396,9 @@ As an example, it allows the use of the async/await syntax.</p>
 <p>Using promises the example above would be:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// connect using the 'newUserCard', create an asset, add it to a registry and get all assets.</span>
 
-  <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'newUserCard'</span><span class="p">)</span>
+  <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">newUserCard</span><span class="dl">'</span><span class="p">)</span>
     <span class="p">.</span><span class="nx">then</span><span class="p">(</span> <span class="kd">function</span><span class="p">()</span>  <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">newAsset</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newAsset</span><span class="p">(</span><span class="s1">'org.example.basic'</span><span class="p">,</span><span class="s1">'SampleAsset'</span><span class="p">,</span><span class="s1">'1148'</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">newAsset</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newAsset</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.basic</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">SampleAsset</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">1148</span><span class="dl">'</span><span class="p">);</span>
         <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newAsset</span><span class="p">);</span>
     <span class="p">})</span>
     <span class="p">.</span><span class="nx">then</span><span class="p">(</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
@@ -413,16 +418,16 @@ As an example, it allows the use of the async/await syntax.</p>
 
 <p>The starting point for these APIs are the <code>AdminConnection</code> or <code>BusinessNetworkConnection</code>. Both APIs follow a similar pattern to connect.
 A name of an already imported business network card is needed. By default these cards are ready from the file system card store.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">AdminConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-admin'</span><span class="p">).</span><span class="nx">AdminConnection</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">AdminConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">composer-admin</span><span class="dl">'</span><span class="p">).</span><span class="nx">AdminConnection</span><span class="p">;</span>
 
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'cardNameToUse'</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">cardNameToUse</span><span class="dl">'</span><span class="p">);</span>
 
 <span class="c1">//</span>
-<span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">composer-client</span><span class="dl">'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
 
 <span class="kd">let</span> <span class="nx">bizNetConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="kd">let</span> <span class="nx">businessNetworkDefintion</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">bizNetConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'cardNameToUse'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">businessNetworkDefintion</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">bizNetConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">cardNameToUse</span><span class="dl">'</span><span class="p">);</span>
 
 </code></pre></div>
 <h3 id="registries">Registries</h3>
@@ -450,9 +455,9 @@ A name of an already imported business network card is needed. By default these 
 
 <p>For example to create a new asset</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">factory</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getFactory</span><span class="p">();</span>
-<span class="nx">owner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork'</span><span class="p">,</span> <span class="s1">'Person'</span><span class="p">,</span> <span class="s1">'PID:1234567890'</span><span class="p">);</span>
-<span class="nx">owner</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Fred'</span><span class="p">;</span>
-<span class="nx">owner</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="s1">'Bloggs'</span><span class="p">;</span>
+<span class="nx">owner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="dl">'</span><span class="s1">net.biz.digitalPropertyNetwork</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Person</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">PID:1234567890</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">owner</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Fred</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">owner</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Bloggs</span><span class="dl">'</span><span class="p">;</span>
 </code></pre></div>
 <h3 id="runtime-api">Runtime API</h3>
 
@@ -467,7 +472,7 @@ A name of an already imported business network card is needed. By default these 
 <p>The Common API calls are also available to interact with resources, together with the Registry APIs. For each</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
 <span class="k">try</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nx">driverParticipantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">driverParticipantRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Driver</span><span class="dl">'</span><span class="p">);</span>
     <span class="c1">// Call methods on the driver participant registry.</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Add optional error handling here.</span>
