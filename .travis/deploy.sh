@@ -129,6 +129,8 @@ for j in ${DOCKER_NPM_MODULES}; do
     done
 done
 
+./.travis/deprecate.sh
+
 # Check which Docker images to publish, we need to temporarily disable the 'e' flag here as we rely on a failure
 set +e
 echo "Checking for Docker images with version ${VERSION}"
