@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -389,8 +394,8 @@ meets the requirements by using the <code>getCurrentParticipant</code> function:
 </ol>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript">   <span class="k">async</span> <span class="kd">function</span> <span class="nx">onPrivilegedTransaction</span><span class="p">(</span><span class="nx">privilegedTransaction</span><span class="p">)</span> <span class="p">{</span>
        <span class="kd">let</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
-       <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'net.biz.digitalPropertyNetwork.PrivilegedPerson'</span><span class="p">)</span> <span class="p">{</span>
-           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Transaction can only be submitted by a privileged person'</span><span class="p">);</span>
+       <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="dl">'</span><span class="s1">net.biz.digitalPropertyNetwork.PrivilegedPerson</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Transaction can only be submitted by a privileged person</span><span class="dl">'</span><span class="p">);</span>
        <span class="p">}</span>
        <span class="c1">// Current participant must be a privileged person to get here.</span>
    <span class="p">}</span>
@@ -401,8 +406,8 @@ participant by using the <code>getCurrentParticipant</code> function:</li>
 </ol>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript">   <span class="k">async</span> <span class="kd">function</span> <span class="nx">onPrivilegedTransaction</span><span class="p">(</span><span class="nx">privilegedTransaction</span><span class="p">)</span> <span class="p">{</span>
        <span class="kd">let</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
-       <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'net.biz.digitalPropertyNetwork.Person#PERSON_1'</span><span class="p">)</span> <span class="p">{</span>
-           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Transaction can only be submitted by person 1'</span><span class="p">);</span>
+       <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="dl">'</span><span class="s1">net.biz.digitalPropertyNetwork.Person#PERSON_1</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Transaction can only be submitted by person 1</span><span class="dl">'</span><span class="p">);</span>
        <span class="p">}</span>
        <span class="c1">// Current participant must be person 1 to get here.</span>
    <span class="p">}</span>
@@ -415,7 +420,7 @@ participant by using the <code>getCurrentParticipant</code> function:</li>
        <span class="kd">let</span> <span class="nx">assetOwner</span> <span class="o">=</span> <span class="nx">privilegedTransaction</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">owner</span><span class="p">;</span>
        <span class="kd">let</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
        <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="nx">asset</span><span class="p">.</span><span class="nx">owner</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">())</span> <span class="p">{</span>
-           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Transaction can only be submitted by the owner of the asset'</span><span class="p">);</span>
+           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Transaction can only be submitted by the owner of the asset</span><span class="dl">'</span><span class="p">);</span>
        <span class="p">}</span>
        <span class="c1">// Current participant must be the owner of the asset to get here.</span>
    <span class="p">}</span>
@@ -430,7 +435,7 @@ meets the requirements by using the <code>getCurrentIdentity</code> function:</l
        <span class="kd">let</span> <span class="nx">certificate</span> <span class="o">=</span> <span class="nx">currentIdentity</span><span class="p">.</span><span class="nx">certificate</span><span class="p">;</span>
        <span class="c1">// Perform testing on the PEM encoded certificate.</span>
        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">certificate</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/^----BEGIN CERTIFICATE----/</span><span class="p">))</span> <span class="p">{</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Transaction can only be submitted by a person with a valid certificate'</span><span class="p">);</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Transaction can only be submitted by a person with a valid certificate</span><span class="dl">'</span><span class="p">);</span>
        <span class="p">}</span>
        <span class="c1">// Current identity must have a valid certificate to get here.</span>
    <span class="p">}</span>

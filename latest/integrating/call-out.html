@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -381,7 +386,7 @@
 <span class="k">async</span> <span class="kd">function</span> <span class="nx">buyStocks</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
 
     <span class="c1">// Look up the current price of the CONGA stock, and parse it into a float.</span>
-    <span class="kd">const</span> <span class="nx">priceAsStr</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'http://stocks.org/CONGA'</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">priceAsStr</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://stocks.org/CONGA</span><span class="dl">'</span><span class="p">);</span>
     <span class="kd">const</span> <span class="nx">price</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">priceAsStr</span><span class="p">);</span>
 
     <span class="c1">// Get the current participant, and update their stock and balance.</span>
@@ -391,8 +396,8 @@
     <span class="nx">participant</span><span class="p">.</span><span class="nx">balance</span> <span class="o">-=</span> <span class="nx">price</span> <span class="o">*</span> <span class="nx">units</span><span class="p">;</span>
 
     <span class="c1">// Update the current participant in the participant registry.</span>
-    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Trader'</span><span class="p">);</span>
-    <span class="kr">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Trader</span><span class="dl">'</span><span class="p">);</span>
+    <span class="k">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
 
 <span class="p">}</span>
 </code></pre></div>
@@ -406,7 +411,7 @@
 
     <span class="c1">// Look up the current price of the CONGA stock, and extract the price.</span>
     <span class="c1">// The option "json: true" automatically parses JSON from the HTTP response.</span>
-    <span class="kd">const</span> <span class="nx">stock</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="s1">'http://stocks.org/CONGA'</span><span class="p">,</span> <span class="na">json</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
+    <span class="kd">const</span> <span class="nx">stock</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="dl">'</span><span class="s1">http://stocks.org/CONGA</span><span class="dl">'</span><span class="p">,</span> <span class="na">json</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
     <span class="kd">const</span> <span class="nx">price</span> <span class="o">=</span> <span class="nx">stock</span><span class="p">.</span><span class="nx">price</span><span class="p">;</span>
 
     <span class="c1">// Get the current participant, and update their stock and balance.</span>
@@ -416,8 +421,8 @@
     <span class="nx">participant</span><span class="p">.</span><span class="nx">balance</span> <span class="o">-=</span> <span class="nx">price</span> <span class="o">*</span> <span class="nx">units</span><span class="p">;</span>
 
     <span class="c1">// Update the current participant in the participant registry.</span>
-    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Trader'</span><span class="p">);</span>
-    <span class="kr">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Trader</span><span class="dl">'</span><span class="p">);</span>
+    <span class="k">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
 
 <span class="p">}</span>
 </code></pre></div>
@@ -435,7 +440,7 @@
     <span class="c1">// Look up the current price of the CONGA stock, and extract the price.</span>
     <span class="c1">// The option "json" sends the participant as the HTTP request body,</span>
     <span class="c1">// and automatically parses JSON from the HTTP response.</span>
-    <span class="kd">const</span> <span class="nx">stock</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="s1">'http://stocks.org/CONGA'</span><span class="p">,</span> <span class="na">json</span><span class="p">:</span> <span class="nx">participant</span> <span class="p">});</span>
+    <span class="kd">const</span> <span class="nx">stock</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="dl">'</span><span class="s1">http://stocks.org/CONGA</span><span class="dl">'</span><span class="p">,</span> <span class="na">json</span><span class="p">:</span> <span class="nx">participant</span> <span class="p">});</span>
     <span class="kd">const</span> <span class="nx">price</span> <span class="o">=</span> <span class="nx">stock</span><span class="p">.</span><span class="nx">price</span><span class="p">;</span>
 
     <span class="c1">// Get the current participant, and update their stock and balance.</span>
@@ -444,8 +449,8 @@
     <span class="nx">participant</span><span class="p">.</span><span class="nx">balance</span> <span class="o">-=</span> <span class="nx">price</span> <span class="o">*</span> <span class="nx">units</span><span class="p">;</span>
 
     <span class="c1">// Update the current participant in the participant registry.</span>
-    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Trader'</span><span class="p">);</span>
-    <span class="kr">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Trader</span><span class="dl">'</span><span class="p">);</span>
+    <span class="k">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
 
 <span class="p">}</span>
 </code></pre></div>
@@ -459,7 +464,7 @@
 
     <span class="c1">// Look up the current price of the CONGA stock, and extract the price.</span>
     <span class="c1">// The option "json: true" automatically parses JSON from the HTTP response.</span>
-    <span class="kd">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="s1">'http://stocks.org/CONGA'</span><span class="p">,</span> <span class="na">json</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
+    <span class="kd">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="dl">'</span><span class="s1">http://stocks.org/CONGA</span><span class="dl">'</span><span class="p">,</span> <span class="na">json</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
 
     <span class="c1">// Parse the JavaScript object into the stock asset.</span>
     <span class="kd">const</span> <span class="nx">serializer</span> <span class="o">=</span> <span class="nx">getSerializer</span><span class="p">();</span>
@@ -473,8 +478,8 @@
     <span class="nx">participant</span><span class="p">.</span><span class="nx">balance</span> <span class="o">-=</span> <span class="nx">price</span> <span class="o">*</span> <span class="nx">units</span><span class="p">;</span>
 
     <span class="c1">// Update the current participant in the participant registry.</span>
-    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Trader'</span><span class="p">);</span>
-    <span class="kr">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example.Trader</span><span class="dl">'</span><span class="p">);</span>
+    <span class="k">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
 
 <span class="p">}</span>
 </code></pre></div>

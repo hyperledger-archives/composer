@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -439,10 +444,10 @@ method instead.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the factory.</span>
 <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
 <span class="c1">// Create a new vehicle.</span>
-<span class="kd">var</span> <span class="nx">vehicle</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">vehicle</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Vehicle</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">VEHICLE_1</span><span class="dl">'</span><span class="p">);</span>
 <span class="c1">// Set the properties of the new vehicle.</span>
-<span class="nx">vehicle</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="s1">'BLUE'</span><span class="p">;</span>
-<span class="nx">vehicle</span><span class="p">.</span><span class="nx">manufacturer</span> <span class="o">=</span> <span class="s1">'Toyota'</span><span class="p">;</span>
+<span class="nx">vehicle</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">BLUE</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">vehicle</span><span class="p">.</span><span class="nx">manufacturer</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Toyota</span><span class="dl">'</span><span class="p">;</span>
 </code></pre></div>
 <h2 id="newrelationship">newRelationship</h2>
 
@@ -490,7 +495,7 @@ method instead.</p>
 <span class="c1">// Get the factory.</span>
 <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
 <span class="c1">// Create a new relationship to the vehicle.</span>
-<span class="kd">var</span> <span class="nx">vehicle</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">vehicle</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Vehicle</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">VEHICLE_1</span><span class="dl">'</span><span class="p">);</span>
 <span class="c1">// Set the relationship as the value of the vehicle property of the driver.</span>
 <span class="nx">driver</span><span class="p">.</span><span class="nx">vehicle</span> <span class="o">=</span> <span class="nx">vehicle</span><span class="p">;</span>
 </code></pre></div>
@@ -534,7 +539,7 @@ method instead.</p>
 <span class="c1">// Get the factory.</span>
 <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
 <span class="c1">// Create a new relationship to the vehicle.</span>
-<span class="kd">var</span> <span class="nx">record</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newConcept</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Record'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">record</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newConcept</span><span class="p">(</span><span class="dl">'</span><span class="s1">org.example</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Record</span><span class="dl">'</span><span class="p">);</span>
 <span class="c1">// Add the record to the persons array of records.</span>
 <span class="nx">person</span><span class="p">.</span><span class="nx">records</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">record</span><span class="p">);</span>
 </code></pre></div>

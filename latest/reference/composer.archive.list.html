@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -368,10 +373,10 @@ Version:0.0.1
 Command succeeded
 </code></pre></div>
 <h2 id="javascript-api-example">Javascript API Example</h2>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">ArchiveList</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-cli'</span><span class="p">).</span><span class="nx">Archive</span><span class="p">.</span><span class="nx">List</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">ArchiveList</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">composer-cli</span><span class="dl">'</span><span class="p">).</span><span class="nx">Archive</span><span class="p">.</span><span class="nx">List</span><span class="p">;</span>
 
 <span class="kd">let</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="na">archiveFile</span><span class="p">:</span> <span class="s1">'digitalPropertyNetwork.bna'</span>
+  <span class="na">archiveFile</span><span class="p">:</span> <span class="dl">'</span><span class="s1">digitalPropertyNetwork.bna</span><span class="dl">'</span>
 <span class="p">};</span>
 
 <span class="nx">ArchiveList</span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>

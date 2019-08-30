@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -389,15 +394,15 @@ and the unique identifier for that identity is &#39;f1c5b9fe136d7f2d31b927e0dcb7
 <li>JavaScript API</li>
 </ul></li>
 </ol>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">    <span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">    <span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">composer-client</span><span class="dl">'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
 
     <span class="k">async</span> <span class="kd">function</span> <span class="nx">revoke</span><span class="p">()</span> <span class="p">{</span>
         <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
 
         <span class="k">try</span> <span class="p">{</span>
-            <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@digitalPropertyNetwork'</span><span class="p">);</span>
-            <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">revokeIdentity</span><span class="p">(</span><span class="s1">'f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862'</span><span class="p">)</span>
-            <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
+            <span class="k">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin@digitalPropertyNetwork</span><span class="dl">'</span><span class="p">);</span>
+            <span class="k">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">revokeIdentity</span><span class="p">(</span><span class="dl">'</span><span class="s1">f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862</span><span class="dl">'</span><span class="p">)</span>
+            <span class="k">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
         <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
             <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>

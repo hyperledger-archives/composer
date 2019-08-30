@@ -86,6 +86,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<div class="homepage-callout">
+  <div class="callout-copy">
+      <p><strong>Update Aug 29th 2019: </strong>Hyperledger Composer has been deprecated. Please see the <a href="https://github.com/hyperledger/composer/blob/master/README.md">README</a> for more information.</p>
+  </div>
+</div>
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
@@ -395,7 +400,7 @@ event RemoveNotification {
 <ol>
 <li><p>Open the transaction processor function file <code>lib/logic.js</code>.</p></li>
 <li><p>Replace the transaction logic with the following JavaScript:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="cd">/**
  * Track the trade of a commodity from one trader to another
  * @param {org.example.mynetwork.Trade} trade - the trade to be processed
  * @transaction
@@ -415,7 +420,7 @@ event RemoveNotification {
     <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="sd">/**
+<span class="cd">/**
  * Remove all high volume commodities
  * @param {org.example.mynetwork.RemoveHighQuantityCommodities} remove - the remove to be processed
  * @transaction
