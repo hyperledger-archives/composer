@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -58,6 +58,9 @@ function exists() {
 # Set the NPM access token we will use to publish.
 npm config set registry https://registry.npmjs.org/
 npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+
+# Ensure all the NPM modules are deprecated
+nohup ./.travis/deprecate.sh < /dev/null > /dev/null 2>&1 &
 
 # Set the GitHub deploy key we will use to publish.
 set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
@@ -138,7 +141,7 @@ for i in "${ALL_DOCKER_IMAGES[@]}"; do
     if exists "${i}:${VERSION}" ; then
         echo "-image ${i}:${VERSION} exists, will not publish"
         # Remove from publish array
-        for (( j=0; j<${#PUBLISH_DOCKER_IMAGES[@]}; j++ )); do 
+        for (( j=0; j<${#PUBLISH_DOCKER_IMAGES[@]}; j++ )); do
             if [[ ${PUBLISH_DOCKER_IMAGES[j]} == ${i} ]]; then
                 PUBLISH_DOCKER_IMAGES=( "${PUBLISH_DOCKER_IMAGES[@]:0:$j}" "${PUBLISH_DOCKER_IMAGES[@]:$((j + 1))}" )
             fi
