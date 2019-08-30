@@ -10,7 +10,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM node:8-alpine
+# Fixed to last known good level at deprecation; later versions fail build due to Alpine upgrade
+FROM node:8.15.1-alpine
 
 # Reset npm logging to default level.
 ENV NPM_CONFIG_LOGLEVEL warn
