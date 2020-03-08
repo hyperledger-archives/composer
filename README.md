@@ -1,4 +1,6 @@
-# Hyperledger Composer
+#   D E P R E C A T E D
+
+## Hyperledger Composer
 
 :warning: :warning: :warning:
 
